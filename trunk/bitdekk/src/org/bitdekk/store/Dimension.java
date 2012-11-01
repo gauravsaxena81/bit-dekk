@@ -2,7 +2,7 @@ package org.bitdekk.store;
 
 public class Dimension {
 	private String name;
-	private String displayName;
+	private String displayName;//Let this go to the UI
 	public String getName() {
 		return name;
 	}
