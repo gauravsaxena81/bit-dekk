@@ -3,7 +3,6 @@ package org.bitdekk.test.store;
 import java.io.FileReader;
 
 import au.com.bytecode.opencsv.*;
-import java.io.FileReader;
 import org.bitdekk.store.Measure;
 
 public class TestMeasure {
@@ -27,6 +26,8 @@ public class TestMeasure {
 		
 		System.out.println("Measure A:" + mesA.getName());
 		System.out.println("Measure B:" + mesB.getName());
+		
+		reader.close();
 	}
 
 }
