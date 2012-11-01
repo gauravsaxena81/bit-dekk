@@ -12,6 +12,8 @@ public class DimensionValue {
 		this.dimensionValue = dimensionValue;
 	}
 	public String getDimensionDisplayValue() {
+		if(dimensionDisplayValue == null)
+			return dimensionValue;
 		return dimensionDisplayValue;
 	}
 	public void setDimensionDisplayValue(String dimensionDisplayValue) {
