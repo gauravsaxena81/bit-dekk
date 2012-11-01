@@ -1,4 +1,4 @@
-package org.bitdekk.test;
+package org.bitdekk.test.store;
 
 import au.com.bytecode.opencsv.*;
 import java.io.FileReader;
