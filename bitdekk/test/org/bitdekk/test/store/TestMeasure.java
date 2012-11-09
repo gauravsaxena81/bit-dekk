@@ -7,7 +7,7 @@ import org.bitdekk.store.Measure;
 
 public class TestMeasure {
 
-	private static final String FILE_ADDRESS = "E:/EclipseWorkspace/manish.mishra/workspace/BitDekk/test/org/bitdekk/test/store/Test.csv";
+	private static final String FILE_ADDRESS = "bin/org/bitdekk/test/store/Test.csv";
 	/**
 	 * @param args
 	 */
