@@ -3,7 +3,7 @@ package org.bitdekk.store;
 public class DimensionValue {
 
 	private String dimensionValue;
-	private String dimensionDisplayValue;
+	private String dimensionDisplayValue;// Shift to UI
 	private int dimensionValueID;
 	public String getDimensionValue() {
 		return dimensionValue;
