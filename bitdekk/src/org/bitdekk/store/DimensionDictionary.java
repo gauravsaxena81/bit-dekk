@@ -2,6 +2,8 @@ package org.bitdekk.store;
 
 
 import java.util.HashMap;
+import java.util.Set;
+
 import com.google.common.collect.HashBiMap;
 
 //Primarily store Dimensions, their ID and look up
@@ -52,5 +54,9 @@ public class DimensionDictionary {
 	
 	public String getDimVal(String dimName, int dimValID){
 		return dimensionDictionary.get(dimName).get(dimValID);
+	}
+	
+	public Set<String> getDimensions(){
+		return dimensionDictionary.keySet();
 	}
 }
