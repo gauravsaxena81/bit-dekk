@@ -2,8 +2,11 @@ package org.bitdekk.test.store;
 
 import au.com.bytecode.opencsv.*;
 import java.io.FileReader;
+import java.util.Iterator;
+import java.util.Set;
 
-import org.bitdekk.store.Dimension;
+//import org.bitdekk.store.Dimension;
+import org.bitdekk.store.DimensionDictionary;
 
 public class TestDimension {
 	
@@ -16,45 +19,33 @@ public class TestDimension {
 		CSVReader reader = new CSVReader(new FileReader(FILE_ADDRESS));
 		String[] nextLine;
 		
-		//Read the column headers
-		//Lang: Load Table Headers
+		DimensionDictionary dimensionDictionary = new DimensionDictionary();
+		/* Language Considerations:
+		 * -> Need to specify to read dimension names from where, first row, first column etc
+		 * -> Need to specify which columns to read from the CSV file for dimensions
+		 * Example:
+		 * Read CSV file ([File Path]);
+		 * DimensionName from ROW 1 (or COL 1)
+		 * Read Columns (1,3,4,5) as dimensions
+		 * Column 1 as 'DimA'
+		 * Column 3 as 'DimC'
+		 * Column 4 as 'DimD'
+		 * Column 5 as 'DimE'
+		 * 
+		 * Define the language through XML?
+		 */
+		
 		nextLine = reader.readNext(); //got the first line
-		//Which columns are Dimensions
-		//Lang: Dimension:C1 as 'Dimension A'
-		Dimension dimC1 = new Dimension();
-		dimC1.setName(nextLine[0]);
-		dimC1.setDisplayName("Dimension A");
-		//Lang: Dimension: C2 as 'Dimension B'
-		Dimension dimC2 = new Dimension();
-		dimC2.setName(nextLine[1]);
-		dimC2.setDisplayName("Dimension B");
-		//Lang: Dimension: C3 as 'Dimension C'
-		Dimension dimC3 = new Dimension();
-		dimC3.setName(nextLine[2]);
-		dimC3.setDisplayName("Dimension C");
-		//Lang: Dimension: C4 as 'Dimension D'
-		Dimension dimC4 = new Dimension();
-		dimC4.setName(nextLine[3]);
-		dimC4.setDisplayName("Dimension D");
+		dimensionDictionary.addDimension(nextLine[0]);
+		dimensionDictionary.addDimension(nextLine[1]);
+		dimensionDictionary.addDimension(nextLine[2]);
+		dimensionDictionary.addDimension(nextLine[3]);
+		Iterator<String> dimIter = dimensionDictionary.getDimensions().iterator();
 		
-		System.out.println(dimC1.getName());
-		System.out.println(dimC1.getDisplayName());
-		
-		System.out.println(dimC2.getName());
-		System.out.println(dimC2.getDisplayName());
-		
-		System.out.println(dimC3.getName());
-		System.out.println(dimC3.getDisplayName());
-		
-		System.out.println(dimC4.getName());
-		System.out.println(dimC4.getDisplayName());
-		
-		/*while((nextLine = reader.readNext()) != null){
-			System.out.println(nextLine[0] + "\t" + nextLine[1] + "\t" + nextLine[2] + "\t" + nextLine[3] + "\t" + nextLine[4] + "\t" + nextLine[5]);
-		}*/
+		while(dimIter.hasNext()){
+			System.out.println("Dimension from dictionary: " + dimIter.next());
+		}
 		
 		reader.close();
-
 	}
-
 }
