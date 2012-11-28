@@ -1,17 +1,16 @@
 package org.bitdekk.util;
 
 import java.util.HashMap;
-import java.util.ArrayList;
-
 import org.bitdekk.store.Dimension;
-import org.bitdekk.store.DimensionValue;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
+//Deprecated
 /* In future maybe this will be persisted. But since everything is in memory right now, everything goes
  * down when the system crashes or when main exits.
  */
 public class DimensionValueIDGenerator{
+	
+	//Remove the following maintain a reference for dimension dictionary
 	HashMap<Dimension,HashMap<String,Integer>> dimensionSpace;
 	HashMap<Dimension,AtomicInteger> dimensionIDSequence;
 	
