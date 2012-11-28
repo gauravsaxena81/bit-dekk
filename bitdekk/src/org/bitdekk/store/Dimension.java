@@ -1,5 +1,6 @@
 package org.bitdekk.store;
 
+//Deprecated: DimensionDictionary supports this
 public class Dimension {
 	private String name;
 	private String displayName;//Let this go to the UI
