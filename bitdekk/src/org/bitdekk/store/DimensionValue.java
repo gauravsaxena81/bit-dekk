@@ -1,5 +1,6 @@
 package org.bitdekk.store;
 
+//Deprecated: Marked for removal
 public class DimensionValue {
 
 	private String dimensionValue;
