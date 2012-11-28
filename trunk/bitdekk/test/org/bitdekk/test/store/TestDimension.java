@@ -40,11 +40,7 @@ public class TestDimension {
 		dimensionDictionary.addDimension(nextLine[1]);
 		dimensionDictionary.addDimension(nextLine[2]);
 		dimensionDictionary.addDimension(nextLine[3]);
-		Iterator<String> dimIter = dimensionDictionary.getDimensions().iterator();
-		
-		while(dimIter.hasNext()){
-			System.out.println("Dimension from dictionary: " + dimIter.next());
-		}
+		System.out.println(dimensionDictionary.toString());
 		
 		reader.close();
 	}
