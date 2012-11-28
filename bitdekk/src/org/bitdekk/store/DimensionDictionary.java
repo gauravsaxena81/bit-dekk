@@ -2,7 +2,10 @@ package org.bitdekk.store;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.collect.HashBiMap;
 
@@ -11,7 +14,8 @@ public class DimensionDictionary {
 	
 	private static final int BIMAPSIZE = 16;
 	
-	public HashMap<String, HashBiMap<Integer,String>> dimensionDictionary; 
+	public HashMap<String, HashBiMap<Integer,String>> dimensionDictionary;
+	public HashMap<String, AtomicInteger> dimensionIDSequence;
 	
 	//Use a bidirectional map for Dimension Dictionary
 	//Should we add the mechanism for generating IDs right here?
@@ -25,38 +29,88 @@ public class DimensionDictionary {
 	
 	public DimensionDictionary(){
 		dimensionDictionary = new HashMap<>();
+		dimensionIDSequence = new HashMap<>();
 	}
 	
 	public void addDimension(String dimName){
 		if(!dimensionDictionary.containsKey(dimName)){
 			HashBiMap<Integer,String> dimValues = HashBiMap.create(BIMAPSIZE); 
 			dimensionDictionary.put(dimName, dimValues);
+			assert (!dimensionIDSequence.containsKey(dimName));
+			dimensionIDSequence.put(dimName, new AtomicInteger(0));
 		}else{
-			
-			//Do Nothing. Already there
+			assert dimensionIDSequence.containsKey(dimName);
 		}
 	}
 	
-	public void addDimValue(String dimName, int dimValID, String dimValue ){
-		if(!dimensionDictionary.containsKey(dimName)){
-			HashBiMap<Integer,String> dimValues = HashBiMap.create(BIMAPSIZE); 
-			dimValues.put(dimValID, dimValue);
-			dimensionDictionary.put(dimName, dimValues);
-		}else{
+	public void addDimensionValue(String dimName, String dimValue ){
+		int dimValID;
+		if(!dictHasDimension(dimName)){//Dictionary has no dimension and dimension value
+			addDimension(dimName);
+			dimValID = dimensionIDSequence.get(dimName).addAndGet(1);
 			dimensionDictionary.get(dimName).put(dimValID, dimValue);
+			
+		}else if(getDimensionValueID(dimName, dimValue) == -1){//Dictionary has dimension but no dimension value
+			dimValID = dimensionIDSequence.get(dimName).addAndGet(1);
+			dimensionDictionary.get(dimName).put(dimValID, dimValue);
+			
+		}else{//Dictionary has dimension and dimension value
+			//do nothing
 		}
 	}
 	
-	public int getDimValID(String dimName, String dimValue){
-		//why inverse, can't we just have getKey()?
-		return dimensionDictionary.get(dimName).inverse().get(dimValue);
+	public int getDimensionValueID(String dimName, String dimValue){
+		//Valid dimension value ID can be positive only
+		if(dimensionDictionary.get(dimName).inverse().containsKey(dimValue)){
+			return dimensionDictionary.get(dimName).inverse().get(dimValue);
+		}else{
+			return -1;
+		}
 	}
 	
-	public String getDimVal(String dimName, int dimValID){
+	public String getDimensionValue(String dimName, int dimValID){
 		return dimensionDictionary.get(dimName).get(dimValID);
+	}
+	
+	public boolean dictHasDimension(String dimName){
+		if(dimensionDictionary.containsKey(dimName)){
+			assert dimensionIDSequence.containsKey(dimName);
+			return dimensionDictionary.containsKey(dimName);
+		}else{
+			return false;
+		}
 	}
 	
 	public Set<String> getDimensions(){
 		return dimensionDictionary.keySet();
+	}
+	
+	public String toString(){
+		StringBuilder strB = new StringBuilder();
+		strB.append("Dimension Sequence:\n");
+		
+		Iterator<String> seqIter = dimensionIDSequence.keySet().iterator();
+		while(seqIter.hasNext()){
+			String key = seqIter.next();
+			strB.append("Dimension: "+ key + " Seq Value: " + dimensionIDSequence.get(key).get() + "\n" );
+		}
+		strB.append("\n");
+		strB.append("Dimension Dictionary:\n");
+		
+		Iterator<String> dictIter = dimensionDictionary.keySet().iterator();
+		
+		while(dictIter.hasNext()){
+			String key = dictIter.next();
+			strB.append("Dimension: " + key + "\n");
+			Map<Integer,String> dimValMap = dimensionDictionary.get(key);
+			Iterator<Integer> valIter = dimValMap.keySet().iterator();
+			
+			while(valIter.hasNext()){
+				int valID = valIter.next();
+				strB.append("Dimension Value ID: " + valID + " ; Dimension Value: " + dimValMap.get(valID) + "\n");
+			}
+			strB.append("\n");
+		}
+		return strB.toString();
 	}
 }
