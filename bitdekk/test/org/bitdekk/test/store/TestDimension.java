@@ -2,8 +2,7 @@ package org.bitdekk.test.store;
 
 import au.com.bytecode.opencsv.*;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.Set;
+
 
 //import org.bitdekk.store.Dimension;
 import org.bitdekk.store.DimensionDictionary;
