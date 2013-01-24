@@ -15,7 +15,8 @@ public class DimensionDictionary {
 	private static final int BIMAPSIZE = 16;
 	
 	public HashMap<String, HashBiMap<Integer,String>> dimensionDictionary;
-	public HashMap<String, AtomicInteger> dimensionIDSequence;
+	AtomicInteger dimensionIDSequence;
+	//public HashMap<String, AtomicInteger> dimensionIDSequence;
 	
 	//Use a bidirectional map for Dimension Dictionary
 	//Should we add the mechanism for generating IDs right here?
@@ -29,17 +30,13 @@ public class DimensionDictionary {
 	
 	public DimensionDictionary(){
 		dimensionDictionary = new HashMap<>();
-		dimensionIDSequence = new HashMap<>();
+		dimensionIDSequence = new AtomicInteger(0);
 	}
 	
 	public void addDimension(String dimName){
 		if(!dimensionDictionary.containsKey(dimName)){
 			HashBiMap<Integer,String> dimValues = HashBiMap.create(BIMAPSIZE); 
 			dimensionDictionary.put(dimName, dimValues);
-			assert (!dimensionIDSequence.containsKey(dimName));
-			dimensionIDSequence.put(dimName, new AtomicInteger(0));
-		}else{
-			assert dimensionIDSequence.containsKey(dimName);
 		}
 	}
 	
@@ -47,13 +44,11 @@ public class DimensionDictionary {
 		int dimValID;
 		if(!dictHasDimension(dimName)){//Dictionary has no dimension and dimension value
 			addDimension(dimName);
-			dimValID = dimensionIDSequence.get(dimName).addAndGet(1);
-			dimensionDictionary.get(dimName).put(dimValID, dimValue);
-			
+			dimValID = dimensionIDSequence.addAndGet(1);
+			dimensionDictionary.get(dimName).put(dimValID, dimValue);		
 		}else if(getDimensionValueID(dimName, dimValue) == -1){//Dictionary has dimension but no dimension value
-			dimValID = dimensionIDSequence.get(dimName).addAndGet(1);
+			dimValID = dimensionIDSequence.addAndGet(1);
 			dimensionDictionary.get(dimName).put(dimValID, dimValue);
-			
 		}else{//Dictionary has dimension and dimension value
 			//do nothing
 		}
@@ -74,7 +69,6 @@ public class DimensionDictionary {
 	
 	public boolean dictHasDimension(String dimName){
 		if(dimensionDictionary.containsKey(dimName)){
-			assert dimensionIDSequence.containsKey(dimName);
 			return dimensionDictionary.containsKey(dimName);
 		}else{
 			return false;
@@ -87,14 +81,6 @@ public class DimensionDictionary {
 	
 	public String toString(){
 		StringBuilder strB = new StringBuilder();
-		strB.append("Dimension Sequence:\n");
-		
-		Iterator<String> seqIter = dimensionIDSequence.keySet().iterator();
-		while(seqIter.hasNext()){
-			String key = seqIter.next();
-			strB.append("Dimension: "+ key + " Seq Value: " + dimensionIDSequence.get(key).get() + "\n" );
-		}
-		strB.append("\n");
 		strB.append("Dimension Dictionary:\n");
 		
 		Iterator<String> dictIter = dimensionDictionary.keySet().iterator();
