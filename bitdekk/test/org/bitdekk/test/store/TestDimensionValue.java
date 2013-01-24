@@ -35,7 +35,6 @@ public class TestDimensionValue {
 		}
 
 		System.out.println(dimensionDict.toString());
-
 		reader.close();
 	}
 }
