@@ -9,7 +9,7 @@ grammar BitDekkMeasureExpressionTest;
 //2 + SUM(Volume) + AVG(Volume)
 //2 * SUM(Volume) * AVG(Volume)
 
-stat	:	groupedExpression ;
+stat	:	groupedExpression EOF;
 groupedExpression
 	:	a=groupedAddExpression (ADD_SUB b=groupedAddExpression)*;
 groupedAddExpression
@@ -28,7 +28,10 @@ mulExpression
 	| 	'('measureExpression')' ;
 function
 	:	'SUM' 
-	|	'AVG' ;
+	|	'AVG' 
+	|	'COUNT'
+	|	'MAX'
+	|	'MIN';
 //Lexer
 OPERATOR:	'=' | '<' | '>' | '<>' | '<=' | '>=';
 NUMBER	:	Digit+('.'Digit+)?;

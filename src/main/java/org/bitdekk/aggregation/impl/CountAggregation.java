@@ -3,27 +3,24 @@ package org.bitdekk.aggregation.impl;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.helper.expression.MeasureExpression;
 
-public class AvgAggregation implements IAggregation{
-	private double value = 0;
+public class CountAggregation implements IAggregation{
 	private int number = 0;
 	private boolean anyValueFound = false;
 	private MeasureExpression me;
 	@Override
 	public void aggregate(double measureValue) {
-		value += measureValue;
 		number++;
 		anyValueFound = true;
 	}
 	@Override
 	public double getValue() {
 		if(anyValueFound)
-			return value / number;
+			return number;
 		else
 			return Double.NaN;
 	}
 	@Override
 	public void aggregate(double[] measureValues) {
-		value += measureValues[0];
 		number++;
 		anyValueFound = true;
 	}

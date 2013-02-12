@@ -1,1 +1,1 @@
-SELECT a,b,c FROM d WHERE a="b" AND d="e" ORDER BY a LIMIT 10, 20 
+SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc
