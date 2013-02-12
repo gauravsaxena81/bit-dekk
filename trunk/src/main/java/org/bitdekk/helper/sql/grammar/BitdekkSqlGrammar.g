@@ -15,15 +15,15 @@ package org.bitdekk.helper.sql.grammar;
 	private State state1;
 }
 
-stat	:	selectStatement;
+stat	:	selectStatement EOF;
 
 selectStatement
 	:	'SELECT' columns 'FROM' IDENTIFIER{state1.setTableName($IDENTIFIER.text);} ('WHERE' whereExpressions)? 
 	('ORDER' 'BY' orderByColumns)? limitClause?;
 columns	:	column  (',' column)*;
 orderByColumns
-	:	a=IDENTIFIER (c=('asc'|'desc'))? {state1.addOrderByColumn($a.text, $c.text == null || $c.text.equals("asc"));} 
-		(','b=IDENTIFIER (d=('asc'|'desc'))? {state1.addOrderByColumn($b.text, $d.text == null || $d.text.equals("asc"));})*;
+	:	a=IDENTIFIER (c=('ASC'|'DESC'))? {state1.addOrderByColumn($a.text, $c.text == null || $c.text.equals("ASC"));} 
+		(','b=IDENTIFIER (d=('ASC'|'DESC'))? {state1.addOrderByColumn($b.text, $d.text == null || $d.text.equals("ASC"));})*;
 limitClause
 	:	('LIMIT' a=POS_INT {state1.setFromRowNumber(Integer.parseInt($a.text));} 
 	',' b=POS_INT {state1.setToRowNumber(Integer.parseInt($b.text));});
@@ -40,7 +40,7 @@ whereExpression
 	;
 dimensionCondition
 	:	(a=IDENTIFIER '=' '"' b=IDENTIFIER {state1.addDimensionValue($a.text, $b.text);} '"')
-	| 	(c=IDENTIFIER 'in' ('(' '"' d=IDENTIFIER {state1.addDimensionValue($b.text, $d.text);} '"' 
+	| 	(c=IDENTIFIER 'IN' ('(' '"' d=IDENTIFIER {state1.addDimensionValue($b.text, $d.text);} '"' 
 			(',' '"' d=IDENTIFIER {state1.addDimensionValue($c.text, $d.text);} '"')* ')'));
 /*measureExpression
 	:	mulExpression (MUL_DIV mulExpression)?;
@@ -70,7 +70,10 @@ mulExpression
 	| 	'('measureExpression')' ;
 function
 	:	'SUM' 
-	|	'AVG' ;
+	|	'AVG' 
+	|	'COUNT'
+	|	'MAX'
+	|	'MIN';
 number	:	ADD_SUB? POS_INT('.'POS_INT)?;
 //Lexer
 OPERATOR:	'=' | '<' | '>' | '<>' | '<=' | '>=';

@@ -9,5 +9,4 @@ public interface IAggregation {
 	public void aggregate(double measureValue);
 	public void setMeasureExpression(MeasureExpression me);
 	public MeasureExpression getMeasureExpression();
-	public void initialize();
 }

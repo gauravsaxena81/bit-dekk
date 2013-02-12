@@ -3,28 +3,27 @@ package org.bitdekk.aggregation.impl;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.helper.expression.MeasureExpression;
 
-public class AvgAggregation implements IAggregation{
-	private double value = 0;
-	private int number = 0;
+public class MinAggregation implements IAggregation {
+	private double value = Double.MAX_VALUE;
 	private boolean anyValueFound = false;
 	private MeasureExpression me;
 	@Override
 	public void aggregate(double measureValue) {
-		value += measureValue;
-		number++;
+		if(value > measureValue)
+			value = measureValue;
 		anyValueFound = true;
 	}
 	@Override
 	public double getValue() {
 		if(anyValueFound)
-			return value / number;
+			return value ;
 		else
 			return Double.NaN;
 	}
 	@Override
 	public void aggregate(double[] measureValues) {
-		value += measureValues[0];
-		number++;
+		if(value > measureValues[0])
+			value = measureValues[0];
 		anyValueFound = true;
 	}
 	@Override

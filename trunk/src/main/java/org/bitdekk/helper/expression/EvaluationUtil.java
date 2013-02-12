@@ -26,7 +26,6 @@ public class EvaluationUtil {
 			return row.getMeasureValues()[table.getMeasureIndexMap().get(measureExpressionTokens.get(pos))];
 	}
 	private static double aggregate(IAggregation aggregation, MeasureExpression measureExpression, Table table, OpenBitSet viewBitSet, OpenBitSet filterBitSet) {
-		aggregation.initialize();
 		for(DataRow i : table.getRows()) {
 			if(filterBitSet.contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSet)) {
 				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), 0, i, table, viewBitSet, filterBitSet));

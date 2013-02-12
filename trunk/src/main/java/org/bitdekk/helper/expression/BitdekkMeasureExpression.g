@@ -7,6 +7,9 @@ import org.bitdekk.helper.expression.MeasureExpression;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.aggregation.impl.SumAggregation;
 import org.bitdekk.aggregation.impl.AvgAggregation;
+import org.bitdekk.aggregation.impl.CountAggregation;
+import org.bitdekk.aggregation.impl.MaxAggregation;
+import org.bitdekk.aggregation.impl.MinAggregation;
 }
 @lexer::header
 {
@@ -16,7 +19,7 @@ package org.bitdekk.helper.expression;
 {
 	private GroupedMeasureExpression gme;
 }
-stat	:	groupedExpression {gme.setGroupedTokens($groupedExpression.groupedTokens);};
+stat	:	groupedExpression {gme.setGroupedTokens($groupedExpression.groupedTokens);} EOF;
 groupedExpression returns [ArrayList<Object> groupedTokens] @init{groupedTokens = new ArrayList<Object>();}
 	:	a=groupedAddExpression (ADD_SUB b=groupedAddExpression)? {
 		if(b != null) {
@@ -66,7 +69,10 @@ mulExpression returns [ArrayList<Object> tokens] @init{tokens = new ArrayList<Ob
 	| 	'('measureExpression')' {$tokens.addAll($measureExpression.me.getTokens());};
 function returns [IAggregation func]
 	:	'SUM' {$func = new SumAggregation();}
-	|	'AVG' {$func = new AvgAggregation();};
+	|	'AVG' {$func = new AvgAggregation();}
+	|	'COUNT' {$func = new CountAggregation();}
+	|	'MAX' {$func = new MaxAggregation();}
+	|	'MIN' {$func = new MinAggregation();};
 //Lexer
 OPERATOR:	'=' | '<' | '>' | '<>' | '<=' | '>=';
 NUMBER	:	ADD_SUB? Digit+('.'Digit+)?;

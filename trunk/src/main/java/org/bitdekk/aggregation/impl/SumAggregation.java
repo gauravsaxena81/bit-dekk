@@ -32,9 +32,4 @@ public class SumAggregation implements IAggregation {
 	public MeasureExpression getMeasureExpression() {
 		return me;
 	}
-	@Override
-	public void initialize() {
-		value = 0;
-		anyValueFound = false;
-	}
 }

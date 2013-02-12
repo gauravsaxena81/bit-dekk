@@ -1,12 +1,12 @@
 grammar BitdekkSqlGrammarTest;
 
-stat	:	selectStatement;
+stat	:	selectStatement EOF;
 
 selectStatement
 	:	'SELECT' columns 'FROM' IDENTIFIER ('WHERE' whereExpressions)? ('ORDER' 'BY' orderByColumns)? limitClause?;
 orderByColumns
-	:	a=IDENTIFIER (c=('asc'|'desc'))? 
-		(','b=IDENTIFIER (d=('asc'|'desc'))?)*;
+	:	a=IDENTIFIER (c=('ASC'|'DESC'))? 
+		(','b=IDENTIFIER (d=('ASC'|'DESC'))?)*;
 limitClause
 	:	'LIMIT' POS_INT ',' POS_INT;
 columns	:	column  (',' column)*;
@@ -14,14 +14,14 @@ column	:	a=dimension | b=aggregateMeasure;
 dimension
 	:	a=IDENTIFIER ('AS' b=IDENTIFIER)? ;
 aggregateMeasure
-	:	a=(function'('measureExpression ')') ('AS' b=IDENTIFIER)?;
+	:	a=groupedExpression ('AS' b=IDENTIFIER)?;
 whereExpressions
 	:	whereExpression ('AND' whereExpression)*;
 whereExpression
 	:	dimensionCondition;
 dimensionCondition
 	:	(a=IDENTIFIER '=' '"' b=IDENTIFIER '"')
-	| 	(c=IDENTIFIER 'in' ('(' '"' d=IDENTIFIER '"' (',' '"' d=IDENTIFIER '"')*')'));
+	| 	(c=IDENTIFIER 'IN' ('(' '"' d=IDENTIFIER '"' (',' '"' d=IDENTIFIER '"')*')'));
 /*measureExpression 
 	:	(a=addExpression (ADD_SUB b=addExpression)?) ;
 addExpression
@@ -48,7 +48,10 @@ mulExpression
 	| 	'('measureExpression')' ;
 function
 	:	'SUM' 
-	|	'AVG' ;
+	|	'AVG' 
+	|	'COUNT'
+	|	'MAX'
+	|	'MIN';
 number	:	ADD_SUB? POS_INT('.'POS_INT)?;
 //Lexer
 OPERATOR:	'=' | '<' | '>' | '<>' | '<=' | '>=';

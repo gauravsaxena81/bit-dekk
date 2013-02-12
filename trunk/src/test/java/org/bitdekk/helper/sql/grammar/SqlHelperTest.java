@@ -100,16 +100,16 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
 	Assert.assertEquals(202.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
 	Assert.assertEquals(602.0, ((NumberValue)dataTableSelected.getCell(1, 1).getValue()).getValue(), 0.000000000001);
 	
-	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc");
+	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume DESC");
 	Assert.assertEquals(800.0, ((NumberValue)dataTableSelected.getCell(0, 2).getValue()).getValue(), 0.000000000001);
 	
-	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume asc");
+	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume ASC");
 	Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(0, 2).getValue()).getValue(), 0.000000000001);
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume");
 	Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(0, 2).getValue()).getValue(), 0.000000000001);
 	
-	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc LIMIT 1, 2");
+	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume DESC LIMIT 1, 2");
 	Assert.assertEquals(600.0, ((NumberValue)dataTableSelected.getCell(0, 2).getValue()).getValue(), 0.000000000001);
 	
 	long currentTimeMillis = System.currentTimeMillis();
@@ -124,11 +124,14 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
   }
   @Test(expectedExceptions={IllegalArgumentException.class})
   public void illegalQueries() throws DataSourceException, InvalidBitDekkExpressionException {	
-	sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc LIMIT 3, 1");
+	sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume DESC LIMIT 3, 1");
   }
   @Test(expectedExceptions={InvalidGrammarException.class})
-  public void invalidQueryExpression() throws DataSourceException, InvalidBitDekkExpressionException {
-	sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc LIMIT -1, 2");
-	sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc -1, 2");
+  public void invalidQueryExpression() throws InvalidBitDekkExpressionException {
+	sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume DESC LIMIT -1, 2");
+  }
+  @Test(expectedExceptions={InvalidGrammarException.class})
+  public void invalidQueryExpression1() throws InvalidBitDekkExpressionException {
+		sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc");
   }
 }
