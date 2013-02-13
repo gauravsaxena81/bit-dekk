@@ -36,15 +36,16 @@ public class DataLayer {
 		return aggregationHelper.aggregate(measureHelper.getTable(tableName), viewBitSet, filterBitSet, measureExpression);
 	}
 	public double aggregate(String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(measureHelper.getTable(tableName), dimensionHelper.getBitSet(viewDimensionValues)
-				, dimensionHelper.getBitSet(filterDimensionValues), measureExpression);
+		return aggregationHelper.aggregate(measureHelper.getTable(tableName), getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
+	}
+	public OpenBitSet getBitSet(String[] dimensions) {
+		return dimensionHelper.getBitSet(dimensions);
 	}
 	public double aggregate(IAggregation aggregation, String tableName, OpenBitSet viewBitSet, OpenBitSet filterBitSet, String[] measureNames) throws InvalidBitDekkExpressionException {
 		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), viewBitSet, filterBitSet, measureNames);
 	}
 	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), dimensionHelper.getBitSet(viewDimensionValues)
-				, dimensionHelper.getBitSet(filterDimensionValues), measureNames);
+		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
 	public int getDimensionId(String dimensionName) {
 		return dimensionHelper.getId(dimensionName);

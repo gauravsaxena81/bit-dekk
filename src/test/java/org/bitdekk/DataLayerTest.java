@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bitdekk.aggregation.impl.AvgAggregation;
 import org.bitdekk.aggregation.impl.SumAggregation;
 import org.bitdekk.helper.InvalidBitDekkExpressionException;
+import org.bitdekk.util.OpenBitSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -101,5 +102,20 @@ public class DataLayerTest extends AbstractTestNGSpringContextTests {
 		DataTable dataTable = new DataTable();
 		dataLayer.initializeTable("VolumeTable", dataTable);
 		Assert.assertEquals(Double.NaN, (dataLayer.aggregate(new SumAggregation(), "VolumeTable", new String[]{"S1","P3"}, new String[]{"S1","P2"}, new String[]{"Volume"})));
+	}
+	@Test
+	public void getBitSetTest() {
+		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+		hashMap.put("S1",0);
+		hashMap.put("S2",1);
+		hashMap.put("P1",2);
+		hashMap.put("P2",3);
+		
+		dataLayer.initializeDimensions(hashMap);
+		OpenBitSet openBitSet = new OpenBitSet();
+		openBitSet.set(0);
+		openBitSet.set(2);
+		Assert.assertEquals(dataLayer.getBitSet(new String[] {"S1", "P1"}), openBitSet);
+		Assert.assertEquals(dataLayer.getBitSet(new String[] {}), new OpenBitSet());
 	}
 }
