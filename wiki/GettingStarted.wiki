@@ -11,14 +11,14 @@
 3. Example Code
 
 {{{
+//Create Dimensions and dimension values for the example
 HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
 hashMap.put("S1",0);
 hashMap.put("S2",1);
 hashMap.put("P1",2);
 hashMap.put("P2",3);
-	
-dataLayer.initializeDimensions(hashMap);
-	
+
+//Create DataTable for the example
 DataTable dataTable = new DataTable();
 dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
 dataTable.addColumn(new ColumnDescription("2", ValueType.TEXT, "Product"));
@@ -43,8 +43,15 @@ row.addCell("S2");
 row.addCell("P2");
 row.addCell(400);
 dataTable.addRow(row);
+
+//Now the real action
+//Create Datalayer
 DataLayer dataLayer = new DataLayer();
+//Initialize the dimensions
+dataLayer.initializeDimensions(hashMap);
+//Initialize the table
 dataLayer.initializeTable("VolumeTable", dataTable);
+//Now run queries on the table using datalayer
 dataLayer.aggregate(new SumAggregation(), "VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, new String[]{"Volume"});//300
 dataLayer.aggregate(new SumAggregation(), "VolumeTable",  new String[]{"S1","P1"}, new String[]{"S1","P1","P2","S2"}, new String[]{"Volume"});//100
 dataLayer.aggregate(new AvgAggregation(), "VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, new String[]{"Volume"});//150
