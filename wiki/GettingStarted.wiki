@@ -43,6 +43,7 @@ row.addCell("S2");
 row.addCell("P2");
 row.addCell(400);
 dataTable.addRow(row);
+DataLayer dataLayer = new DataLayer();
 dataLayer.initializeTable("VolumeTable", dataTable);
 dataLayer.aggregate(new SumAggregation(), "VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, new String[]{"Volume"});//300
 dataLayer.aggregate(new SumAggregation(), "VolumeTable",  new String[]{"S1","P1"}, new String[]{"S1","P1","P2","S2"}, new String[]{"Volume"});//100
