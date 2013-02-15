@@ -7,6 +7,14 @@
     <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
   </properties>
   <build>
+  	<resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.java</include>
+            </includes>
+        </resource>
+      </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
