@@ -1,5 +1,9 @@
 package org.bitdekk.helper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,5 +50,48 @@ public class MeasureHelper {
 
 	public Table getTable(String tableName) {
 		return dataHelper.getTableMap().get(tableName);
+	}
+
+	public void intializeTable(String tableName, ResultSet resultSet) throws SQLException {
+		Table table = new Table();
+		int measureIndex = 0;
+		int dimensionIndex = 0;
+		for(int i = 0, columns = resultSet.getMetaData().getColumnCount(); i < columns; i++) {
+			switch(resultSet.getMetaData().getColumnType(i)) {
+				case Types.BIGINT:
+				case Types.DECIMAL:
+				case Types.DOUBLE:
+				case Types.FLOAT:
+				case Types.INTEGER:
+				case Types.REAL:
+				case Types.SMALLINT:
+				case Types.TINYINT:
+					table.getMeasureIndexMap().put(resultSet.getMetaData().getColumnLabel(i), measureIndex++);
+					break;
+				default:
+					table.getDimensionIndexMap().put(resultSet.getMetaData().getColumnLabel(i), dimensionIndex++);
+			}
+		}
+		while(resultSet.next()) {
+			DataRow dataRow = new DataRow(table.getMeasureIndexMap().size());
+			table.getRows().add(dataRow);
+			int index = 0;
+			for(int i = 0, columns = resultSet.getMetaData().getColumnCount(); i < columns; i++) {	
+				switch(resultSet.getMetaData().getColumnType(i)) {
+					case Types.BIGINT:
+					case Types.DECIMAL:
+					case Types.DOUBLE:
+					case Types.FLOAT:
+					case Types.INTEGER:
+					case Types.REAL:
+					case Types.SMALLINT:
+					case Types.TINYINT:
+						dataRow.getMeasureValues()[index++] = resultSet.getDouble(i);
+					default:
+						dataRow.getMeasureQuery().set(dimensionHelper.getId(resultSet.getString(i)));
+				}
+			}
+		}
+		dataHelper.getTableMap().put(tableName, table);
 	}
 }

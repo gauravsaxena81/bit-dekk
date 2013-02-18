@@ -1,5 +1,7 @@
 package org.bitdekk;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -39,7 +41,11 @@ public class DataLayer {
 	public void initializeTable(String tableName, DataTable dataTable) {
 		measureHelper.intializeTable(tableName, dataTable);
 	}
+	public void initializeTable(String tableName, ResultSet resultSet) throws SQLException {
+		measureHelper.intializeTable(tableName, resultSet);
+	}
 	/**
+	 * 
 	 * @param tableName Name of the table which will be queried
 	 * @param viewBitSet A {@link OpenBitSet} implementation having those bits set who's position matches with the ids of dimension values for which 
 	 * list of matching measure values will be grouped and aggregated
