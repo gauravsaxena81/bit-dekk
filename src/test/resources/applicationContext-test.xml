@@ -29,7 +29,7 @@
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="aggregationHelper" ref="aggregationHelper" />
 	</bean>
-	<bean id="evaluationHelper" class="org.bitdekk.helper.expression.EvaluationHelper">
+	<bean id="evaluationHelper" class="org.bitdekk.helper.EvaluationHelper">
 		<property name="measureHelper" ref="measureHelper" />
 	</bean>
 </beans>
