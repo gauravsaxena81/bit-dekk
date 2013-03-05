@@ -1,4 +1,4 @@
-package org.bitdekk.helper.expression;
+package org.bitdekk.helper.expression.model;
 
 import java.util.ArrayList;
 

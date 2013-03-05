@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g 2013-02-12 10:18:13
+// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g 2013-03-03 13:38:16
 
 package org.bitdekk.helper.expression;
 
@@ -17,6 +17,8 @@ import org.bitdekk.aggregation.impl.CountAggregation;
 import org.bitdekk.aggregation.impl.MaxAggregation;
 import org.bitdekk.aggregation.impl.MinAggregation;
 import org.bitdekk.aggregation.impl.SumAggregation;
+import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
+import org.bitdekk.helper.expression.model.MeasureExpression;
 
 public class BitdekkMeasureExpressionParser extends Parser {
     public static final String[] tokenNames = new String[] {
@@ -62,14 +64,14 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "stat"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:22:1: stat : groupedExpression EOF ;
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:23:1: stat : groupedExpression EOF ;
     public final void stat() throws RecognitionException {
         ArrayList<Object> groupedExpression1 = null;
 
 
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:22:6: ( groupedExpression EOF )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:22:8: groupedExpression EOF
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:23:6: ( groupedExpression EOF )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:23:8: groupedExpression EOF
             {
             pushFollow(FOLLOW_groupedExpression_in_stat27);
             groupedExpression1=groupedExpression();
@@ -94,7 +96,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "groupedExpression"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:23:1: groupedExpression returns [ArrayList<Object> groupedTokens] : a= groupedAddExpression ( ADD_SUB b= groupedAddExpression )? ;
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:24:1: groupedExpression returns [ArrayList<Object> groupedTokens] : a= groupedAddExpression ( ADD_SUB b= groupedAddExpression )? ;
     public final ArrayList<Object> groupedExpression() throws RecognitionException {
         ArrayList<Object> groupedTokens = null;
 
@@ -106,15 +108,15 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
         groupedTokens = new ArrayList<Object>();
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:24:2: (a= groupedAddExpression ( ADD_SUB b= groupedAddExpression )? )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:24:4: a= groupedAddExpression ( ADD_SUB b= groupedAddExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:25:2: (a= groupedAddExpression ( ADD_SUB b= groupedAddExpression )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:25:4: a= groupedAddExpression ( ADD_SUB b= groupedAddExpression )?
             {
             pushFollow(FOLLOW_groupedAddExpression_in_groupedExpression49);
             a=groupedAddExpression();
 
             state._fsp--;
 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:24:27: ( ADD_SUB b= groupedAddExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:25:27: ( ADD_SUB b= groupedAddExpression )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -123,7 +125,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
             }
             switch (alt1) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:24:28: ADD_SUB b= groupedAddExpression
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:25:28: ADD_SUB b= groupedAddExpression
                     {
                     ADD_SUB2=(Token)match(input,ADD_SUB,FOLLOW_ADD_SUB_in_groupedExpression52); 
                     pushFollow(FOLLOW_groupedAddExpression_in_groupedExpression56);
@@ -161,7 +163,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "groupedAddExpression"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:32:1: groupedAddExpression returns [ArrayList<Object> groupedTokens] : a= groupedMulExpression ( MUL_DIV b= groupedMulExpression )? ;
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:33:1: groupedAddExpression returns [ArrayList<Object> groupedTokens] : a= groupedMulExpression ( MUL_DIV b= groupedMulExpression )? ;
     public final ArrayList<Object> groupedAddExpression() throws RecognitionException {
         ArrayList<Object> groupedTokens = null;
 
@@ -173,15 +175,15 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
         groupedTokens = new ArrayList<Object>();
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:33:2: (a= groupedMulExpression ( MUL_DIV b= groupedMulExpression )? )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:33:4: a= groupedMulExpression ( MUL_DIV b= groupedMulExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:34:2: (a= groupedMulExpression ( MUL_DIV b= groupedMulExpression )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:34:4: a= groupedMulExpression ( MUL_DIV b= groupedMulExpression )?
             {
             pushFollow(FOLLOW_groupedMulExpression_in_groupedAddExpression78);
             a=groupedMulExpression();
 
             state._fsp--;
 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:33:27: ( MUL_DIV b= groupedMulExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:34:27: ( MUL_DIV b= groupedMulExpression )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -190,7 +192,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
             }
             switch (alt2) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:33:28: MUL_DIV b= groupedMulExpression
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:34:28: MUL_DIV b= groupedMulExpression
                     {
                     MUL_DIV3=(Token)match(input,MUL_DIV,FOLLOW_MUL_DIV_in_groupedAddExpression81); 
                     pushFollow(FOLLOW_groupedMulExpression_in_groupedAddExpression85);
@@ -228,7 +230,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "groupedMulExpression"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:41:1: groupedMulExpression returns [ArrayList<Object> groupedTokens] : ( NUMBER | function '(' measureExpression ')' | '(' groupedExpression ')' );
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:42:1: groupedMulExpression returns [ArrayList<Object> groupedTokens] : ( NUMBER | function '(' measureExpression ')' | '(' groupedExpression ')' );
     public final ArrayList<Object> groupedMulExpression() throws RecognitionException {
         ArrayList<Object> groupedTokens = null;
 
@@ -242,7 +244,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
         groupedTokens = new ArrayList<Object>();
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:42:2: ( NUMBER | function '(' measureExpression ')' | '(' groupedExpression ')' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:43:2: ( NUMBER | function '(' measureExpression ')' | '(' groupedExpression ')' )
             int alt3=3;
             switch ( input.LA(1) ) {
             case NUMBER:
@@ -273,7 +275,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
             switch (alt3) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:42:5: NUMBER
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:43:5: NUMBER
                     {
                     NUMBER4=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_groupedMulExpression106); 
                     groupedTokens.add(Double.parseDouble((NUMBER4!=null?NUMBER4.getText():null)));
@@ -281,7 +283,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:43:4: function '(' measureExpression ')'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:44:4: function '(' measureExpression ')'
                     {
                     pushFollow(FOLLOW_function_in_groupedMulExpression113);
                     function5=function();
@@ -301,7 +303,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:44:4: '(' groupedExpression ')'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:45:4: '(' groupedExpression ')'
                     {
                     match(input,12,FOLLOW_12_in_groupedMulExpression128); 
                     pushFollow(FOLLOW_groupedExpression_in_groupedMulExpression129);
@@ -329,7 +331,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "measureExpression"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:45:1: measureExpression returns [MeasureExpression me] : (a= addExpression ( ADD_SUB b= addExpression )? ) ;
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:46:1: measureExpression returns [MeasureExpression me] : (a= addExpression ( ADD_SUB b= addExpression )? ) ;
     public final MeasureExpression measureExpression() throws RecognitionException {
         MeasureExpression me = null;
 
@@ -343,18 +345,18 @@ public class BitdekkMeasureExpressionParser extends Parser {
         							me = new MeasureExpression();
         						
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:48:2: ( (a= addExpression ( ADD_SUB b= addExpression )? ) )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:48:4: (a= addExpression ( ADD_SUB b= addExpression )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:49:2: ( (a= addExpression ( ADD_SUB b= addExpression )? ) )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:49:4: (a= addExpression ( ADD_SUB b= addExpression )? )
             {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:48:4: (a= addExpression ( ADD_SUB b= addExpression )? )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:48:5: a= addExpression ( ADD_SUB b= addExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:49:4: (a= addExpression ( ADD_SUB b= addExpression )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:49:5: a= addExpression ( ADD_SUB b= addExpression )?
             {
             pushFollow(FOLLOW_addExpression_in_measureExpression150);
             a=addExpression();
 
             state._fsp--;
 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:48:21: ( ADD_SUB b= addExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:49:21: ( ADD_SUB b= addExpression )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -363,7 +365,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:48:22: ADD_SUB b= addExpression
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:49:22: ADD_SUB b= addExpression
                     {
                     ADD_SUB8=(Token)match(input,ADD_SUB,FOLLOW_ADD_SUB_in_measureExpression153); 
                     pushFollow(FOLLOW_addExpression_in_measureExpression157);
@@ -405,7 +407,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "addExpression"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:57:1: addExpression returns [ArrayList<Object> tokens] : (a= mulExpression ( MUL_DIV b= mulExpression )? ) ;
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:1: addExpression returns [ArrayList<Object> tokens] : (a= mulExpression ( MUL_DIV b= mulExpression )? ) ;
     public final ArrayList<Object> addExpression() throws RecognitionException {
         ArrayList<Object> tokens = null;
 
@@ -417,18 +419,18 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
         tokens = new ArrayList<Object>();
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:2: ( (a= mulExpression ( MUL_DIV b= mulExpression )? ) )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:4: (a= mulExpression ( MUL_DIV b= mulExpression )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:59:2: ( (a= mulExpression ( MUL_DIV b= mulExpression )? ) )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:59:4: (a= mulExpression ( MUL_DIV b= mulExpression )? )
             {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:4: (a= mulExpression ( MUL_DIV b= mulExpression )? )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:5: a= mulExpression ( MUL_DIV b= mulExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:59:4: (a= mulExpression ( MUL_DIV b= mulExpression )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:59:5: a= mulExpression ( MUL_DIV b= mulExpression )?
             {
             pushFollow(FOLLOW_mulExpression_in_addExpression181);
             a=mulExpression();
 
             state._fsp--;
 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:21: ( MUL_DIV b= mulExpression )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:59:21: ( MUL_DIV b= mulExpression )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -437,7 +439,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:58:22: MUL_DIV b= mulExpression
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:59:22: MUL_DIV b= mulExpression
                     {
                     MUL_DIV9=(Token)match(input,MUL_DIV,FOLLOW_MUL_DIV_in_addExpression184); 
                     pushFollow(FOLLOW_mulExpression_in_addExpression188);
@@ -478,7 +480,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "mulExpression"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:66:1: mulExpression returns [ArrayList<Object> tokens] : ( IDENTIFIER | NUMBER | '(' measureExpression ')' );
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:67:1: mulExpression returns [ArrayList<Object> tokens] : ( IDENTIFIER | NUMBER | '(' measureExpression ')' );
     public final ArrayList<Object> mulExpression() throws RecognitionException {
         ArrayList<Object> tokens = null;
 
@@ -489,7 +491,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
         tokens = new ArrayList<Object>();
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:67:2: ( IDENTIFIER | NUMBER | '(' measureExpression ')' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:68:2: ( IDENTIFIER | NUMBER | '(' measureExpression ')' )
             int alt6=3;
             switch ( input.LA(1) ) {
             case IDENTIFIER:
@@ -516,7 +518,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:67:4: IDENTIFIER
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:68:4: IDENTIFIER
                     {
                     IDENTIFIER10=(Token)match(input,IDENTIFIER,FOLLOW_IDENTIFIER_in_mulExpression208); 
                     tokens.add((IDENTIFIER10!=null?IDENTIFIER10.getText():null));
@@ -524,7 +526,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:68:5: NUMBER
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:69:5: NUMBER
                     {
                     NUMBER11=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_mulExpression217); 
                     tokens.add(Double.parseDouble((NUMBER11!=null?NUMBER11.getText():null)));
@@ -532,7 +534,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:69:5: '(' measureExpression ')'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:70:5: '(' measureExpression ')'
                     {
                     match(input,12,FOLLOW_12_in_mulExpression226); 
                     pushFollow(FOLLOW_measureExpression_in_mulExpression227);
@@ -560,12 +562,12 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
 
     // $ANTLR start "function"
-    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:70:1: function returns [IAggregation func] : ( 'SUM' | 'AVG' | 'COUNT' | 'MAX' | 'MIN' );
+    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:71:1: function returns [IAggregation func] : ( 'SUM' | 'AVG' | 'COUNT' | 'MAX' | 'MIN' );
     public final IAggregation function() throws RecognitionException {
         IAggregation func = null;
 
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:71:2: ( 'SUM' | 'AVG' | 'COUNT' | 'MAX' | 'MIN' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:72:2: ( 'SUM' | 'AVG' | 'COUNT' | 'MAX' | 'MIN' )
             int alt7=5;
             switch ( input.LA(1) ) {
             case 14:
@@ -602,7 +604,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
 
             switch (alt7) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:71:4: 'SUM'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:72:4: 'SUM'
                     {
                     match(input,14,FOLLOW_14_in_function242); 
                     func = new SumAggregation();
@@ -610,7 +612,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:72:4: 'AVG'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:73:4: 'AVG'
                     {
                     match(input,15,FOLLOW_15_in_function249); 
                     func = new AvgAggregation();
@@ -618,7 +620,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:73:4: 'COUNT'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:74:4: 'COUNT'
                     {
                     match(input,16,FOLLOW_16_in_function256); 
                     func = new CountAggregation();
@@ -626,7 +628,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:74:4: 'MAX'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:75:4: 'MAX'
                     {
                     match(input,17,FOLLOW_17_in_function263); 
                     func = new MaxAggregation();
@@ -634,7 +636,7 @@ public class BitdekkMeasureExpressionParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:75:4: 'MIN'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:76:4: 'MIN'
                     {
                     match(input,18,FOLLOW_18_in_function270); 
                     func = new MinAggregation();

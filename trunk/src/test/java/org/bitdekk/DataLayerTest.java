@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.bitdekk.aggregation.impl.AvgAggregation;
 import org.bitdekk.aggregation.impl.SumAggregation;
-import org.bitdekk.helper.InvalidBitDekkExpressionException;
+import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.util.OpenBitSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

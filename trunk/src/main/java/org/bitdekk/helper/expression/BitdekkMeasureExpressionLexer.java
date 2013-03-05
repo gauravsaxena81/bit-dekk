@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g 2013-02-12 10:18:13
+// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g 2013-03-03 13:38:16
 
 package org.bitdekk.helper.expression;
 
@@ -194,7 +194,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
         try {
             int _type = OPERATOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:9: ( '=' | '<' | '>' | '<>' | '<=' | '>=' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:9: ( '=' | '<' | '>' | '<>' | '<=' | '>=' )
             int alt1=6;
             switch ( input.LA(1) ) {
             case '=':
@@ -240,28 +240,28 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
 
             switch (alt1) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:11: '='
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:11: '='
                     {
                     match('='); 
 
                     }
                     break;
                 case 2 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:17: '<'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:17: '<'
                     {
                     match('<'); 
 
                     }
                     break;
                 case 3 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:23: '>'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:23: '>'
                     {
                     match('>'); 
 
                     }
                     break;
                 case 4 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:29: '<>'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:29: '<>'
                     {
                     match("<>"); 
 
@@ -269,7 +269,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
                     }
                     break;
                 case 5 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:36: '<='
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:36: '<='
                     {
                     match("<="); 
 
@@ -277,7 +277,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
                     }
                     break;
                 case 6 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:77:43: '>='
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:43: '>='
                     {
                     match(">="); 
 
@@ -299,10 +299,10 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:8: ( ( ADD_SUB )? ( Digit )+ ( '.' ( Digit )+ )? )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:10: ( ADD_SUB )? ( Digit )+ ( '.' ( Digit )+ )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:8: ( ( ADD_SUB )? ( Digit )+ ( '.' ( Digit )+ )? )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:10: ( ADD_SUB )? ( Digit )+ ( '.' ( Digit )+ )?
             {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:10: ( ADD_SUB )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:10: ( ADD_SUB )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -311,7 +311,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:10: ADD_SUB
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:10: ADD_SUB
                     {
                     mADD_SUB(); 
 
@@ -320,7 +320,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
 
             }
 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:19: ( Digit )+
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:19: ( Digit )+
             int cnt3=0;
             loop3:
             do {
@@ -334,7 +334,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:19: Digit
+            	    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:19: Digit
             	    {
             	    mDigit(); 
 
@@ -350,7 +350,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
                 cnt3++;
             } while (true);
 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:25: ( '.' ( Digit )+ )?
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:25: ( '.' ( Digit )+ )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -359,10 +359,10 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:26: '.' ( Digit )+
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:26: '.' ( Digit )+
                     {
                     match('.'); 
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:29: ( Digit )+
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:29: ( Digit )+
                     int cnt4=0;
                     loop4:
                     do {
@@ -376,7 +376,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:78:29: Digit
+                    	    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:29: Digit
                     	    {
                     	    mDigit(); 
 
@@ -414,7 +414,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
         try {
             int _type = MUL_DIV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:79:9: ( '*' | '/' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:80:9: ( '*' | '/' )
             // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:
             {
             if ( input.LA(1)=='*'||input.LA(1)=='/' ) {
@@ -442,7 +442,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
         try {
             int _type = ADD_SUB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:80:9: ( '+' | '-' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:81:9: ( '+' | '-' )
             // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:
             {
             if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
@@ -470,11 +470,11 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
         try {
             int _type = IDENTIFIER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:81:14: ( Letter ( Letter | Digit )* )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:81:17: Letter ( Letter | Digit )*
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:82:14: ( Letter ( Letter | Digit )* )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:82:17: Letter ( Letter | Digit )*
             {
             mLetter(); 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:81:24: ( Letter | Digit )*
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:82:24: ( Letter | Digit )*
             loop6:
             do {
                 int alt6=2;
@@ -521,7 +521,7 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
     // $ANTLR start "Letter"
     public final void mLetter() throws RecognitionException {
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:83:9: ( 'a' .. 'z' | '_' | 'A' .. 'Z' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:84:9: ( 'a' .. 'z' | '_' | 'A' .. 'Z' )
             // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
@@ -545,8 +545,8 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
     // $ANTLR start "Digit"
     public final void mDigit() throws RecognitionException {
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:85:8: ( '0' .. '9' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:85:11: '0' .. '9'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:86:8: ( '0' .. '9' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:86:11: '0' .. '9'
             {
             matchRange('0','9'); 
 
@@ -563,8 +563,8 @@ public class BitdekkMeasureExpressionLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:86:6: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:86:10: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:87:6: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\expression\\BitdekkMeasureExpression.g:87:10: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();

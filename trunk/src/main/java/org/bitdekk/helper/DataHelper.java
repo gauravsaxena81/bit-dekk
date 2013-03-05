@@ -3,9 +3,7 @@ package org.bitdekk.helper;
 import java.util.HashMap;
 
 import org.bitdekk.model.Table;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DataHelper {
 	private HashMap<String, Integer> dimensionValueMap = new HashMap<String, Integer>();
 	private HashMap<Integer, String> IdToDimensionMap = new HashMap<Integer, String>();

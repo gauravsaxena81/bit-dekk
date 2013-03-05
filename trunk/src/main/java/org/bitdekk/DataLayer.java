@@ -6,28 +6,38 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.bitdekk.aggregation.IAggregation;
+import org.bitdekk.api.IBitSet;
+import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.helper.AggregationHelper;
 import org.bitdekk.helper.DimensionHelper;
-import org.bitdekk.helper.InvalidBitDekkExpressionException;
 import org.bitdekk.helper.MeasureHelper;
-import org.bitdekk.helper.sql.grammar.SqlHelper;
-import org.bitdekk.util.OpenBitSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.visualization.datasource.datatable.DataTable;
 
-@Component
+
 public class DataLayer {
-	@Autowired
 	private DimensionHelper dimensionHelper;
-	@Autowired
 	private MeasureHelper measureHelper;
-	@Autowired
 	private AggregationHelper aggregationHelper;
-	@Autowired
-	private SqlHelper sqlHelper;
 	
+	public DimensionHelper getDimensionHelper() {
+		return dimensionHelper;
+	}
+	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+		this.dimensionHelper = dimensionHelper;
+	}
+	public MeasureHelper getMeasureHelper() {
+		return measureHelper;
+	}
+	public void setMeasureHelper(MeasureHelper measureHelper) {
+		this.measureHelper = measureHelper;
+	}
+	public AggregationHelper getAggregationHelper() {
+		return aggregationHelper;
+	}
+	public void setAggregationHelper(AggregationHelper aggregationHelper) {
+		this.aggregationHelper = aggregationHelper;
+	}
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
@@ -47,15 +57,15 @@ public class DataLayer {
 	/**
 	 * 
 	 * @param tableName Name of the table which will be queried
-	 * @param viewBitSet A {@link OpenBitSet} implementation having those bits set who's position matches with the ids of dimension values for which 
+	 * @param viewBitSet A {@link IBitSet} implementation having those bits set who's position matches with the ids of dimension values for which 
 	 * list of matching measure values will be grouped and aggregated
-	 * @param filterBitSet A {@link OpenBitSet} implementation having those bits set position of which matches with the ids of dimension values filtered in.
+	 * @param filterBitSet A {@link IBitSet} implementation having those bits set position of which matches with the ids of dimension values filtered in.
 	 * @param measureExpression Accepts any well formed mathematical expression. It may also contain SQL like functions e.g. SUM(MeasureName)
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
-	public double aggregate(String tableName, OpenBitSet viewBitSet, OpenBitSet filterBitSet, String measureExpression) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(measureHelper.getTable(tableName), viewBitSet, filterBitSet, measureExpression);
+	public double aggregate(String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String measureExpression) throws InvalidBitDekkExpressionException {
+		return aggregationHelper.aggregate(tableName, viewBitSet, filterBitSet, measureExpression);
 	}
 	/**
 	 * @param tableName Name of the table which will be queried
@@ -66,25 +76,25 @@ public class DataLayer {
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
 	public double aggregate(String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(measureHelper.getTable(tableName), getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
+		return aggregationHelper.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
 	}
 	/**
 	 * @param dimensionValues Array of dimension values
-	 * @return A {@link OpenBitSet} object having those bits set position of which matches with the ids of dimension values 
+	 * @return A {@link IBitSet} object having those bits set position of which matches with the ids of dimension values 
 	 */
-	public OpenBitSet getBitSet(String[] dimensionValues) {
+	public IBitSet getBitSet(String[] dimensionValues) {
 		return dimensionHelper.getBitSet(dimensionValues);
 	}
 	/**
 	 * @param aggregation custom aggregation
-	 * @param viewBitSet A {@link OpenBitSet} implementation having those bits set who's position matches with the ids of dimension values for which 
+	 * @param viewBitSet A {@link IBitSet} implementation having those bits set who's position matches with the ids of dimension values for which 
 	 * list of matching measure values will be grouped and aggregated
-	 * @param filterBitSet A {@link OpenBitSet} implementation having those bits set position of which matches with the ids of dimension values filtered in.
+	 * @param filterBitSet A {@link IBitSet} implementation having those bits set position of which matches with the ids of dimension values filtered in.
 	 * @param measureNames array of measureNames
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException
 	 */
-	public double aggregate(IAggregation aggregation, String tableName, OpenBitSet viewBitSet, OpenBitSet filterBitSet, String[] measureNames) throws InvalidBitDekkExpressionException {
+	public double aggregate(IAggregation aggregation, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String[] measureNames) throws InvalidBitDekkExpressionException {
 		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), viewBitSet, filterBitSet, measureNames);
 	}
 	/**

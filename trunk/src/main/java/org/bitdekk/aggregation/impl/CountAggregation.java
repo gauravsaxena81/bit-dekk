@@ -1,7 +1,7 @@
 package org.bitdekk.aggregation.impl;
 
 import org.bitdekk.aggregation.IAggregation;
-import org.bitdekk.helper.expression.MeasureExpression;
+import org.bitdekk.helper.expression.model.MeasureExpression;
 
 public class CountAggregation implements IAggregation{
 	private int number = 0;
