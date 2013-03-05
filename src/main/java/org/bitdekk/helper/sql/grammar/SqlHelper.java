@@ -7,11 +7,11 @@ import java.util.HashMap;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.TokenStream;
 import org.bitdekk.DataLayer;
-import org.bitdekk.helper.InvalidBitDekkExpressionException;
+import org.bitdekk.api.IBitSet;
+import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.util.OpenBitSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
@@ -19,12 +19,18 @@ import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
-@Component
+
 public class SqlHelper {
-	@Autowired
+	
 	private DataLayer dataLayer;
 	private HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap;
 	
+	public DataLayer getDataLayer() {
+		return dataLayer;
+	}
+	public void setDataLayer(DataLayer dataLayer) {
+		this.dataLayer = dataLayer;
+	}
 	public DataTable result(String sql) throws InvalidBitDekkExpressionException {
 		ErrorHandlingLexer lexer = new ErrorHandlingLexer(new ANTLRStringStream(sql));
 		CommonTokenStream tokens = new CommonTokenStream();
@@ -35,54 +41,94 @@ public class SqlHelper {
 		try {
 			parser.stat();
 			dataTable = new DataTable();
-			int dimensionColumnNumber = 0;
-			for(IColumn i : state.getColumns()) {
-				if(i instanceof Dimension) {
-					dataTable.addColumn(new ColumnDescription(i.getLabel(), ValueType.TEXT, i.getLabel()));
-					dimensionColumnNumber++;
-				} else
-					dataTable.addColumn(new ColumnDescription(i.getLabel(), ValueType.NUMBER, i.getLabel()));
-			}
-			OpenBitSet filterBitSet = getFilterOpenBitSet(state.getDimensionConditions(), dimensionToDimensionValuesMap);
-			int[] counters = new int[dimensionColumnNumber];
-			OpenBitSet viewBitSet;
-			ArrayList<TableRow> rowList = new ArrayList<TableRow>();
-			while((viewBitSet = nextBitSet(dimensionToDimensionValuesMap, state.getColumns(), counters)) != null) {
-				TableRow row = new TableRow();
-				boolean isAllMeasuresNull = false;
-				boolean isAnyDimensionPresent = false;
-				int k = -1;
-				for(IColumn j : state.getColumns()) {
-					if(j instanceof Dimension) {
-						k = viewBitSet.nextSetBit(k + 1);
-						row.addCell(dataLayer.getDimensionValue(k));
-						isAnyDimensionPresent = true;
-					} else {
-						double value = dataLayer.aggregate(state.getTableName(), viewBitSet, filterBitSet, ((Measure)j).getMeasureExpression());
-						row.addCell(value);
-						isAllMeasuresNull |= Double.isNaN(value);
-					}
-				}
-				if(!isAllMeasuresNull)
-					rowList.add(row);
-				if(!isAnyDimensionPresent)
-					break;
-			}
-			if(!state.getOrderByColumns().isEmpty())
-				Collections.sort(rowList, new TableRowComparator(state.getOrderByColumns()));
-			if(state.getFromRowNumber() != -1 && state.getToRowNumber() != -1)
-				for(int i = state.getFromRowNumber(); i < rowList.size() && i < state.getToRowNumber(); i++)
-					dataTable.addRow(rowList.get(i));
-			else
-				for(TableRow i : rowList)
-					dataTable.addRow(i);
+			int dimensionColumnNumber = applyProjection(state.getColumns(), dataTable);
+			ArrayList<TableRow> rowList = getRowList(state.getColumns(), new int[dimensionColumnNumber]
+					, getFilterOpenBitSet(state.getDimensionConditions(), dimensionToDimensionValuesMap), state.getTableName(), state.getHavingExpressions());
+			//rowList = applyHaving(state.getHavingExpressions(), rowList, dataTable.getColumnDescriptions());
+			applyOrderBy(state.getOrderByColumns(), rowList);
+			applyLimit(state.getFromRowNumber(), state.getToRowNumber(), rowList, dataTable);
 		} catch (RecognitionException e) {
-			e.printStackTrace();
-			return null;
+			throw new InvalidGrammarException("Bad Grammar near " + ((TokenStream)parser.input).LT(1).getText());
 		} catch (TypeMismatchException e) {
 			e.printStackTrace();
 		}
 		return dataTable;
+	}
+	private int applyProjection(ArrayList<IColumn> columns, DataTable dataTable) {
+		int dimensionColumnNumber = 0;
+		for(IColumn i : columns) {
+			if(i instanceof Dimension) {
+				dataTable.addColumn(new ColumnDescription(i.getLabel(), ValueType.TEXT, i.getLabel()));
+				dimensionColumnNumber++;
+			} else
+				dataTable.addColumn(new ColumnDescription(i.getLabel(), ValueType.NUMBER, i.getLabel()));
+		}
+		return dimensionColumnNumber;
+	}
+	private ArrayList<TableRow> getRowList(ArrayList<IColumn> columns, int[] counters, IBitSet filterBitSet, String tableName
+			, ArrayList<HavingExpression> havingExpressions) {
+		OpenBitSet viewBitSet;
+		ArrayList<TableRow> rowList = new ArrayList<TableRow>();
+		while((viewBitSet = nextBitSet(dimensionToDimensionValuesMap, columns, counters)) != null) {
+			TableRow row = new TableRow();
+			boolean isAllMeasuresNull = false;
+			boolean isAnyDimensionPresent = false;
+			int k = -1;
+			for(IColumn j : columns) {
+				if(j instanceof Dimension) {
+					k = viewBitSet.nextSetBit(k + 1);
+					row.addCell(dataLayer.getDimensionValue(k));
+					isAnyDimensionPresent = true;
+				} else {
+					double value = dataLayer.aggregate(tableName, viewBitSet, filterBitSet, ((Measure)j).getMeasureExpression());
+					row.addCell(value);
+					isAllMeasuresNull |= Double.isNaN(value);
+				}
+			}
+			if(!isAllMeasuresNull) {
+				boolean isHavingTrue = true;
+				for(HavingExpression j : havingExpressions) {
+					if(!logicalOperation(dataLayer.aggregate(tableName, viewBitSet, filterBitSet, j.getLhs()), j.getLogicOperator(), 
+						dataLayer.aggregate(tableName, viewBitSet, filterBitSet, j.getRhs()))) {
+						isHavingTrue = false;
+						break;
+					}
+				}
+				if(isHavingTrue)
+					rowList.add(row);
+			}
+			if(!isAnyDimensionPresent)
+				break;
+		}
+		return rowList;
+	}
+	private boolean logicalOperation(double lhsAggregate, String logicOperator, double rhsAggregate) {
+		if(logicOperator.equals("="))
+			return lhsAggregate == rhsAggregate;
+		else if(logicOperator.equals("<"))
+			return lhsAggregate < rhsAggregate;
+		else if(logicOperator.equals(">"))
+			return lhsAggregate > rhsAggregate;
+		else if(logicOperator.equals(">="))
+			return lhsAggregate >= rhsAggregate;
+		else if(logicOperator.equals("<="))
+			return lhsAggregate <= rhsAggregate;
+		else if(logicOperator.equals("<>"))
+			return lhsAggregate != rhsAggregate;
+		else
+			return false;
+	}
+	private void applyLimit(int fromRowNumber, int toRowNumber, ArrayList<TableRow> rowList, DataTable dataTable) throws TypeMismatchException {
+		if(fromRowNumber != -1 && toRowNumber != -1)
+			for(int i = fromRowNumber; i < rowList.size() && i < toRowNumber; i++)
+				dataTable.addRow(rowList.get(i));
+		else
+			for(TableRow i : rowList)
+				dataTable.addRow(i);		
+	}
+	private void applyOrderBy(ArrayList<OrderColumn> orderByColumns, ArrayList<TableRow> rowList) {
+		if(!orderByColumns.isEmpty())
+			Collections.sort(rowList, new TableRowComparator(orderByColumns));		
 	}
 	private OpenBitSet nextBitSet(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, ArrayList<IColumn> columns, int[] counters) {
 		OpenBitSet bitSet = new OpenBitSet();

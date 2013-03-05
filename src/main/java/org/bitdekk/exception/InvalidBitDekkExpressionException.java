@@ -1,4 +1,4 @@
-package org.bitdekk.helper;
+package org.bitdekk.exception;
 
 @SuppressWarnings("serial")
 public class InvalidBitDekkExpressionException extends RuntimeException {

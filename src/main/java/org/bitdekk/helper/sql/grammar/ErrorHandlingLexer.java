@@ -34,7 +34,11 @@ public class ErrorHandlingLexer extends BitdekkSqlGrammarLexer {
             }
             catch (RecognitionException re) {
                 reportError(re);
-                throw new InvalidGrammarException("Bad grammar near " + state.token.getText()); // or throw Error
+                if(state.token != null)
+                	throw new InvalidGrammarException("Bad grammar near " + state.token.getText()); // or throw Error
+                else
+                	throw new InvalidGrammarException("Bad grammar after " + input.substring(0, input.getCharPositionInLine())); // or throw Error
+                	
             }
         }
     }

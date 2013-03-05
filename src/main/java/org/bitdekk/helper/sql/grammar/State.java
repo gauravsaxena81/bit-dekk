@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class State {
-	//private DataHelper dataHelper;
 	private String tableName;
 	private HashMap<String, ArrayList<String>> dimensionConditions = new HashMap<String, ArrayList<String>>();
 	private ArrayList<IColumn> columns = new ArrayList<IColumn>();
@@ -12,7 +11,12 @@ public class State {
 	private ArrayList<OrderColumn> orderByColumns = new ArrayList<OrderColumn>();
 	private int fromRowNumber = -1;
 	private int toRowNumber = -1;
+	private ArrayList<HavingExpression> havingExpressions = new ArrayList<HavingExpression>();
 	
+	public ArrayList<HavingExpression> getHavingExpressions() {
+		return havingExpressions;
+	}
+
 	public int getFromRowNumber() {
 		return fromRowNumber;
 	}
@@ -80,5 +84,13 @@ public class State {
 		if(toRowNumber < fromRowNumber)
 			throw new IllegalArgumentException("in LIMIT clause toRowNumber should be grater than fromRowNumber");
 		this.toRowNumber = toRowNumber;
+	}
+
+	public void groupedExpressionNotFound(String expression) {
+		throw new InvalidGrammarException("No aggregating function found with measure expression: " + expression);
+	}
+
+	public void addHavingExpression(HavingExpression havingExpression) {
+		havingExpressions.add(havingExpression);
 	}
 }

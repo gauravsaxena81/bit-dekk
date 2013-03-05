@@ -3,7 +3,8 @@ grammar BitdekkMeasureExpression;
 {
 package org.bitdekk.helper.expression;
 
-import org.bitdekk.helper.expression.MeasureExpression;
+import org.bitdekk.helper.expression.model.MeasureExpression;
+import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.aggregation.impl.SumAggregation;
 import org.bitdekk.aggregation.impl.AvgAggregation;

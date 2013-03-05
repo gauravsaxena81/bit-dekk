@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.bitdekk.helper.InvalidBitDekkExpressionException;
+import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -25,6 +25,7 @@ import com.ibm.icu.util.ULocale;
 public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
   @Autowired
   private SqlHelper sqlHelper;
+  
   @Test
   public void result() throws InvalidQueryException, DataSourceException, InvalidBitDekkExpressionException {
 	HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
@@ -87,6 +88,15 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
 	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
 	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(1, 1).getValue()).getValue(), 0.000000000001);
 	
+	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) FROM VolumeTable HAVING SUM(Volume) > 400");
+	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
+	
+	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) FROM VolumeTable HAVING SUM(Volume) < 3 * MIN(Volume)");
+	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
+	
+	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) FROM VolumeTable HAVING 100 < 100");
+	Assert.assertEquals(0, dataTableSelected.getNumberOfRows());
+	
 	dataTableSelected = sqlHelper.result("SELECT SUM(Volume), Supplier FROM VolumeTable");
 	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(0, 0).getValue()).getValue(), 0.000000000001);
 	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(1, 0).getValue()).getValue(), 0.000000000001);
@@ -133,5 +143,17 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
   @Test(expectedExceptions={InvalidGrammarException.class})
   public void invalidQueryExpression1() throws InvalidBitDekkExpressionException {
 		sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc");
+  }
+  @Test(expectedExceptions={InvalidGrammarException.class})
+  public void invalidQueryExpression2() throws InvalidBitDekkExpressionException {
+		sqlHelper.result("SELECT Supplier, Product, 2 * Volume AS Volume FROM VolumeTable ORDER BY Volume desc");
+  }
+  @Test(expectedExceptions={InvalidGrammarException.class})
+  public void invalidQueryExpression3() throws InvalidBitDekkExpressionException {
+		sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable HAVING Volume > 100 ORDER BY Volume desc");
+  }
+  @Test(expectedExceptions={InvalidGrammarException.class})
+  public void invalidQueryExpression4() throws InvalidBitDekkExpressionException {
+		sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable HAVING Supplier = 'S1' ORDER BY Volume desc");
   }
 }

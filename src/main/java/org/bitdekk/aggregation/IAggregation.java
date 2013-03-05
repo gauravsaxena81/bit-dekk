@@ -1,7 +1,6 @@
 package org.bitdekk.aggregation;
 
-import org.bitdekk.helper.expression.MeasureExpression;
-
+import org.bitdekk.helper.expression.model.MeasureExpression;
 
 public interface IAggregation {
 	public void aggregate(double[] measureValues);

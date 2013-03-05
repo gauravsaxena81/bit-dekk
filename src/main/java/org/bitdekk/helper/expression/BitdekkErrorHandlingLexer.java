@@ -4,7 +4,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
-import org.bitdekk.helper.InvalidBitDekkExpressionException;
+import org.bitdekk.exception.InvalidBitDekkExpressionException;
 
 public class BitdekkErrorHandlingLexer extends BitdekkMeasureExpressionLexer {
 	public BitdekkErrorHandlingLexer(ANTLRStringStream antlrStringStream) {

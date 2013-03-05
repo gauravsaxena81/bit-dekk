@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.bitdekk.util.OpenBitSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableCell;
@@ -13,10 +11,17 @@ import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.TextValue;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
-@Component
+
 public class DimensionHelper {
-	@Autowired
+	
 	private DataHelper dataHelper;
+	
+	public DataHelper getDataHelper() {
+		return dataHelper;
+	}
+	public void setDataHelper(DataHelper dataHelper) {
+		this.dataHelper = dataHelper;
+	}
 	public void initialize(HashMap<String, Integer> dimensionMap) {
 		dataHelper.setDimensionValueMap(dimensionMap);
 		HashMap<Integer, String> idMap = new HashMap<Integer, String>();

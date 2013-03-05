@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g 2013-02-12 10:19:05
+// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g 2013-02-22 09:37:46
 
 package org.bitdekk.helper.sql.grammar;
 
@@ -37,11 +37,12 @@ public class BitdekkSqlGrammarLexer extends Lexer {
     public static final int T__31=31;
     public static final int T__32=32;
     public static final int T__33=33;
+    public static final int T__34=34;
     public static final int IDENTIFIER=4;
-    public static final int POS_INT=5;
-    public static final int ADD_SUB=6;
-    public static final int MUL_DIV=7;
-    public static final int OPERATOR=8;
+    public static final int LOGICAL_OPERATORS=5;
+    public static final int POS_INT=6;
+    public static final int ADD_SUB=7;
+    public static final int MUL_DIV=8;
     public static final int Digit=9;
     public static final int Letter=10;
     public static final int WS=11;
@@ -127,10 +128,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__15;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:10:7: ( 'ORDER' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:10:9: 'ORDER'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:10:7: ( 'HAVING' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:10:9: 'HAVING'
             {
-            match("ORDER"); 
+            match("HAVING"); 
 
 
             }
@@ -148,10 +149,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__16;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:11:7: ( 'BY' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:11:9: 'BY'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:11:7: ( 'AND' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:11:9: 'AND'
             {
-            match("BY"); 
+            match("AND"); 
 
 
             }
@@ -169,10 +170,11 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__17;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:12:7: ( ',' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:12:9: ','
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:12:7: ( 'ORDER' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:12:9: 'ORDER'
             {
-            match(','); 
+            match("ORDER"); 
+
 
             }
 
@@ -189,10 +191,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__18;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:13:7: ( 'ASC' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:13:9: 'ASC'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:13:7: ( 'BY' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:13:9: 'BY'
             {
-            match("ASC"); 
+            match("BY"); 
 
 
             }
@@ -210,11 +212,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__19;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:14:7: ( 'DESC' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:14:9: 'DESC'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:14:7: ( ',' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:14:9: ','
             {
-            match("DESC"); 
-
+            match(','); 
 
             }
 
@@ -231,10 +232,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__20;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:15:7: ( 'LIMIT' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:15:9: 'LIMIT'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:15:7: ( 'ASC' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:15:9: 'ASC'
             {
-            match("LIMIT"); 
+            match("ASC"); 
 
 
             }
@@ -252,10 +253,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__21;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:16:7: ( 'AS' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:16:9: 'AS'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:16:7: ( 'DESC' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:16:9: 'DESC'
             {
-            match("AS"); 
+            match("DESC"); 
 
 
             }
@@ -273,10 +274,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:17:7: ( 'AND' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:17:9: 'AND'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:17:7: ( 'LIMIT' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:17:9: 'LIMIT'
             {
-            match("AND"); 
+            match("LIMIT"); 
 
 
             }
@@ -294,10 +295,11 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:18:7: ( '=' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:18:9: '='
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:18:7: ( 'AS' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:18:9: 'AS'
             {
-            match('='); 
+            match("AS"); 
+
 
             }
 
@@ -314,10 +316,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__24;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:19:7: ( '\"' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:19:9: '\"'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:19:7: ( '=' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:19:9: '='
             {
-            match('\"'); 
+            match('='); 
 
             }
 
@@ -334,11 +336,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__25;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:20:7: ( 'IN' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:20:9: 'IN'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:20:7: ( '\"' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:20:9: '\"'
             {
-            match("IN"); 
-
+            match('\"'); 
 
             }
 
@@ -355,10 +356,11 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__26;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:21:7: ( '(' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:21:9: '('
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:21:7: ( 'IN' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:21:9: 'IN'
             {
-            match('('); 
+            match("IN"); 
+
 
             }
 
@@ -375,10 +377,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__27;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:22:7: ( ')' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:22:9: ')'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:22:7: ( '(' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:22:9: '('
             {
-            match(')'); 
+            match('('); 
 
             }
 
@@ -395,11 +397,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__28;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:23:7: ( 'SUM' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:23:9: 'SUM'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:23:7: ( ')' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:23:9: ')'
             {
-            match("SUM"); 
-
+            match(')'); 
 
             }
 
@@ -416,10 +417,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__29;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:24:7: ( 'AVG' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:24:9: 'AVG'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:24:7: ( 'SUM' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:24:9: 'SUM'
             {
-            match("AVG"); 
+            match("SUM"); 
 
 
             }
@@ -437,10 +438,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__30;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:25:7: ( 'COUNT' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:25:9: 'COUNT'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:25:7: ( 'AVG' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:25:9: 'AVG'
             {
-            match("COUNT"); 
+            match("AVG"); 
 
 
             }
@@ -458,10 +459,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__31;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:26:7: ( 'MAX' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:26:9: 'MAX'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:26:7: ( 'COUNT' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:26:9: 'COUNT'
             {
-            match("MAX"); 
+            match("COUNT"); 
 
 
             }
@@ -479,10 +480,10 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__32;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:27:7: ( 'MIN' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:27:9: 'MIN'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:27:7: ( 'MAX' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:27:9: 'MAX'
             {
-            match("MIN"); 
+            match("MAX"); 
 
 
             }
@@ -500,10 +501,11 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = T__33;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:28:7: ( '.' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:28:9: '.'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:28:7: ( 'MIN' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:28:9: 'MIN'
             {
-            match('.'); 
+            match("MIN"); 
+
 
             }
 
@@ -515,12 +517,32 @@ public class BitdekkSqlGrammarLexer extends Lexer {
     }
     // $ANTLR end "T__33"
 
-    // $ANTLR start "OPERATOR"
-    public final void mOPERATOR() throws RecognitionException {
+    // $ANTLR start "T__34"
+    public final void mT__34() throws RecognitionException {
         try {
-            int _type = OPERATOR;
+            int _type = T__34;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:9: ( '=' | '<' | '>' | '<>' | '<=' | '>=' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:29:7: ( '.' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:29:9: '.'
+            {
+            match('.'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__34"
+
+    // $ANTLR start "LOGICAL_OPERATORS"
+    public final void mLOGICAL_OPERATORS() throws RecognitionException {
+        try {
+            int _type = LOGICAL_OPERATORS;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:2: ( '=' | '<' | '>' | '<>' | '<=' | '>=' )
             int alt1=6;
             switch ( input.LA(1) ) {
             case '=':
@@ -566,28 +588,28 @@ public class BitdekkSqlGrammarLexer extends Lexer {
 
             switch (alt1) {
                 case 1 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:11: '='
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:4: '='
                     {
                     match('='); 
 
                     }
                     break;
                 case 2 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:17: '<'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:10: '<'
                     {
                     match('<'); 
 
                     }
                     break;
                 case 3 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:23: '>'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:16: '>'
                     {
                     match('>'); 
 
                     }
                     break;
                 case 4 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:29: '<>'
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:22: '<>'
                     {
                     match("<>"); 
 
@@ -595,7 +617,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
                     }
                     break;
                 case 5 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:36: '<='
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:29: '<='
                     {
                     match("<="); 
 
@@ -603,7 +625,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
                     }
                     break;
                 case 6 :
-                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:79:43: '>='
+                    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:36: '>='
                     {
                     match(">="); 
 
@@ -618,17 +640,17 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "OPERATOR"
+    // $ANTLR end "LOGICAL_OPERATORS"
 
     // $ANTLR start "POS_INT"
     public final void mPOS_INT() throws RecognitionException {
         try {
             int _type = POS_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:80:9: ( ( Digit )+ )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:80:11: ( Digit )+
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:86:9: ( ( Digit )+ )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:86:11: ( Digit )+
             {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:80:11: ( Digit )+
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:86:11: ( Digit )+
             int cnt2=0;
             loop2:
             do {
@@ -642,7 +664,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:80:11: Digit
+            	    // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:86:11: Digit
             	    {
             	    mDigit(); 
 
@@ -674,7 +696,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = MUL_DIV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:81:9: ( '*' | '/' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:87:9: ( '*' | '/' )
             // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:
             {
             if ( input.LA(1)=='*'||input.LA(1)=='/' ) {
@@ -702,7 +724,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = ADD_SUB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:82:9: ( '+' | '-' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:88:9: ( '+' | '-' )
             // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:
             {
             if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
@@ -730,11 +752,11 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = IDENTIFIER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:83:14: ( Letter ( Letter | Digit )* )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:83:17: Letter ( Letter | Digit )*
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:89:14: ( Letter ( Letter | Digit )* )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:89:17: Letter ( Letter | Digit )*
             {
             mLetter(); 
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:83:24: ( Letter | Digit )*
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:89:24: ( Letter | Digit )*
             loop3:
             do {
                 int alt3=2;
@@ -781,7 +803,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
     // $ANTLR start "Letter"
     public final void mLetter() throws RecognitionException {
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:85:9: ( 'a' .. 'z' | '_' | 'A' .. 'Z' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:91:9: ( 'a' .. 'z' | '_' | 'A' .. 'Z' )
             // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
@@ -805,8 +827,8 @@ public class BitdekkSqlGrammarLexer extends Lexer {
     // $ANTLR start "Digit"
     public final void mDigit() throws RecognitionException {
         try {
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:87:8: ( '0' .. '9' )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:87:11: '0' .. '9'
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:93:8: ( '0' .. '9' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:93:11: '0' .. '9'
             {
             matchRange('0','9'); 
 
@@ -823,8 +845,8 @@ public class BitdekkSqlGrammarLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:88:6: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:88:10: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:94:6: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:94:10: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -848,8 +870,8 @@ public class BitdekkSqlGrammarLexer extends Lexer {
     // $ANTLR end "WS"
 
     public void mTokens() throws RecognitionException {
-        // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:8: ( T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | OPERATOR | POS_INT | MUL_DIV | ADD_SUB | IDENTIFIER | WS )
-        int alt4=28;
+        // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:8: ( T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | LOGICAL_OPERATORS | POS_INT | MUL_DIV | ADD_SUB | IDENTIFIER | WS )
+        int alt4=29;
         alt4 = dfa4.predict(input);
         switch (alt4) {
             case 1 :
@@ -1007,42 +1029,49 @@ public class BitdekkSqlGrammarLexer extends Lexer {
                 }
                 break;
             case 23 :
-                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:142: OPERATOR
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:142: T__34
                 {
-                mOPERATOR(); 
+                mT__34(); 
 
                 }
                 break;
             case 24 :
-                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:151: POS_INT
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:148: LOGICAL_OPERATORS
+                {
+                mLOGICAL_OPERATORS(); 
+
+                }
+                break;
+            case 25 :
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:166: POS_INT
                 {
                 mPOS_INT(); 
 
                 }
                 break;
-            case 25 :
-                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:159: MUL_DIV
+            case 26 :
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:174: MUL_DIV
                 {
                 mMUL_DIV(); 
 
                 }
                 break;
-            case 26 :
-                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:167: ADD_SUB
+            case 27 :
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:182: ADD_SUB
                 {
                 mADD_SUB(); 
 
                 }
                 break;
-            case 27 :
-                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:175: IDENTIFIER
+            case 28 :
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:190: IDENTIFIER
                 {
                 mIDENTIFIER(); 
 
                 }
                 break;
-            case 28 :
-                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:186: WS
+            case 29 :
+                // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:1:201: WS
                 {
                 mWS(); 
 
@@ -1056,56 +1085,60 @@ public class BitdekkSqlGrammarLexer extends Lexer {
 
     protected DFA4 dfa4 = new DFA4(this);
     static final String DFA4_eotS =
-        "\1\uffff\5\26\1\uffff\3\26\2\uffff\1\26\2\uffff\2\26\7\uffff\5"+
-        "\26\1\55\1\57\4\26\1\uffff\1\64\4\26\1\71\3\26\1\uffff\1\75\1\uffff"+
-        "\1\76\1\77\2\26\1\uffff\1\26\1\103\1\104\1\26\1\uffff\1\106\2\26"+
-        "\3\uffff\1\111\2\26\2\uffff\1\26\1\uffff\1\115\1\116\1\uffff\1\117"+
-        "\1\120\1\121\5\uffff";
+        "\1\uffff\7\27\1\uffff\2\27\2\uffff\1\27\2\uffff\2\27\7\uffff\6"+
+        "\27\1\61\2\27\1\64\2\27\1\uffff\1\67\4\27\1\74\3\27\1\100\1\101"+
+        "\1\uffff\1\102\1\27\1\uffff\2\27\1\uffff\1\27\1\107\1\110\1\27\1"+
+        "\uffff\1\112\2\27\3\uffff\1\27\1\116\2\27\2\uffff\1\27\1\uffff\1"+
+        "\122\1\27\1\124\1\uffff\1\125\1\126\1\127\1\uffff\1\130\5\uffff";
     static final String DFA4_eofS =
-        "\122\uffff";
+        "\131\uffff";
     static final String DFA4_minS =
-        "\1\11\1\105\1\122\1\110\1\122\1\131\1\uffff\1\116\1\105\1\111\2"+
-        "\uffff\1\116\2\uffff\1\117\1\101\7\uffff\1\114\1\115\1\117\1\105"+
-        "\1\104\2\60\1\104\1\107\1\123\1\115\1\uffff\1\60\1\125\1\130\1\116"+
-        "\1\105\1\60\1\115\1\122\1\105\1\uffff\1\60\1\uffff\2\60\1\103\1"+
-        "\111\1\uffff\1\116\2\60\1\103\1\uffff\1\60\1\105\1\122\3\uffff\1"+
-        "\60\2\124\2\uffff\1\124\1\uffff\2\60\1\uffff\3\60\5\uffff";
+        "\1\11\1\105\1\122\1\110\1\101\1\116\1\122\1\131\1\uffff\1\105\1"+
+        "\111\2\uffff\1\116\2\uffff\1\117\1\101\7\uffff\1\114\1\115\1\117"+
+        "\1\105\1\126\1\104\1\60\1\107\1\104\1\60\1\123\1\115\1\uffff\1\60"+
+        "\1\125\1\130\1\116\1\105\1\60\1\115\1\122\1\111\2\60\1\uffff\1\60"+
+        "\1\105\1\uffff\1\103\1\111\1\uffff\1\116\2\60\1\103\1\uffff\1\60"+
+        "\1\105\1\116\3\uffff\1\122\1\60\2\124\2\uffff\1\124\1\uffff\1\60"+
+        "\1\107\1\60\1\uffff\3\60\1\uffff\1\60\5\uffff";
     static final String DFA4_maxS =
-        "\1\172\1\125\1\122\1\110\1\122\1\131\1\uffff\1\126\1\105\1\111"+
-        "\2\uffff\1\116\2\uffff\1\117\1\111\7\uffff\1\114\1\115\1\117\1\105"+
-        "\1\104\2\172\1\104\1\107\1\123\1\115\1\uffff\1\172\1\125\1\130\1"+
-        "\116\1\105\1\172\1\115\1\122\1\105\1\uffff\1\172\1\uffff\2\172\1"+
-        "\103\1\111\1\uffff\1\116\2\172\1\103\1\uffff\1\172\1\105\1\122\3"+
-        "\uffff\1\172\2\124\2\uffff\1\124\1\uffff\2\172\1\uffff\3\172\5\uffff";
+        "\1\172\1\125\1\122\1\110\1\101\1\126\1\122\1\131\1\uffff\1\105"+
+        "\1\111\2\uffff\1\116\2\uffff\1\117\1\111\7\uffff\1\114\1\115\1\117"+
+        "\1\105\1\126\1\104\1\172\1\107\1\104\1\172\1\123\1\115\1\uffff\1"+
+        "\172\1\125\1\130\1\116\1\105\1\172\1\115\1\122\1\111\2\172\1\uffff"+
+        "\1\172\1\105\1\uffff\1\103\1\111\1\uffff\1\116\2\172\1\103\1\uffff"+
+        "\1\172\1\105\1\116\3\uffff\1\122\1\172\2\124\2\uffff\1\124\1\uffff"+
+        "\1\172\1\107\1\172\1\uffff\3\172\1\uffff\1\172\5\uffff";
     static final String DFA4_acceptS =
-        "\6\uffff\1\6\3\uffff\1\14\1\15\1\uffff\1\17\1\20\2\uffff\1\26\1"+
-        "\27\1\30\1\31\1\32\1\33\1\34\13\uffff\1\14\11\uffff\1\5\1\uffff"+
-        "\1\12\4\uffff\1\16\4\uffff\1\21\3\uffff\1\7\1\13\1\22\3\uffff\1"+
-        "\24\1\25\1\uffff\1\2\2\uffff\1\10\3\uffff\1\3\1\4\1\11\1\23\1\1";
+        "\10\uffff\1\10\2\uffff\1\15\1\16\1\uffff\1\20\1\21\2\uffff\1\27"+
+        "\1\30\1\31\1\32\1\33\1\34\1\35\14\uffff\1\15\13\uffff\1\14\2\uffff"+
+        "\1\7\2\uffff\1\17\4\uffff\1\22\3\uffff\1\5\1\11\1\23\4\uffff\1\25"+
+        "\1\26\1\uffff\1\2\3\uffff\1\12\3\uffff\1\3\1\uffff\1\6\1\13\1\24"+
+        "\1\1\1\4";
     static final String DFA4_specialS =
-        "\122\uffff}>";
+        "\131\uffff}>";
     static final String[] DFA4_transitionS = {
-            "\2\27\2\uffff\1\27\22\uffff\1\27\1\uffff\1\13\5\uffff\1\15"+
-            "\1\16\1\24\1\25\1\6\1\25\1\21\1\24\12\23\2\uffff\1\22\1\12\1"+
-            "\22\2\uffff\1\7\1\5\1\17\1\10\1\26\1\2\2\26\1\14\2\26\1\11\1"+
-            "\20\1\26\1\4\3\26\1\1\3\26\1\3\3\26\4\uffff\1\26\1\uffff\32"+
-            "\26",
-            "\1\30\17\uffff\1\31",
-            "\1\32",
+            "\2\30\2\uffff\1\30\22\uffff\1\30\1\uffff\1\14\5\uffff\1\16"+
+            "\1\17\1\25\1\26\1\10\1\26\1\22\1\25\12\24\2\uffff\1\23\1\13"+
+            "\1\23\2\uffff\1\5\1\7\1\20\1\11\1\27\1\2\1\27\1\4\1\15\2\27"+
+            "\1\12\1\21\1\27\1\6\3\27\1\1\3\27\1\3\3\27\4\uffff\1\27\1\uffff"+
+            "\32\27",
+            "\1\31\17\uffff\1\32",
             "\1\33",
             "\1\34",
             "\1\35",
-            "",
-            "\1\37\4\uffff\1\36\2\uffff\1\40",
+            "\1\36\4\uffff\1\37\2\uffff\1\40",
             "\1\41",
             "\1\42",
             "",
-            "",
+            "\1\43",
             "\1\44",
             "",
             "",
-            "\1\45",
-            "\1\46\7\uffff\1\47",
+            "\1\46",
+            "",
+            "",
+            "\1\47",
+            "\1\50\7\uffff\1\51",
             "",
             "",
             "",
@@ -1113,59 +1146,65 @@ public class BitdekkSqlGrammarLexer extends Lexer {
             "",
             "",
             "",
-            "\1\50",
-            "\1\51",
             "\1\52",
             "\1\53",
             "\1\54",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\12\26\7\uffff\2\26\1\56\27\26\4\uffff\1\26\1\uffff\32\26",
-            "\1\60",
-            "\1\61",
+            "\1\55",
+            "\1\56",
+            "\1\57",
+            "\12\27\7\uffff\2\27\1\60\27\27\4\uffff\1\27\1\uffff\32\27",
             "\1\62",
             "\1\63",
-            "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
             "\1\65",
             "\1\66",
-            "\1\67",
+            "",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
             "\1\70",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
+            "\1\71",
             "\1\72",
             "\1\73",
-            "\1\74",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\1\75",
+            "\1\76",
+            "\1\77",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
             "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\1\103",
             "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\1\100",
-            "\1\101",
-            "",
-            "\1\102",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
+            "\1\104",
             "\1\105",
             "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\1\107",
-            "\1\110",
+            "\1\106",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\1\111",
             "",
-            "",
-            "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\1\112",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
             "\1\113",
-            "",
-            "",
             "\1\114",
             "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
             "",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
-            "\12\26\7\uffff\32\26\4\uffff\1\26\1\uffff\32\26",
+            "",
+            "\1\115",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\1\117",
+            "\1\120",
+            "",
+            "",
+            "\1\121",
+            "",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\1\123",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
+            "",
+            "\12\27\7\uffff\32\27\4\uffff\1\27\1\uffff\32\27",
             "",
             "",
             "",
@@ -1203,7 +1242,7 @@ public class BitdekkSqlGrammarLexer extends Lexer {
             this.transition = DFA4_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | OPERATOR | POS_INT | MUL_DIV | ADD_SUB | IDENTIFIER | WS );";
+            return "1:1: Tokens : ( T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | LOGICAL_OPERATORS | POS_INT | MUL_DIV | ADD_SUB | IDENTIFIER | WS );";
         }
     }
  

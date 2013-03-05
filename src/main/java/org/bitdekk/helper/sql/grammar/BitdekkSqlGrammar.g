@@ -13,13 +13,18 @@ package org.bitdekk.helper.sql.grammar;
 @members
 {
 	private State state1;
+	private boolean groupedExpressionFound = false;
 }
 
 stat	:	selectStatement EOF;
 
 selectStatement
 	:	'SELECT' columns 'FROM' IDENTIFIER{state1.setTableName($IDENTIFIER.text);} ('WHERE' whereExpressions)? 
-	('ORDER' 'BY' orderByColumns)? limitClause?;
+	('HAVING' havingExpression ('AND' havingExpression)*)?  ('ORDER' 'BY' orderByColumns)? limitClause?;
+havingExpression
+	:	(a=aggregateMeasure b=LOGICAL_OPERATORS c=aggregateMeasure) {
+		state1.addHavingExpression(new HavingExpression($a.text, $b.text, $c.text));
+	};
 columns	:	column  (',' column)*;
 orderByColumns
 	:	a=IDENTIFIER (c=('ASC'|'DESC'))? {state1.addOrderByColumn($a.text, $c.text == null || $c.text.equals("ASC"));} 
@@ -27,12 +32,22 @@ orderByColumns
 limitClause
 	:	('LIMIT' a=POS_INT {state1.setFromRowNumber(Integer.parseInt($a.text));} 
 	',' b=POS_INT {state1.setToRowNumber(Integer.parseInt($b.text));});
-column	:	a=dimension | b=aggregateMeasure;
-dimension
-	:	a=IDENTIFIER ('AS' b=IDENTIFIER)? {state1.addColumn(new Dimension($a.text, $b == null ? $a.text : $b.text));};
-aggregateMeasure
-	:	a=groupedExpression ('AS' b=IDENTIFIER)? 
-		{state1.addColumn(new Measure($groupedExpression.text, $b == null ? $a.text : $b.text));};
+column	:	(a=dimension ('AS' b=IDENTIFIER)?) {state1.addColumn(new Dimension($a.name, $b == null ? $a.name : $b.text));}
+	| (c=aggregateMeasure ('AS' d=IDENTIFIER)?) {
+		if(c.expression != null)
+			state1.addColumn(new Measure($c.text, $d == null ? $c.text : $d.text));
+		else
+			state1.groupedExpressionNotFound($c.text);
+	};
+dimension returns[String name]
+	:	a=IDENTIFIER {$name = $a.text;};
+aggregateMeasure returns[String expression] @init{groupedExpressionFound = false;}
+	:	a=groupedExpression {
+		if(groupedExpressionFound)
+			$expression = $groupedExpression.text;
+		else
+			$expression = null;
+	};
 whereExpressions
 	:	whereExpression ('AND' whereExpression)*;
 whereExpression
@@ -42,23 +57,13 @@ dimensionCondition
 	:	(a=IDENTIFIER '=' '"' b=IDENTIFIER {state1.addDimensionValue($a.text, $b.text);} '"')
 	| 	(c=IDENTIFIER 'IN' ('(' '"' d=IDENTIFIER {state1.addDimensionValue($b.text, $d.text);} '"' 
 			(',' '"' d=IDENTIFIER {state1.addDimensionValue($c.text, $d.text);} '"')* ')'));
-/*measureExpression
-	:	mulExpression (MUL_DIV mulExpression)?;
-mulExpression
-	:	addExpression (ADD_SUB addExpression)?;
-addExpression
-	:	IDENTIFIER
-	| 	number
-	|	function?'('measureExpression')';
-function:	'SUM'
-	|	'AVG';*/
 groupedExpression
 	:	a=groupedAddExpression (ADD_SUB b=groupedAddExpression)*;
 groupedAddExpression
 	:	a=groupedMulExpression (MUL_DIV b=groupedMulExpression)*;
 groupedMulExpression
 	:	number 
-	|	function '(' measureExpression  ')'
+	|	(function '(' measureExpression  ')') {groupedExpressionFound = true;}
 	|	'('groupedExpression')' ;
 measureExpression
 	:	a=addExpression (MUL_DIV b=addExpression)*;
@@ -76,7 +81,8 @@ function
 	|	'MIN';
 number	:	ADD_SUB? POS_INT('.'POS_INT)?;
 //Lexer
-OPERATOR:	'=' | '<' | '>' | '<>' | '<=' | '>=';
+LOGICAL_OPERATORS
+	:	'=' | '<' | '>' | '<>' | '<=' | '>=';
 POS_INT	:	Digit+;
 MUL_DIV	:	'*' | '/';
 ADD_SUB	:	'+' | '-';

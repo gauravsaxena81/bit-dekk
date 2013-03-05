@@ -3,6 +3,8 @@ package org.bitdekk.util;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.bitdekk.api.IBitSet;
+
 /**
  * An "open" OpenBitSet implementation that allows direct access to the arrays of words
  * storing the bits.  Derived from Lucene's OpenBitSet, but with a paged backing array
@@ -26,7 +28,7 @@ import java.util.Arrays;
  */
 
 @SuppressWarnings("serial")
-public class OpenBitSet implements Serializable {
+public class OpenBitSet implements Serializable, IBitSet {
   /**
    * We break the OpenBitSet up into multiple arrays to avoid promotion failure caused by attempting to allocate
    * large, contiguous arrays (CASSANDRA-2466).  All sub-arrays but the last are uniformly PAGE_SIZE words;
@@ -492,20 +494,24 @@ public class OpenBitSet implements Serializable {
     return (int)((h>>32) ^ h) + 0x98761234;
   }
 
-	public boolean contains(OpenBitSet other) {
-		int newLen= Math.min(this.wlen,other.wlen);
-	    long[][] thisArr = this.bits;
-	    long[][] otherArr = other.bits;
-	    int thisPageSize = OpenBitSet.PAGE_SIZE;
-	    int otherPageSize = OpenBitSet.PAGE_SIZE;
-	    int pos=newLen;
-	    while(--pos>=0) {
-	    	if(otherArr[pos / otherPageSize][pos % otherPageSize] 
-	    			!= (thisArr[pos / thisPageSize][ pos % thisPageSize] & otherArr[pos / otherPageSize][pos % otherPageSize]))
-	    		return false;
-	    }
-	    this.wlen = newLen;
-		return true;
+	public boolean contains(IBitSet bitset) {
+		if(bitset != null && bitset instanceof OpenBitSet) {
+			OpenBitSet other = (OpenBitSet)bitset;
+			int newLen= Math.min(this.wlen,other.wlen);
+		    long[][] thisArr = this.bits;
+		    long[][] otherArr = other.bits;
+		    int thisPageSize = OpenBitSet.PAGE_SIZE;
+		    int otherPageSize = OpenBitSet.PAGE_SIZE;
+		    int pos=newLen;
+		    while(--pos>=0) {
+		    	if(otherArr[pos / otherPageSize][pos % otherPageSize] 
+		    			!= (thisArr[pos / thisPageSize][ pos % thisPageSize] & otherArr[pos / otherPageSize][pos % otherPageSize]))
+		    		return false;
+		    }
+		    this.wlen = newLen;
+			return true;
+		} else
+			return false;
 	}
 }
 
