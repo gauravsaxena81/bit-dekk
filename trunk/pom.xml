@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitdekk</groupId>
   <artifactId>Bitdekk</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.0.1</version>
   <properties>
     <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
   </properties>
@@ -16,6 +16,28 @@
         </resource>
       </resources>
     <plugins>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <executions>
+              <execution>
+                  <id>install-kryonet-validator</id>
+                  <phase>validate</phase>
+                  <goals>
+                      <goal>install-file</goal>
+                  </goals>
+                  <configuration>
+                      <file>src/main/resources/kryonet-debug-2.18-all.jar</file>
+                      <groupId>com.esotericsoftware</groupId>
+                      <artifactId>kryonet</artifactId>
+                      <version>debug-2.18-all</version>
+                      <packaging>jar</packaging>
+                      <createChecksum>true</createChecksum>
+                      <generatePom>true</generatePom>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
@@ -36,31 +58,31 @@
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-core</artifactId>
 	  <version>${org.springframework.version}</version>
-	  <scope>compile</scope>
+	  <scope>test</scope>
 	</dependency>
   	<dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-beans</artifactId>
 	  <version>${org.springframework.version}</version>
-	  <scope>compile</scope>
+	  <scope>test</scope>
 	</dependency>
   	<dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-context</artifactId>
 	  <version>${org.springframework.version}</version>
-	  <scope>compile</scope>
+	  <scope>test</scope>
 	</dependency>
 	<dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-asm</artifactId>
 	  <version>${org.springframework.version}</version>
-	  <scope>compile</scope>
+	  <scope>test</scope>
 	</dependency>
 	<dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-expression</artifactId>
 	  <version>${org.springframework.version}</version>
-	  <scope>compile</scope>
+	  <scope>test</scope>
 	</dependency>
 	<dependency>
 	  <groupId>org.springframework</groupId>
@@ -86,6 +108,11 @@
 		<groupId>org.antlr</groupId>
 		<artifactId>antlr</artifactId>
 		<version>3.5</version>
+	</dependency>
+	<dependency>
+		 <groupId>com.esotericsoftware</groupId>
+         <artifactId>kryonet</artifactId>
+         <version>debug-2.18-all</version>
 	</dependency>
   </dependencies>
 </project>
