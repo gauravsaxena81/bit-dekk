@@ -3,6 +3,7 @@ package org.bitdekk.helper.distributed.expression;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -24,6 +25,13 @@ import com.esotericsoftware.kryonet.Listener;
 
 public class DistributedEvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
+	private Integer timeout = Integer.MAX_VALUE;
+	public Integer getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
+	}
 	public MeasureHelper getMeasureHelper() {
 		return measureHelper;
 	}
@@ -73,12 +81,16 @@ public class DistributedEvaluationHelper implements IEvaluation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		boolean success = false;
 		try {
-			doneSignal.await();
+			success = doneSignal.await(timeout, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return functionExpression.getAggregation().getValue();
+		if(success)
+			return functionExpression.getAggregation().getValue();
+		else
+			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
 	private double divide(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
 		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 

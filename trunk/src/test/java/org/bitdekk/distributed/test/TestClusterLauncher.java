@@ -66,10 +66,22 @@ public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
 		double x = (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"));
 		Assert.assertEquals(1800, x, 0.00000001);
 	}
+	@Test(expectedExceptions=RuntimeException.class)
+	public void distributedTestFailure() {
+		processAB.destroy();
+		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+		hashMap.put("S1",0);
+		hashMap.put("S2",1);
+		hashMap.put("P1",2);
+		hashMap.put("P2",3);
+		
+		dataLayer.initializeDimensions(hashMap);
+		double x = (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"));
+		Assert.assertEquals(1800, x, 0.00000001);
+	}
 	@AfterTest
 	public void destroyServers() {
 		processA.destroy();
 		processAA.destroy();
-		processAB.destroy();
 	}
 }
