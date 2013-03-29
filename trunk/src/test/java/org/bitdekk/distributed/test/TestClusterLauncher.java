@@ -62,7 +62,7 @@ public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
 		hashMap.put("P1",2);
 		hashMap.put("P2",3);
 		
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 		double x = (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"));
 		Assert.assertEquals(1800, x, 0.00000001);
 	}
@@ -75,7 +75,7 @@ public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
 		hashMap.put("P1",2);
 		hashMap.put("P2",3);
 		
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 		double x = (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"));
 		Assert.assertEquals(1800, x, 0.00000001);
 	}

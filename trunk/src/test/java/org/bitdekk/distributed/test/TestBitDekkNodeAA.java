@@ -46,7 +46,7 @@ public class TestBitDekkNodeAA {
 		hashMap.put("P1",2);
 		hashMap.put("P2",3);
 		
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 		
 		DataTable dataTable = new DataTable();
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));

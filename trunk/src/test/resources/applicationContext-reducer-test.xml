@@ -13,7 +13,7 @@
 	<bean id="sqlHelper" class="org.bitdekk.helper.sql.grammar.SqlHelper" autowire-candidate="true">
 		<property name="dataLayer" ref="dataLayer" />
 	</bean>
-	<bean id="dimensionHelper" class="org.bitdekk.helper.DimensionHelper"  autowire-candidate="true">
+	<bean id="dimensionHelper" class="org.bitdekk.helper.DimensionValueHelper"  autowire-candidate="true">
 		<property name="dataHelper" ref="dataHelper" />
 	</bean>
 	<bean id="dataHelper" class="org.bitdekk.helper.DataHelper" autowire-candidate="true" />

@@ -1,27 +1,48 @@
-package org.bitdekk.distributed.datalayer;
+package org.bitdekk.scenario;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
 
 import org.bitdekk.DataLayer;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
+import org.bitdekk.scenario.helper.DimensionHelper;
+import org.bitdekk.scenario.helper.ScenarioDimensionValueHelper;
+import org.bitdekk.scenario.helper.ScenarioHelper;
+
+import com.google.visualization.datasource.datatable.DataTable;
 
 
-public class DistributedDataLayer {
+public class ScenarioEnabledDataLayer {
+	private DimensionHelper dimensionHelper;
+	private ScenarioHelper scenarioHelper;
+	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
 	private DataLayer dataLayer;
-	public DataLayer getDataLayer() {
-		return dataLayer;
+	
+	public ScenarioHelper getScenarioHelper() {
+		return scenarioHelper;
 	}
-	public void setDataLayer(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
+	public void setScenarioHelper(ScenarioHelper scenarioHelper) {
+		this.scenarioHelper = scenarioHelper;
 	}
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
-	public void initializeDimensions(HashMap<String, Integer> dimensionMap) {
+	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
 		dataLayer.initializeDimensionValues(dimensionMap);
+	}
+	/**
+	 * @param tableName a string to uniquely identify this table
+	 * @param dataTable <a href='http://gwt-google-apis.googlecode.com/svn/javadoc/visualization/1.1/com/google/gwt/visualization/client/DataTable.html'>Google DataTable</a> 
+	 */
+	public void initializeTable(String tableName, DataTable dataTable) {
+		dataLayer.initializeTable(tableName, dataTable);
+	}
+	public void initializeTable(String tableName, ResultSet resultSet) throws SQLException {
+		dataLayer.initializeTable(tableName, resultSet);
 	}
 	/**
 	 * 
@@ -76,26 +97,18 @@ public class DistributedDataLayer {
 	 * @throws InvalidBitDekkExpressionException
 	 */
 	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
-		return dataLayer.aggregate(aggregation,tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
+		return dataLayer.aggregate(aggregation, tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
-	/**
-	 * @param dimensionValue
-	 * @return id of the dimension value
-	 */
-	public int getDimensionId(String dimensionValue) {
-		return dataLayer.getDimensionId(dimensionValue);
+	public void initializeDimensions(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
+		dimensionHelper.initializeDimensions(dimensionToDimensionValueIdMap);
 	}
-	/**
-	 * @return set of all the ids
-	 */
-	public Set<Integer> getDimensionIds() {
-		return dataLayer.getDimensionIds();
+	public void createDimensionValue(String dimension, String dimensionValue, int id) {
+		scenarioDimensionValueHelper.addDimensionValue(dimension, dimensionValue, id);
 	}
-	/**
-	 * @param id of a dimension value
-	 * @return Dimension value
-	 */
-	public String getDimensionValue(int id) {
-		return dataLayer.getDimensionValue(id);
+	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
+		scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
+	}
+	public void associateRule(int id, IBitSet ruleBitSet, double factor) {
+		scenarioHelper.associateRule(id, ruleBitSet, factor);
 	}
 }
