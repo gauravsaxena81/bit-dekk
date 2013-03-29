@@ -25,8 +25,8 @@ public class DataLayerTest extends AbstractTestNGSpringContextTests {
 	private DataLayer dataLayer;
 
 	@Test(dataProvider="initializeDimensionsDataProvider")
-	public void initializeDimensions(HashMap<String, Integer> hashMap) {
-		dataLayer.initializeDimensions(hashMap);
+	public void initializeDimensionValues(HashMap<String, Integer> hashMap) {
+		dataLayer.initializeDimensionValues(hashMap);
 		for(String i : hashMap.keySet())
 			Assert.assertEquals(dataLayer.getDimensionId(i), hashMap.get(i).intValue());
 	}
@@ -39,7 +39,7 @@ public class DataLayerTest extends AbstractTestNGSpringContextTests {
 		hashMap.put("P1",2);
 		hashMap.put("P2",3);
 		
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 		return new Object[][]{{emptyHashMap},{hashMap}};
 	}
 	@Test
@@ -50,7 +50,7 @@ public class DataLayerTest extends AbstractTestNGSpringContextTests {
 		hashMap.put("P1",2);
 		hashMap.put("P2",3);
 		
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 		
 		DataTable dataTable = new DataTable();
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
@@ -111,7 +111,7 @@ public class DataLayerTest extends AbstractTestNGSpringContextTests {
 		hashMap.put("P1",2);
 		hashMap.put("P2",3);
 		
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 		OpenBitSet openBitSet = new OpenBitSet();
 		openBitSet.set(0);
 		openBitSet.set(2);

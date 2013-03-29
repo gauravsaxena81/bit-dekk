@@ -9,21 +9,21 @@ import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.helper.AggregationHelper;
-import org.bitdekk.helper.DimensionHelper;
+import org.bitdekk.helper.DimensionValueHelper;
 import org.bitdekk.helper.MeasureHelper;
 
 import com.google.visualization.datasource.datatable.DataTable;
 
 
 public class DataLayer {
-	private DimensionHelper dimensionHelper;
+	private DimensionValueHelper dimensionHelper;
 	private MeasureHelper measureHelper;
 	private AggregationHelper aggregationHelper;
 	
-	public DimensionHelper getDimensionHelper() {
+	public DimensionValueHelper getDimensionHelper() {
 		return dimensionHelper;
 	}
-	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+	public void setDimensionHelper(DimensionValueHelper dimensionHelper) {
 		this.dimensionHelper = dimensionHelper;
 	}
 	public MeasureHelper getMeasureHelper() {
@@ -41,7 +41,7 @@ public class DataLayer {
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
-	public void initializeDimensions(HashMap<String, Integer> dimensionMap) {
+	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
 		dimensionHelper.initialize(dimensionMap);
 	}
 	/**

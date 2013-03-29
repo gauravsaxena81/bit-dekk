@@ -178,7 +178,7 @@ public class SqlHelper {
 	}
 	public void initialize(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, HashMap<String, Integer> hashMap) {
 		this.dimensionToDimensionValuesMap = dimensionToDimensionValuesMap;
-		dataLayer.initializeDimensions(hashMap);
+		dataLayer.initializeDimensionValues(hashMap);
 	}
 	public void initializeTable(String name, DataTable dataTable) {
 		dataLayer.initializeTable(name, dataTable);

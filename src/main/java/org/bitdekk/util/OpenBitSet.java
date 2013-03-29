@@ -513,5 +513,36 @@ public class OpenBitSet implements Serializable, IBitSet {
 		} else
 			return false;
 	}
+	/** this = this AND other */
+    @Override
+    public boolean intersects(IBitSet bitset) {
+      if(bitset != null && bitset instanceof OpenBitSet) {
+    	  OpenBitSet other = (OpenBitSet)bitset;
+	      int minLen= Math.min(this.wlen,other.wlen);
+	      long[][] thisArr = this.bits;
+	      long[][] otherArr = other.bits;
+	      int thisPageSize = OpenBitSet.PAGE_SIZE;
+	      int otherPageSize = OpenBitSet.PAGE_SIZE;
+	      // testing against zero can be more efficient
+	      int pos=minLen;
+	      while(--pos>=0) {
+	        if((thisArr[pos / thisPageSize][ pos % thisPageSize] & otherArr[pos / otherPageSize][pos % otherPageSize]) > 0)
+	        	return true;
+	      }
+	      return false;
+	    } else
+	      return false;
+    }
+    @Override
+    public IBitSet clone() {
+    	return new OpenBitSet(this);
+    }
+
+	@Override
+	public void and(IBitSet bitset) {
+		if(bitset != null && bitset instanceof OpenBitSet) {
+			and((OpenBitSet)bitset);
+		}
+	}
 }
 

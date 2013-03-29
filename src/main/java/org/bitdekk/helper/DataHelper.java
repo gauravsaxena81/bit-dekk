@@ -12,16 +12,16 @@ public class DataHelper {
 	public HashMap<String, Table> getTableMap() {
 		return tableMap;
 	}
-	public HashMap<String, Integer> getDimensionMap() {
+	public HashMap<String, Integer> getDimensionValueMap() {
 		return dimensionValueMap;
 	}
 	public void setDimensionValueMap(HashMap<String, Integer> dimensionValueMap) {
 		this.dimensionValueMap = dimensionValueMap;
 	}
-	public void setIdToDimensionMap(HashMap<Integer, String> IdToDimensionMap) {
+	public void setIdToDimensionValueMap(HashMap<Integer, String> IdToDimensionMap) {
 		this.IdToDimensionMap = IdToDimensionMap;
 	}
-	public HashMap<Integer, String> getIdToDimensionMap() {
+	public HashMap<Integer, String> getIdToDimensionValueMap() {
 		return IdToDimensionMap;
 	}
 }

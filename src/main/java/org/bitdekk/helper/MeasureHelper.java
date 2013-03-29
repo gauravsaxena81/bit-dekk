@@ -18,15 +18,15 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 
 public class MeasureHelper {
 	
-	private DimensionHelper dimensionHelper;
+	private DimensionValueHelper dimensionHelper;
 	private DataHelper dataHelper;
 	
 	
-	public DimensionHelper getDimensionHelper() {
+	public DimensionValueHelper getDimensionHelper() {
 		return dimensionHelper;
 	}
 
-	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+	public void setDimensionHelper(DimensionValueHelper dimensionHelper) {
 		this.dimensionHelper = dimensionHelper;
 	}
 
