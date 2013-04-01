@@ -1,3 +1,16 @@
+/*
+ * Copyright 2013 Contributors of bit-dekk
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.bitdekk.scenario.helper;
 
 import java.util.ArrayList;
@@ -9,12 +22,14 @@ import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.api.IEvaluation;
 import org.bitdekk.helper.MeasureHelper;
+import org.bitdekk.helper.Position;
 import org.bitdekk.helper.expression.BitdekkErrorHandlingLexer;
 import org.bitdekk.helper.expression.BitdekkErrorHandlingParser;
 import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.helper.expression.model.MeasureExpression;
 import org.bitdekk.model.DataRow;
 import org.bitdekk.scenario.ScenarioUtil;
+import org.bitdekk.scenario.model.ScenarioRowQuery;
 
 public class ScenarioEvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
@@ -39,58 +54,81 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 		this.measureHelper = measureHelper;
 	}
 	@Override
-	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet
+	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet
 			, IBitSet filterBitSet) {
-		if(measureExpressionTokens.get(pos).equals("+"))
-			return add(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos).equals("-"))
-			return subtract(measureExpressionTokens, ++pos, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos).equals("*"))
-			return multiply(measureExpressionTokens, ++pos, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos).equals("/"))
-			return divide(measureExpressionTokens, ++pos, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos) instanceof Double)
-			return (Double)measureExpressionTokens.get(pos);
-		else if(measureExpressionTokens.get(pos) instanceof IAggregation)
-			return aggregate(((IAggregation)measureExpressionTokens.get(pos)), ((IAggregation)measureExpressionTokens.get(pos)).getMeasureExpression(), tableName, viewBitSet, filterBitSet);
-		else
-			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos))];
+		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, null);
 	}
-	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		ArrayList<IBitSet> list = new ArrayList<IBitSet>();
-		for(Integer i : ScenarioUtil.pi(viewBitSet, scenarioDataHelper)) {
-			for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
+	private double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet
+			, IBitSet filterBitSet, double[] factors) {
+		if(measureExpressionTokens.get(pos.pos).equals("+")) {
+			++pos.pos;
+			return add(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		} else if(measureExpressionTokens.get(pos.pos).equals("-")) {
+			++pos.pos;
+			return subtract(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		} else if(measureExpressionTokens.get(pos.pos).equals("*"))  {
+			++pos.pos;
+			return multiply(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		} else if(measureExpressionTokens.get(pos.pos).equals("/")) {
+			++pos.pos;
+			return divide(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		} else if(measureExpressionTokens.get(pos.pos) instanceof Double)
+			return (Double)measureExpressionTokens.get(pos.pos);
+		else if(measureExpressionTokens.get(pos.pos) instanceof IAggregation)
+			return aggregate(((IAggregation)measureExpressionTokens.get(pos.pos)), ((IAggregation)measureExpressionTokens.get(pos.pos)).getMeasureExpression(), tableName
+				, viewBitSet, filterBitSet, factors);
+		else if (factors != null){
+			Integer measureNumber = measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos));
+			return row.getMeasureValues()[measureNumber] * factors[measureNumber];
+		} else
+			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos))];
+	}
+	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+		ArrayList<ScenarioRowQuery> list = new ArrayList<ScenarioRowQuery>();
+		IBitSet viewBitSetClone = viewBitSet.clone();
+		if(filterBitSet.contains(viewBitSet)) {
+			for(Integer i : ScenarioUtil.pi(viewBitSet, scenarioDataHelper)) {
 				IBitSet clone = viewBitSet.clone();
-				clone.and(key);
-				if(!ScenarioUtil.containsAllDimensions(clone, dimensionHelper, scenarioDataHelper))
-					list.addAll(scenarioDataHelper.getQueryMap(i).get(key));
+				clone.clear(i);
+				viewBitSetClone.clear(i);
+				for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
+					if(filterBitSet.contains(key) && key.contains(clone))
+						list.addAll(scenarioDataHelper.getQueryMap(i).get(key));
+				}
 			}
 		}
-		
 		for(DataRow i : measureHelper.getTable(tableName).getRows()) {
 			if(filterBitSet.contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSet))
-				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), 0, i, tableName, viewBitSet, filterBitSet));
+				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet));
 			for(int j = 0; j < list.size(); j++)
-				if(list.get(j).contains(i.getMeasureQuery()))
-					aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), 0, i, tableName, viewBitSet, filterBitSet));
+				if(list.get(j).getQuery().contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSetClone))
+					aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet, list.get(j).getFactor()));
 		}
 		return aggregation.getValue();
 	}
-	private double divide(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				/ getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double divide(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		return v1 / v2;
 	}
-	private double multiply(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				* getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double multiply(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		return v1 * v2;
 	}
-	private double subtract(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				- getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double subtract(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		return v1 - v2;
 	}
-	private double add(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				+ getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double add(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		return v1 + v2;
 	}
 	@Override
 	public BitdekkErrorHandlingLexer getLexer(String measureExpression) {
