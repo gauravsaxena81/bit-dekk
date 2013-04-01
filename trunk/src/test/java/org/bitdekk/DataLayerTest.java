@@ -85,7 +85,7 @@ public class DataLayerTest extends AbstractTestNGSpringContextTests {
 				, 0.00000001);
 		Assert.assertEquals(600, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"))
 				, 0.00000001);
-		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "AVG(2 * Volume) + 2"))
+		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
 				, 0.00000001);
 		Assert.assertEquals(602.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "2 * SUM(Volume) + 2"))
 				, 0.00000001);

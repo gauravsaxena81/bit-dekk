@@ -164,7 +164,7 @@ public class SqlHelper {
 
 	private OpenBitSet getFilterOpenBitSet(HashMap<String, ArrayList<String>> hashMap, HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap) {
 		OpenBitSet openBitSet = new OpenBitSet();
-		for(Integer i : dataLayer.getDimensionIds())
+		for(Integer i : dataLayer.getDimensionValueIds())
 			openBitSet.set(i);
 		if(!hashMap.isEmpty()) {
 			for(String i : hashMap.keySet()) {

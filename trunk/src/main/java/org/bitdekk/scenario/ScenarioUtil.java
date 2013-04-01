@@ -1,3 +1,16 @@
+/*
+ * Copyright 2013 Contributors of bit-dekk
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.bitdekk.scenario;
 
 import java.util.ArrayList;
@@ -7,28 +20,36 @@ import java.util.Set;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.scenario.helper.DimensionHelper;
 import org.bitdekk.scenario.helper.ScenarioDataHelper;
+import org.bitdekk.scenario.model.ScenarioRowQuery;
 
 public class ScenarioUtil {
-	public static ArrayList<IBitSet> mu(ArrayList<ArrayList<IBitSet>> listsOfQueries, DimensionHelper dimensionHelper, ScenarioDataHelper scenarioDataHelper) {
-		ArrayList<IBitSet> finalList = new ArrayList<IBitSet>();
-		for(ArrayList<IBitSet> i : listsOfQueries) {
-			for(IBitSet j : i) {
-				for(int k = 0; k < finalList.size(); ) {
-					if(finalList.get(k) != null) {
-						finalList.get(k).and(j);
-						if(!containsAllDimensions(finalList.get(k), dimensionHelper, scenarioDataHelper))
-							finalList.set(k, null);
-						else
-							k++;
+	public static ArrayList<ScenarioRowQuery> mu(ArrayList<ArrayList<ScenarioRowQuery>> scenarioRowQueriesList, DimensionHelper dimensionHelper, ScenarioDataHelper scenarioDataHelper) {
+		ArrayList<ScenarioRowQuery> currentList = new ArrayList<ScenarioRowQuery>();
+		ArrayList<ScenarioRowQuery> tempList = new ArrayList<ScenarioRowQuery>();
+		for(ArrayList<ScenarioRowQuery> i : scenarioRowQueriesList) {
+			if(currentList.isEmpty())
+				currentList.addAll(i);
+			else {
+				for(ScenarioRowQuery j : i) {
+					for(ScenarioRowQuery k : currentList) {
+						ScenarioRowQuery clone = k.clone();
+						clone.getQuery().and(j.getQuery());
+						for(int l = 0; l < clone.getFactor().length; l++)
+							clone.getFactor()[l] = clone.getFactor()[l] * j.getFactor()[l];
+						if(!containsAllDimensions(clone.getQuery(), dimensionHelper, scenarioDataHelper))
+							tempList.add(clone);
 					}
 				}
+				currentList.clear();
+				currentList.addAll(tempList);
+				tempList.clear();
 			}
 		}
-		return nonNullQueries(finalList);
+		return currentList;
 	}
-	public static ArrayList<IBitSet> nonNullQueries(ArrayList<IBitSet> nullQueryList) {
-		ArrayList<IBitSet> nonNullQueryList = new ArrayList<IBitSet>(nullQueryList.size());
-		for(IBitSet i : nullQueryList)
+	public static ArrayList<ScenarioRowQuery> nonNullQueries(ArrayList<ScenarioRowQuery> nullQueryList) {
+		ArrayList<ScenarioRowQuery> nonNullQueryList = new ArrayList<ScenarioRowQuery>(nullQueryList.size());
+		for(ScenarioRowQuery i : nullQueryList)
 			if(i != null)
 				nonNullQueryList.add(i);
 		return nonNullQueryList;
@@ -39,8 +60,8 @@ public class ScenarioUtil {
 				return false;
 		return true;
 	}
-	public static ArrayList<ArrayList<IBitSet>> theta(Set<Integer> scenarios, ScenarioDataHelper scenarioDataHelper) {
-		ArrayList<ArrayList<IBitSet>> listsOfQueries = new ArrayList<ArrayList<IBitSet>>();
+	public static ArrayList<ArrayList<ScenarioRowQuery>> theta(Set<Integer> scenarios, ScenarioDataHelper scenarioDataHelper) {
+		ArrayList<ArrayList<ScenarioRowQuery>> listsOfQueries = new ArrayList<ArrayList<ScenarioRowQuery>>();
 		for(Integer i : scenarios)
 			listsOfQueries.add(scenarioDataHelper.getScenarioValueQueries(i));
 		return listsOfQueries;
@@ -53,29 +74,29 @@ public class ScenarioUtil {
 		return set;
 	}
 	public static ArrayList<IBitSet> neeta(Set<Integer> scenarios, IBitSet query, ScenarioDataHelper scenarioDataHelper, DimensionHelper dimensionHelper) {
-		ArrayList<IBitSet> linkedList = new ArrayList<IBitSet>();
+		ArrayList<IBitSet> list = new ArrayList<IBitSet>();
 		ArrayList<IBitSet> tempList = new ArrayList<IBitSet>();
 		IBitSet scenarioTrimmedQuery = trimScenarios(scenarios, query);
-		linkedList.add(scenarioTrimmedQuery);
+		list.add(scenarioTrimmedQuery);
 		for(String i : scenarioDataHelper.getDimensionToDimensionValueIdMap().keySet()) {
 			IBitSet dimensionValuesBitSet = dimensionHelper.getDimensionValuesBitSet(i);
 			dimensionValuesBitSet.and(query);
 			if(containsScenario(scenarios, dimensionValuesBitSet)) {
 				if(scenarioTrimmedQuery.intersects(dimensionValuesBitSet))
-					tempList.addAll(linkedList);
+					tempList.addAll(list);
 				for(int j = dimensionValuesBitSet.nextSetBit(0); j > -1; j = dimensionValuesBitSet.nextSetBit(j + 1)) {
-					for(IBitSet k : linkedList) {
+					for(IBitSet k : list) {
 						IBitSet clone = k.clone();
 						tempList.add(clone);
 						clone.set(j);
 					}
 				}
-				linkedList.clear();
-				linkedList.addAll(tempList);
+				list.clear();
+				list.addAll(tempList);
 				tempList.clear();
 			}
 		}
-		return linkedList;
+		return list;
 	}
 	public static IBitSet trimScenarios(Set<Integer> scenarios, IBitSet query) {
 		IBitSet clone = query.clone();

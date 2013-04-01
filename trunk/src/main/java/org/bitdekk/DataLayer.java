@@ -1,3 +1,16 @@
+/*
+ * Copyright 2013 Contributors of bit-dekk
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.bitdekk;
 
 import java.sql.ResultSet;
@@ -16,15 +29,15 @@ import com.google.visualization.datasource.datatable.DataTable;
 
 
 public class DataLayer {
-	private DimensionValueHelper dimensionHelper;
+	private DimensionValueHelper dimensionValueHelper;
 	private MeasureHelper measureHelper;
 	private AggregationHelper aggregationHelper;
 	
-	public DimensionValueHelper getDimensionHelper() {
-		return dimensionHelper;
+	public DimensionValueHelper getDimensionValueHelper() {
+		return dimensionValueHelper;
 	}
-	public void setDimensionHelper(DimensionValueHelper dimensionHelper) {
-		this.dimensionHelper = dimensionHelper;
+	public void setDimensionValueHelper(DimensionValueHelper dimensionValueHelper) {
+		this.dimensionValueHelper = dimensionValueHelper;
 	}
 	public MeasureHelper getMeasureHelper() {
 		return measureHelper;
@@ -42,7 +55,7 @@ public class DataLayer {
 	 * @param dimensionMap Map of dimension name and its id
 	 */
 	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
-		dimensionHelper.initialize(dimensionMap);
+		dimensionValueHelper.initialize(dimensionMap);
 	}
 	/**
 	 * @param tableName a string to uniquely identify this table
@@ -83,7 +96,7 @@ public class DataLayer {
 	 * @return A {@link IBitSet} object having those bits set position of which matches with the ids of dimension values 
 	 */
 	public IBitSet getBitSet(String[] dimensionValues) {
-		return dimensionHelper.getBitSet(dimensionValues);
+		return dimensionValueHelper.getBitSet(dimensionValues);
 	}
 	/**
 	 * @param aggregation custom aggregation
@@ -114,19 +127,19 @@ public class DataLayer {
 	 * @return id of the dimension value
 	 */
 	public int getDimensionId(String dimensionValue) {
-		return dimensionHelper.getId(dimensionValue);
+		return dimensionValueHelper.getId(dimensionValue);
 	}
 	/**
 	 * @return set of all the ids
 	 */
-	public Set<Integer> getDimensionIds() {
-		return dimensionHelper.getDimensionIds();
+	public Set<Integer> getDimensionValueIds() {
+		return dimensionValueHelper.getDimensionValueIds();
 	}
 	/**
 	 * @param id of a dimension value
 	 * @return Dimension value
 	 */
 	public String getDimensionValue(int id) {
-		return dimensionHelper.getDimensionValue(id);
+		return dimensionValueHelper.getDimensionValue(id);
 	}
 }

@@ -535,7 +535,10 @@ public class OpenBitSet implements Serializable, IBitSet {
     }
     @Override
     public IBitSet clone() {
-    	return new OpenBitSet(this);
+    	OpenBitSet openBitSet = new OpenBitSet(this);
+    	for(int i = 0; i < openBitSet.bits.length; i++)
+    		openBitSet.bits[i] = Arrays.copyOf(this.bits[i], this.bits[i].length);
+    	return openBitSet;
     }
 
 	@Override
@@ -544,5 +547,10 @@ public class OpenBitSet implements Serializable, IBitSet {
 			and((OpenBitSet)bitset);
 		}
 	}
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		for(int i = 0; i < length(); i++)
+			buffer.append(get(i) ? 1 : 0).append(",");
+		return buffer.toString();
+	}
 }
-

@@ -1,3 +1,16 @@
+/*
+ * Copyright 2013 Contributors of bit-dekk
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.bitdekk.helper.distributed.expression;
 
 import java.io.IOException;
@@ -14,6 +27,7 @@ import org.bitdekk.api.IEvaluation;
 import org.bitdekk.distributed.cluster.ClusterConfig;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.MeasureHelper;
+import org.bitdekk.helper.Position;
 import org.bitdekk.helper.distributed.expression.model.FunctionExpression;
 import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.model.DataRow;
@@ -39,22 +53,26 @@ public class DistributedEvaluationHelper implements IEvaluation {
 		this.measureHelper = measureHelper;
 	}
 	@Override
-	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet
+	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet
 			, IBitSet filterBitSet) {
-		if(measureExpressionTokens.get(pos).equals("+"))
-			return add(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos).equals("-"))
-			return subtract(measureExpressionTokens, ++pos, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos).equals("*"))
-			return multiply(measureExpressionTokens, ++pos, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos).equals("/"))
-			return divide(measureExpressionTokens, ++pos, row, tableName, viewBitSet, filterBitSet);
-		else if(measureExpressionTokens.get(pos) instanceof Double)
-			return (Double)measureExpressionTokens.get(pos);
-		else if(measureExpressionTokens.get(pos) instanceof FunctionExpression)
-			return aggregate(((FunctionExpression)measureExpressionTokens.get(pos)), tableName, viewBitSet, filterBitSet);
+		if(measureExpressionTokens.get(pos.pos).equals("+")) {
+			++pos.pos;
+			return add(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		} else if(measureExpressionTokens.get(pos.pos).equals("-")) {
+			++pos.pos;
+			return subtract(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		} else if(measureExpressionTokens.get(pos.pos).equals("*"))  {
+			++pos.pos;
+			return multiply(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		} else if(measureExpressionTokens.get(pos.pos).equals("/")) {
+			++pos.pos;
+			return divide(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		} else if(measureExpressionTokens.get(pos.pos) instanceof Double)
+			return (Double)measureExpressionTokens.get(pos.pos);
+		else if(measureExpressionTokens.get(pos.pos) instanceof FunctionExpression)
+			return aggregate(((FunctionExpression)measureExpressionTokens.get(pos.pos)), tableName, viewBitSet, filterBitSet);
 		else
-			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos))];
+			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos))];
 	}
 	private double aggregate(final FunctionExpression functionExpression, final String tableName, final IBitSet viewBitSet
 			, final IBitSet filterBitSet) {
@@ -92,21 +110,29 @@ public class DistributedEvaluationHelper implements IEvaluation {
 		else
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
-	private double divide(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				/ getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double divide(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		return v1 / v2;
 	}
-	private double multiply(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				* getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double multiply(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		return v1 * v2;
 	}
-	private double subtract(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				- getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double subtract(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		return v1 - v2;
 	}
-	private double add(ArrayList<Object> measureExpressionTokens, int pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet) 
-				+ getMeasureExpressionValue(measureExpressionTokens, pos + 1, row, tableName, viewBitSet, filterBitSet);
+	private double add(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		++pos.pos;
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		return v1 + v2;
 	}
 	/*public boolean measureCondition(ArrayList<ArrayList<Object>> measureConditionExpressions, DataRow row, HashMap<String, Integer> measureIndexMap) {
 		boolean returnValue = true;

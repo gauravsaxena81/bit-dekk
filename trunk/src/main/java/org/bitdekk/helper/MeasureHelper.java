@@ -1,3 +1,16 @@
+/*
+ * Copyright 2013 Contributors of bit-dekk
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.bitdekk.helper;
 
 import java.sql.ResultSet;
@@ -18,26 +31,22 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 
 public class MeasureHelper {
 	
-	private DimensionValueHelper dimensionHelper;
+	private DimensionValueHelper dimensionValueHelper;
 	private DataHelper dataHelper;
 	
-	
-	public DimensionValueHelper getDimensionHelper() {
-		return dimensionHelper;
+	public DimensionValueHelper getDimensionValueHelper() {
+		return dimensionValueHelper;
 	}
-
-	public void setDimensionHelper(DimensionValueHelper dimensionHelper) {
-		this.dimensionHelper = dimensionHelper;
+	public void setDimensionValueHelper(DimensionValueHelper dimensionValueHelper) {
+		this.dimensionValueHelper = dimensionValueHelper;
 	}
-
 	public DataHelper getDataHelper() {
 		return dataHelper;
 	}
-
 	public void setDataHelper(DataHelper dataHelper) {
 		this.dataHelper = dataHelper;
 	}
-
+	
 	public void intializeTable(String dataTableName, DataTable dataTable) {
 		Table table = new Table();
 		int measureIndex = 0;
@@ -54,7 +63,7 @@ public class MeasureHelper {
 			int index = 0;
 			for(TableCell j : i.getCells()) {
 				if(j.getType().equals(ValueType.TEXT))
-					dataRow.getMeasureQuery().set(dimensionHelper.getId(((TextValue)j.getValue()).getValue()));
+					dataRow.getMeasureQuery().set(dimensionValueHelper.getId(((TextValue)j.getValue()).getValue()));
 				else if(j.getType().equals(ValueType.NUMBER))
 					dataRow.getMeasureValues()[index++] = ((NumberValue)j.getValue()).getValue();
 			}
@@ -102,7 +111,7 @@ public class MeasureHelper {
 					case Types.TINYINT:
 						dataRow.getMeasureValues()[index++] = resultSet.getDouble(i);
 					default:
-						dataRow.getMeasureQuery().set(dimensionHelper.getId(resultSet.getString(i)));
+						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(resultSet.getString(i)));
 				}
 			}
 		}

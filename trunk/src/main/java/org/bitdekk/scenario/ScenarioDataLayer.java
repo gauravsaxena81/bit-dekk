@@ -1,9 +1,23 @@
+/*
+ * Copyright 2013 Contributors of bit-dekk
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.bitdekk.scenario;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bitdekk.DataLayer;
 import org.bitdekk.aggregation.IAggregation;
@@ -16,12 +30,31 @@ import org.bitdekk.scenario.helper.ScenarioHelper;
 import com.google.visualization.datasource.datatable.DataTable;
 
 
-public class ScenarioEnabledDataLayer {
+public class ScenarioDataLayer {
 	private DimensionHelper dimensionHelper;
 	private ScenarioHelper scenarioHelper;
 	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
 	private DataLayer dataLayer;
 	
+	public DimensionHelper getDimensionHelper() {
+		return dimensionHelper;
+	}
+	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+		this.dimensionHelper = dimensionHelper;
+	}
+	public ScenarioDimensionValueHelper getScenarioDimensionValueHelper() {
+		return scenarioDimensionValueHelper;
+	}
+	public void setScenarioDimensionValueHelper(
+			ScenarioDimensionValueHelper scenarioDimensionValueHelper) {
+		this.scenarioDimensionValueHelper = scenarioDimensionValueHelper;
+	}
+	public DataLayer getDataLayer() {
+		return dataLayer;
+	}
+	public void setDataLayer(DataLayer dataLayer) {
+		this.dataLayer = dataLayer;
+	}
 	public ScenarioHelper getScenarioHelper() {
 		return scenarioHelper;
 	}
@@ -99,6 +132,29 @@ public class ScenarioEnabledDataLayer {
 	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
 		return dataLayer.aggregate(aggregation, tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
+	/**
+	 * @param dimensionValue
+	 * @return id of the dimension value
+	 */
+	public int getDimensionId(String dimensionValue) {
+		return dataLayer.getDimensionId(dimensionValue);
+	}
+	/**
+	 * @return set of all the ids
+	 */
+	public Set<Integer> getDimensionValueIds() {
+		return dataLayer.getDimensionValueIds();
+	}
+	/**
+	 * @param id of a dimension value
+	 * @return Dimension value
+	 */
+	public List<Integer> getDimensionValueIds(String dimension) {
+		return scenarioDimensionValueHelper.getDimensionValueIds(dimension);
+	}
+	public String getDimensionValue(int id) {
+		return dataLayer.getDimensionValue(id);
+	}
 	public void initializeDimensions(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
 		dimensionHelper.initializeDimensions(dimensionToDimensionValueIdMap);
 	}
@@ -108,7 +164,7 @@ public class ScenarioEnabledDataLayer {
 	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
 		scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
 	}
-	public void associateRule(int id, IBitSet ruleBitSet, double factor) {
+	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		scenarioHelper.associateRule(id, ruleBitSet, factor);
 	}
 }
