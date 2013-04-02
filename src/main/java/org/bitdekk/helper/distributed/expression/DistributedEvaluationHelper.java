@@ -22,6 +22,8 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Lexer;
 import org.antlr.runtime.RecognitionException;
+import org.bitdekk.aggregation.impl.CountAggregation;
+import org.bitdekk.aggregation.impl.SumAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.api.IEvaluation;
 import org.bitdekk.distributed.cluster.ClusterConfig;
@@ -76,6 +78,9 @@ public class DistributedEvaluationHelper implements IEvaluation {
 	}
 	private double aggregate(final FunctionExpression functionExpression, final String tableName, final IBitSet viewBitSet
 			, final IBitSet filterBitSet) {
+		//In case of distributed systems, Count received from nodes need to be summed to get the final count
+		if(functionExpression.getAggregation() instanceof CountAggregation)
+			functionExpression.setAggregation(new SumAggregation());
 		final CountDownLatch doneSignal = new CountDownLatch(ClusterConfig.getInstance().getClusterSize());
 		final Client client = new Client();
 		BitDekkDistributedUtil.registerClasses(client.getKryo());
