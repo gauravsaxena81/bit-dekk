@@ -1,5 +1,5 @@
 #labels Featured,Phase-Implementation
-= Creating Scenarios =
+= What-if analysis and Scenarios =
 
 The following approach is an implementation of technical paper on [http://arxiv.org/abs/1302.0351 New Dimension Value Introduction for in-memory What-If Analysis]
 
