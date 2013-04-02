@@ -14,7 +14,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 @ContextConfiguration(locations = {"classpath:applicationContext-reducer-test.xml"})
-public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
+public class DistributedTest extends AbstractTestNGSpringContextTests {
 	@Autowired
 	private DataLayer dataLayer;
 	private Process processA;
@@ -63,8 +63,9 @@ public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
 		hashMap.put("P2",3);
 		
 		dataLayer.initializeDimensionValues(hashMap);
-		double x = (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"));
-		Assert.assertEquals(1800, x, 0.00000001);
+		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"), 0.00000001);
+		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
+				, 0.00000001);
 	}
 	@Test(expectedExceptions=RuntimeException.class)
 	public void distributedTestFailure() {
@@ -77,8 +78,6 @@ public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
 		
 		dataLayer.initializeDimensionValues(hashMap);
 		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"), 0.00000001);
-		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
-				, 0.00000001);
 	}
 	@AfterTest
 	public void destroyServers() {
