@@ -1,6 +1,4 @@
 #labels Featured,Phase-Implementation
-#Creating Scenario with bit-dekk
-
 = Creating Scenarios =
 
 The following approach is an implementation of technical paper on [http://arxiv.org/abs/1302.0351 New Dimension Value Introduction for in-memory What-If Analysis]
