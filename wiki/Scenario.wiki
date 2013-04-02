@@ -3,6 +3,8 @@
 
 = Creating Scenarios =
 
+The following approach is an implementation of technical paper on [http://arxiv.org/abs/1302.0351 New Dimension Value Introduction for in-memory What-If Analysis]
+
 Bit-dekk provides an implementation to help create scenarios on base data. The scenarios are added as dimension values which can then be used in filters and views.
 
 e.g. Consider the following data
