@@ -76,8 +76,9 @@ public class TestClusterLauncher extends AbstractTestNGSpringContextTests {
 		hashMap.put("P2",3);
 		
 		dataLayer.initializeDimensionValues(hashMap);
-		double x = (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"));
-		Assert.assertEquals(1800, x, 0.00000001);
+		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"), 0.00000001);
+		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
+				, 0.00000001);
 	}
 	@AfterTest
 	public void destroyServers() {
