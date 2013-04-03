@@ -11,17 +11,29 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.scenario.helper;
+package org.bitdekk.distributed.scenario.helper;
 
 import java.util.List;
 
+import org.bitdekk.api.Processor;
+import org.bitdekk.distributed.scenario.server.model.CreateDimensionValueRequest;
+import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.DataHelper;
+import org.bitdekk.scenario.helper.DimensionHelper;
+import org.bitdekk.scenario.helper.ScenarioDataHelper;
 
-public class ScenarioDimensionValueHelper {
+public class DistributedScenarioDimensionValueHelper {
 	private DataHelper dataHelper;
 	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
+	private long timeout = Long.MAX_VALUE;
 	
+	public long getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
 	public ScenarioDataHelper getScenarioDataHelper() {
 		return scenarioDataHelper;
 	}
@@ -44,6 +56,18 @@ public class ScenarioDimensionValueHelper {
 		dataHelper.getDimensionValueMap().put(dimensionValue, id);
 		dataHelper.getIdToDimensionValueMap().put(id, dimensionValue);
 		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+		CreateDimensionValueRequest createDimensionValueRequest = new CreateDimensionValueRequest();
+		createDimensionValueRequest.setDimensionValue(dimensionValue);
+		createDimensionValueRequest.setDimension(dimension);
+		createDimensionValueRequest.setId(id);
+		final boolean[] success = new boolean[]{true};
+		if(!BitDekkDistributedUtil.evaluate(timeout, createDimensionValueRequest, new Processor<Boolean>() {
+			@Override
+			public void process(Boolean t) {
+				success[0] &= t;
+			}
+		}) && success[0])
+			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
 	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
 		dataHelper.getDimensionValueMap().remove(dimensionValue);

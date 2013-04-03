@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.scenario;
+package org.bitdekk.distributed.scenario;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,43 +22,43 @@ import java.util.Set;
 import org.bitdekk.DataLayer;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
+import org.bitdekk.distributed.scenario.helper.DistributedScenarioDimensionValueHelper;
+import org.bitdekk.distributed.scenario.helper.DistributedScenarioHelper;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
-import org.bitdekk.scenario.helper.DimensionHelper;
-import org.bitdekk.scenario.helper.ScenarioDimensionValueHelper;
-import org.bitdekk.scenario.helper.ScenarioHelper;
+import org.bitdekk.scenario.ScenarioDataLayer;
 
 import com.google.visualization.datasource.datatable.DataTable;
 
-
-public class ScenarioDataLayer {
-	private DimensionHelper dimensionHelper;
-	private ScenarioHelper scenarioHelper;
-	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
+public class DistributedScenarioDataLayer {
+	private ScenarioDataLayer scenarioDataLayer;
 	private DataLayer dataLayer;
-	
-	public DimensionHelper getDimensionHelper() {
-		return dimensionHelper;
+	private DistributedScenarioDimensionValueHelper distributedScenarioDimensionValueHelper;
+	private DistributedScenarioHelper distributedScenarioHelper;
+	public DistributedScenarioHelper getDistributedScenarioHelper() {
+		return distributedScenarioHelper;
 	}
-	public void setDimensionHelper(DimensionHelper dimensionHelper) {
-		this.dimensionHelper = dimensionHelper;
+	public void setDistributedScenarioHelper(
+			DistributedScenarioHelper distributedScenarioHelper) {
+		this.distributedScenarioHelper = distributedScenarioHelper;
 	}
-	public ScenarioDimensionValueHelper getScenarioDimensionValueHelper() {
-		return scenarioDimensionValueHelper;
+	public DistributedScenarioDimensionValueHelper getDistributedScenarioDimensionValueHelper() {
+		return distributedScenarioDimensionValueHelper;
 	}
-	public void setScenarioDimensionValueHelper(ScenarioDimensionValueHelper scenarioDimensionValueHelper) {
-		this.scenarioDimensionValueHelper = scenarioDimensionValueHelper;
+	public void setDistributedScenarioDimensionValueHelper(
+			DistributedScenarioDimensionValueHelper distributedScenarioDimensionValueHelper) {
+		this.distributedScenarioDimensionValueHelper = distributedScenarioDimensionValueHelper;
+	}
+	public ScenarioDataLayer getScenarioDataLayer() {
+		return scenarioDataLayer;
+	}
+	public void setScenarioDataLayer(ScenarioDataLayer scenarioDataLayer) {
+		this.scenarioDataLayer = scenarioDataLayer;
 	}
 	public DataLayer getDataLayer() {
 		return dataLayer;
 	}
 	public void setDataLayer(DataLayer dataLayer) {
 		this.dataLayer = dataLayer;
-	}
-	public ScenarioHelper getScenarioHelper() {
-		return scenarioHelper;
-	}
-	public void setScenarioHelper(ScenarioHelper scenarioHelper) {
-		this.scenarioHelper = scenarioHelper;
 	}
 	/**
 	 * @param dimensionMap Map of dimension name and its id
@@ -149,30 +149,30 @@ public class ScenarioDataLayer {
 	 * @return Dimension value
 	 */
 	public List<Integer> getDimensionValueIds(String dimension) {
-		return scenarioDimensionValueHelper.getDimensionValueIds(dimension);
+		return scenarioDataLayer.getDimensionValueIds(dimension);
 	}
 	public String getDimensionValue(int id) {
 		return dataLayer.getDimensionValue(id);
 	}
 	public void initializeDimensions(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
-		dimensionHelper.initializeDimensions(dimensionToDimensionValueIdMap);
+		scenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
 	}
 	public void createDimensionValue(String dimension, String dimensionValue, int id) {
-		scenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue, id);
+		distributedScenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue, id);
 	}
 	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
+		distributedScenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
 	}
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
-		scenarioHelper.associateRule(id, ruleBitSet, factor);
+		distributedScenarioHelper.associateRule(id, ruleBitSet, factor);
 	}
 	/**
-	 * @param id
-	 * @param ruleBitSet
-	 * @param factor
+	 * @param dimension value id
+	 * @param ruleBitSet a query which represents a set of rows
+	 * @param factor by which the measure values are to be multiplied
 	 * @return true if ruleBitSet was found and deleted, false if it was not found
 	 */
-	public boolean deleteRule(int id, IBitSet ruleBitSet) {
-		return scenarioHelper.deleteRule(id, ruleBitSet);
+	public boolean deleteRule(int id, IBitSet ruleBitSet, double[] factor) {
+		return distributedScenarioHelper.deleteRule(id, ruleBitSet);
 	}
 }

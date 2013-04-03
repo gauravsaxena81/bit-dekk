@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.server.api;
+package org.bitdekk.distributed.server.api;
 
 import java.util.List;
 

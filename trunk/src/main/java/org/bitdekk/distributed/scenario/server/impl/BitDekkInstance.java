@@ -11,25 +11,26 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.server.impl;
+package org.bitdekk.distributed.scenario.server.impl;
 
 import java.util.ArrayList;
 
-import org.bitdekk.DataLayer;
-import org.bitdekk.server.api.IBitDekkInstance;
+import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
+import org.bitdekk.scenario.ScenarioDataLayer;
 
-public class BitDekkInstance  implements IBitDekkInstance {
-	private ArrayList<IBitDekkInstance> children = new ArrayList<IBitDekkInstance>();
+public class BitDekkInstance  implements IBitDekkScenarioInstance {
+	private ArrayList<IBitDekkScenarioInstance> children = new ArrayList<IBitDekkScenarioInstance>();
 	private String ip;
 	private int tcpPort;
-	private DataLayer dataLayer = new DataLayer();
-	public DataLayer getDataLayer() {
-		return dataLayer;
+	private ScenarioDataLayer scenarioDataLayer;
+	
+	public ScenarioDataLayer getScenarioDataLayer() {
+		return scenarioDataLayer;
 	}
-	public void setDataLayer(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
+	public void setScenarioDataLayer(ScenarioDataLayer scenarioDataLayer) {
+		this.scenarioDataLayer = scenarioDataLayer;
 	}
-	public ArrayList<IBitDekkInstance> getChildren() {
+	public ArrayList<IBitDekkScenarioInstance> getChildren() {
 		return children;
 	}
 	public String getIp() {
@@ -44,7 +45,7 @@ public class BitDekkInstance  implements IBitDekkInstance {
 	public void setPort(int tcpPort) {
 		this.tcpPort = tcpPort;
 	}
-	public void setChildren(ArrayList<IBitDekkInstance> children) {
+	public void setChildren(ArrayList<IBitDekkScenarioInstance> children) {
 		this.children = children;
 	}
 }

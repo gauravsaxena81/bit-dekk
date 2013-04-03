@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.bitdekk.DataLayer;
 import org.bitdekk.distributed.cluster.ClusterConfig;
-import org.bitdekk.server.impl.BitDekkInstance;
+import org.bitdekk.distributed.server.impl.BitDekkInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;

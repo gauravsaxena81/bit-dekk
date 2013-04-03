@@ -11,11 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.server.model;
+package org.bitdekk.distributed.scenario.server.model;
 
 import org.bitdekk.api.IBitSet;
 
-public class Request {
+public class ExpressionEvaluationRequest {
 	private String tableName;
 	private IBitSet filterBitSet;
 	private IBitSet viewBitSet;

@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.bitdekk.DataLayer;
-import org.bitdekk.server.api.IBitDekkInstance;
-import org.bitdekk.server.impl.BitDekkInstance;
-import org.bitdekk.server.impl.BitDekkServer;
+import org.bitdekk.distributed.server.api.IBitDekkInstance;
+import org.bitdekk.distributed.server.impl.BitDekkInstance;
+import org.bitdekk.distributed.server.impl.BitDekkServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
