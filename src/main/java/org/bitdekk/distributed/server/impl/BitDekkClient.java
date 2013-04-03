@@ -11,29 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.distributed.cluster;
+package org.bitdekk.distributed.server.impl;
 
 import org.bitdekk.distributed.server.api.IBitDekkInstance;
 
-public class ClusterConfig {
-	private int clusterSize;
-	private static ClusterConfig clusterConfig = new ClusterConfig();
-	private IBitDekkInstance root;
+import com.esotericsoftware.kryonet.Client;
 
-	public IBitDekkInstance getRoot() {
-		return root;
+public class BitDekkClient extends Client{
+	private IBitDekkInstance bitDekkInstance;
+
+	public IBitDekkInstance getBitDekkInstance() {
+		return bitDekkInstance;
 	}
-	public void setRoot(IBitDekkInstance root) {
-		this.root = root;
-	}
-	public int getClusterSize() {
-		return clusterSize;
-	}
-	public void setClusterSize(int clusterSize) {
-		this.clusterSize = clusterSize;
-	}
-	private ClusterConfig() {}
-	public static ClusterConfig getInstance() {
-		return clusterConfig;
+
+	public void setBitDekkInstance(IBitDekkInstance bitDekkInstance) {
+		this.bitDekkInstance = bitDekkInstance;
 	}
 }

@@ -11,41 +11,34 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.helper.distributed.expression;
+package org.bitdekk.helper.distributed.helper;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Lexer;
 import org.antlr.runtime.RecognitionException;
-import org.bitdekk.aggregation.impl.CountAggregation;
-import org.bitdekk.aggregation.impl.SumAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.api.IEvaluation;
-import org.bitdekk.distributed.cluster.ClusterConfig;
+import org.bitdekk.api.Processor;
+import org.bitdekk.distributed.scenario.server.model.ExpressionEvaluationRequest;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.MeasureHelper;
 import org.bitdekk.helper.Position;
+import org.bitdekk.helper.distributed.expression.DistributedBitdekkErrorHandlingLexer;
+import org.bitdekk.helper.distributed.expression.DistributedBitdekkErrorHandlingParser;
 import org.bitdekk.helper.distributed.expression.model.FunctionExpression;
 import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.model.DataRow;
-import org.bitdekk.server.model.Request;
-
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
 
 public class DistributedEvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
-	private Integer timeout = Integer.MAX_VALUE;
-	public Integer getTimeout() {
+	private long timeout = Long.MAX_VALUE;
+	public long getTimeout() {
 		return timeout;
 	}
-	public void setTimeout(Integer timeout) {
+	public void setTimeout(long timeout) {
 		this.timeout = timeout;
 	}
 	public MeasureHelper getMeasureHelper() {
@@ -78,10 +71,7 @@ public class DistributedEvaluationHelper implements IEvaluation {
 	}
 	private double aggregate(final FunctionExpression functionExpression, final String tableName, final IBitSet viewBitSet
 			, final IBitSet filterBitSet) {
-		//In case of distributed systems, Count received from nodes need to be summed to get the final count
-		if(functionExpression.getAggregation() instanceof CountAggregation)
-			functionExpression.setAggregation(new SumAggregation());
-		final CountDownLatch doneSignal = new CountDownLatch(ClusterConfig.getInstance().getClusterSize());
+		/*final CountDownLatch doneSignal = new CountDownLatch(ClusterConfig.getInstance().getClusterSize());
 		final Client client = new Client();
 		BitDekkDistributedUtil.registerClasses(client.getKryo());
 		client.addListener(new Listener() {
@@ -95,7 +85,7 @@ public class DistributedEvaluationHelper implements IEvaluation {
 		client.start();
 		try {
 			client.connect(5000, ClusterConfig.getInstance().getRoot().getIp(), ClusterConfig.getInstance().getRoot().getPort());
-			Request request = new Request();
+			ExpressionEvaluationRequest request = new ExpressionEvaluationRequest();
 			request.setFilterBitSet(filterBitSet);
 			request.setMeasureExpression(functionExpression.getExpression());
 			request.setTableName(tableName);
@@ -109,8 +99,18 @@ public class DistributedEvaluationHelper implements IEvaluation {
 			success = doneSignal.await(timeout, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
-		if(success)
+		}*/
+		ExpressionEvaluationRequest request = new ExpressionEvaluationRequest();
+		request.setFilterBitSet(filterBitSet);
+		request.setMeasureExpression(functionExpression.getExpression());
+		request.setTableName(tableName);
+		request.setViewBitSet(viewBitSet);
+		if(BitDekkDistributedUtil.evaluate(timeout, request, new Processor<Double>() {
+			@Override
+			public void process(Double t) {
+				functionExpression.getAggregation().aggregate(t);
+			}
+		}))
 			return functionExpression.getAggregation().getValue();
 		else
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");

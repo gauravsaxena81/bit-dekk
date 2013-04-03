@@ -11,20 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.server.impl;
+package org.bitdekk.distributed.scenario.server.impl;
 
-import org.bitdekk.server.api.IBitDekkInstance;
+import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
 
 import com.esotericsoftware.kryonet.Client;
 
 public class BitDekkClient extends Client{
-	private IBitDekkInstance bitDekkInstance;
+	private IBitDekkScenarioInstance bitDekkScenarioInstance;
 
-	public IBitDekkInstance getBitDekkInstance() {
-		return bitDekkInstance;
+	public IBitDekkScenarioInstance getBitDekkScenarioInstance() {
+		return bitDekkScenarioInstance;
+	}
+	public void setBitDekkScenarioInstance(IBitDekkScenarioInstance bitDekkScenarioInstance) {
+		this.bitDekkScenarioInstance = bitDekkScenarioInstance;
 	}
 
-	public void setBitDekkInstance(IBitDekkInstance bitDekkInstance) {
-		this.bitDekkInstance = bitDekkInstance;
-	}
 }

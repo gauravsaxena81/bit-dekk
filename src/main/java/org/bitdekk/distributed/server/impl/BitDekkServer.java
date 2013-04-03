@@ -11,14 +11,14 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.server.impl;
+package org.bitdekk.distributed.server.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.bitdekk.distributed.scenario.server.model.ExpressionEvaluationRequest;
+import org.bitdekk.distributed.server.api.IBitDekkInstance;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
-import org.bitdekk.server.api.IBitDekkInstance;
-import org.bitdekk.server.model.Request;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -36,34 +36,36 @@ public class BitDekkServer {
 		BitDekkDistributedUtil.registerClasses(server.getKryo());
 		
 		server.addListener(new Listener(){
-			public void received (final Connection connection, Object object) {
-				if(object instanceof Request) {
-					final Request request = (Request) object;
+			public void received (final Connection connection, final Object object) {
+				if(object instanceof ExpressionEvaluationRequest) {
 					new Thread(new Runnable() {
 						@Override
 						public void run() {
-							System.err.println("Entering");
-							double aggregate = bitDekkInstance.getDataLayer().aggregate(request.getTableName(), request.getViewBitSet(), request.getFilterBitSet()
-									, request.getMeasureExpression());
-							System.err.println(aggregate);
-							connection.sendTCP(aggregate);
-							System.err.println("Exiting");
+							evaluateExpression(connection, (ExpressionEvaluationRequest) object);
 						}
 		    		  }).start();
-					try {
-						worker.distribute((Request)object, bitDekkClients, connection);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+				}
+				try {
+					worker.distribute(object, bitDekkClients, connection);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		});
-		for(IBitDekkInstance i : bitDekkInstance.getChildren()) {
+		for(IBitDekkInstance i : bitDekkInstance.getChildren()) { 
 			BitDekkClient bitDekkClient = new BitDekkClient();
 			bitDekkClients.add(bitDekkClient);
 			bitDekkClient.setBitDekkInstance(i);
 			BitDekkDistributedUtil.registerClasses(bitDekkClient.getKryo());
 		}
+	}
+	private void evaluateExpression(Connection connection, ExpressionEvaluationRequest request) {
+		System.err.println("Entering");
+		double aggregate = bitDekkInstance.getDataLayer().aggregate(request.getTableName(), request.getViewBitSet(), request.getFilterBitSet()
+				, request.getMeasureExpression());
+		System.err.println(aggregate);
+		connection.sendTCP(aggregate);
+		System.err.println("Exiting");							
 	}
 	public IBitDekkInstance getBitDekkInstance() {
 		return bitDekkInstance;

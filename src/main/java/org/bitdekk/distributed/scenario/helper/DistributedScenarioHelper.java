@@ -11,14 +11,16 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.scenario.helper;
+package org.bitdekk.distributed.scenario.helper;
 
 import java.util.Set;
 
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.scenario.ScenarioUtil;
+import org.bitdekk.scenario.helper.DimensionHelper;
+import org.bitdekk.scenario.helper.ScenarioDataHelper;
 
-public class ScenarioHelper {
+public class DistributedScenarioHelper {
 	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
 	

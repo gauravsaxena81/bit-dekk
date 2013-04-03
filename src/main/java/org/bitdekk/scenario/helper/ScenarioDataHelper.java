@@ -65,4 +65,7 @@ public class ScenarioDataHelper {
 	public HashMap<IBitSet, ArrayList<ScenarioRowQuery>> getQueryMap(Integer id) {
 		return scenarioRules.get(id);
 	}
+	public boolean deleteRule(int id, IBitSet key) {
+		return scenarioRules.get(id).remove(key) != null;
+	}
 }

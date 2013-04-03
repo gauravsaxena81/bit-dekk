@@ -14,20 +14,26 @@
 package org.bitdekk.helper.distributed.expression.model;
 
 import org.bitdekk.aggregation.IAggregation;
+import org.bitdekk.aggregation.impl.CountAggregation;
+import org.bitdekk.aggregation.impl.SumAggregation;
 
 public class FunctionExpression {
 	private String expression;
 	private IAggregation aggregation;
 	
 	public FunctionExpression(IAggregation aggregation, String expression) {
-		this.aggregation = aggregation;
+		setAggregation(aggregation);
 		this.expression = expression;
 	}
 	public IAggregation getAggregation() {
 		return aggregation;
 	}
 	public void setAggregation(IAggregation aggregation) {
-		this.aggregation = aggregation;
+		//In case of distributed systems, Count received from nodes need to be summed to get the final count
+		if(aggregation instanceof CountAggregation)
+			this.aggregation = new SumAggregation();
+		else
+			this.aggregation = aggregation;
 	}
 	public String getExpression() {
 		return expression;
