@@ -20,6 +20,7 @@ import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
 import org.bitdekk.distributed.scenario.server.model.CreateDimensionValueRequest;
 import org.bitdekk.distributed.scenario.server.model.DeleteDimensionValueRequest;
 import org.bitdekk.distributed.scenario.server.model.DeleteRuleRequest;
+import org.bitdekk.distributed.scenario.server.model.ExpressionEvaluationRequest;
 import org.bitdekk.distributed.server.model.AssociateRuleRequest;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 
@@ -28,19 +29,26 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 public class BitDekkScenarioServer {
-	private IBitDekkScenarioInstance bitDekkInstance;
-	private ArrayList<BitDekkClient> bitDekkClients = new ArrayList<BitDekkClient>();
+	private IBitDekkScenarioInstance bitDekkScenarioInstance;
+	private ArrayList<BitDekkScenarioClient> bitDekkClients = new ArrayList<BitDekkScenarioClient>();
 	private ScenarioWorker worker = new ScenarioWorker();
 
 	public void launch() throws IOException {
 		Server server = new Server();
 		server.start();
-		server.bind(bitDekkInstance.getPort());
+		server.bind(bitDekkScenarioInstance.getPort());
 		BitDekkDistributedUtil.registerClasses(server.getKryo());
 		
 		server.addListener(new Listener(){
 			public void received (final Connection connection, final Object object) {
-				if(object instanceof CreateDimensionValueRequest) {
+				if(object instanceof ExpressionEvaluationRequest) {
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							evaluateExpression(connection, (ExpressionEvaluationRequest) object);
+						}
+		    		  }).start();
+				} else if(object instanceof CreateDimensionValueRequest) {
 					new Thread(new Runnable() {
 						@Override
 						public void run() {
@@ -76,40 +84,50 @@ public class BitDekkScenarioServer {
 				}
 			}
 		});
-		for(IBitDekkScenarioInstance i : bitDekkInstance.getChildren()) { 
-			BitDekkClient bitDekkClient = new BitDekkClient();
+		for(IBitDekkScenarioInstance i : bitDekkScenarioInstance.getChildren()) { 
+			BitDekkScenarioClient bitDekkClient = new BitDekkScenarioClient();
 			bitDekkClients.add(bitDekkClient);
 			bitDekkClient.setBitDekkScenarioInstance(i);
 			BitDekkDistributedUtil.registerClasses(bitDekkClient.getKryo());
 		}
 	}
-	public IBitDekkScenarioInstance getBitDekkInstance() {
-		return bitDekkInstance;
+	public IBitDekkScenarioInstance getBitDekkScenarioInstance() {
+		return bitDekkScenarioInstance;
 	}
-	public void setBitDekkInstance(IBitDekkScenarioInstance bitDekkInstance) {
-		this.bitDekkInstance = bitDekkInstance;
+
+	public void setBitDekkScenarioInstance(
+			IBitDekkScenarioInstance bitDekkScenarioInstance) {
+		this.bitDekkScenarioInstance = bitDekkScenarioInstance;
+	}
+	private void evaluateExpression(Connection connection, ExpressionEvaluationRequest request) {
+		System.err.println("Entering");
+		double aggregate = bitDekkScenarioInstance.getScenarioDataLayer().aggregate(request.getTableName(), request.getViewBitSet(), request.getFilterBitSet()
+				, request.getMeasureExpression());
+		System.err.println(aggregate);
+		connection.sendTCP(aggregate);
+		System.err.println("Exiting");							
 	}
 	private void createDimensionValue(Connection connection, CreateDimensionValueRequest request) {
 		System.err.println("Entering");
-		bitDekkInstance.getScenarioDataLayer().createDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId());
+		bitDekkScenarioInstance.getScenarioDataLayer().createDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId());
 		connection.sendTCP(true);
 		System.err.println("Exiting");
 	}
 	private void deleteDimensionValue(Connection connection, DeleteDimensionValueRequest request) {
 		System.err.println("Entering");
-		bitDekkInstance.getScenarioDataLayer().deleteDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId());
+		bitDekkScenarioInstance.getScenarioDataLayer().deleteDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId());
 		connection.sendTCP(true);
 		System.err.println("Exiting");		
 	}
 	private void associateRule(Connection connection, AssociateRuleRequest request) {
 		System.err.println("Entering");
-		bitDekkInstance.getScenarioDataLayer().associateRule(request.getId(), request.getRuleBitSet(), request.getFactor());
+		bitDekkScenarioInstance.getScenarioDataLayer().associateRule(request.getId(), request.getRuleBitSet(), request.getFactor());
 		connection.sendTCP(true);
 		System.err.println("Exiting");
 	}
 	private void deleteRule(Connection connection, DeleteRuleRequest request) {
 		System.err.println("Entering");
-		bitDekkInstance.getScenarioDataLayer().deleteRule(request.getId(), request.getKey());
+		bitDekkScenarioInstance.getScenarioDataLayer().deleteRule(request.getId(), request.getKey());
 		connection.sendTCP(true);
 		System.err.println("Exiting");
 	}

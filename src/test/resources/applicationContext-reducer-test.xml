@@ -37,6 +37,9 @@
 		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 		<property name="dataHelper" ref="dataHelper" />
 	</bean>
+	<bean id="distributedDataLayer" class="org.bitdekk.distributed.datalayer.DistributedDataLayer" autowire-candidate="true">
+		<property name="dataLayer" ref="dataLayer" />
+	</bean>
 	<bean id="dataLayer" class="org.bitdekk.DataLayer" autowire-candidate="true">
 		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 		<property name="measureHelper" ref="measureHelper" />

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
 import org.bitdekk.scenario.ScenarioDataLayer;
 
-public class BitDekkInstance  implements IBitDekkScenarioInstance {
+public class BitDekkScenarioInstance  implements IBitDekkScenarioInstance {
 	private ArrayList<IBitDekkScenarioInstance> children = new ArrayList<IBitDekkScenarioInstance>();
 	private String ip;
 	private int tcpPort;

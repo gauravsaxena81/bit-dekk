@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.bitdekk.DataLayer;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.distributed.scenario.helper.DistributedScenarioDimensionValueHelper;
@@ -31,7 +30,6 @@ import com.google.visualization.datasource.datatable.DataTable;
 
 public class DistributedScenarioDataLayer {
 	private ScenarioDataLayer scenarioDataLayer;
-	private DataLayer dataLayer;
 	private DistributedScenarioDimensionValueHelper distributedScenarioDimensionValueHelper;
 	private DistributedScenarioHelper distributedScenarioHelper;
 	public DistributedScenarioHelper getDistributedScenarioHelper() {
@@ -54,27 +52,21 @@ public class DistributedScenarioDataLayer {
 	public void setScenarioDataLayer(ScenarioDataLayer scenarioDataLayer) {
 		this.scenarioDataLayer = scenarioDataLayer;
 	}
-	public DataLayer getDataLayer() {
-		return dataLayer;
-	}
-	public void setDataLayer(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
-	}
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
 	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
-		dataLayer.initializeDimensionValues(dimensionMap);
+		scenarioDataLayer.initializeDimensionValues(dimensionMap);
 	}
 	/**
 	 * @param tableName a string to uniquely identify this table
 	 * @param dataTable <a href='http://gwt-google-apis.googlecode.com/svn/javadoc/visualization/1.1/com/google/gwt/visualization/client/DataTable.html'>Google DataTable</a> 
 	 */
 	public void initializeTable(String tableName, DataTable dataTable) {
-		dataLayer.initializeTable(tableName, dataTable);
+		scenarioDataLayer.initializeTable(tableName, dataTable);
 	}
 	public void initializeTable(String tableName, ResultSet resultSet) throws SQLException {
-		dataLayer.initializeTable(tableName, resultSet);
+		scenarioDataLayer.initializeTable(tableName, resultSet);
 	}
 	/**
 	 * 
@@ -87,7 +79,7 @@ public class DistributedScenarioDataLayer {
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
 	public double aggregate(String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String measureExpression) throws InvalidBitDekkExpressionException {
-		return dataLayer.aggregate(tableName, viewBitSet, filterBitSet, measureExpression);
+		return scenarioDataLayer.aggregate(tableName, viewBitSet, filterBitSet, measureExpression);
 	}
 	/**
 	 * @param tableName Name of the table which will be queried
@@ -98,14 +90,14 @@ public class DistributedScenarioDataLayer {
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
 	public double aggregate(String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
-		return dataLayer.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
+		return scenarioDataLayer.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
 	}
 	/**
 	 * @param dimensionValues Array of dimension values
 	 * @return A {@link IBitSet} object having those bits set position of which matches with the ids of dimension values 
 	 */
 	public IBitSet getBitSet(String[] dimensionValues) {
-		return dataLayer.getBitSet(dimensionValues);
+		return scenarioDataLayer.getBitSet(dimensionValues);
 	}
 	/**
 	 * @param aggregation custom aggregation
@@ -117,7 +109,7 @@ public class DistributedScenarioDataLayer {
 	 * @throws InvalidBitDekkExpressionException
 	 */
 	public double aggregate(IAggregation aggregation, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String[] measureNames) throws InvalidBitDekkExpressionException {
-		return dataLayer.aggregate(aggregation, tableName, viewBitSet, filterBitSet, measureNames);
+		return scenarioDataLayer.aggregate(aggregation, tableName, viewBitSet, filterBitSet, measureNames);
 	}
 	/**
 	 * @param aggregation
@@ -129,20 +121,20 @@ public class DistributedScenarioDataLayer {
 	 * @throws InvalidBitDekkExpressionException
 	 */
 	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
-		return dataLayer.aggregate(aggregation, tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
+		return scenarioDataLayer.aggregate(aggregation, tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
 	/**
 	 * @param dimensionValue
 	 * @return id of the dimension value
 	 */
 	public int getDimensionId(String dimensionValue) {
-		return dataLayer.getDimensionId(dimensionValue);
+		return scenarioDataLayer.getDimensionId(dimensionValue);
 	}
 	/**
 	 * @return set of all the ids
 	 */
 	public Set<Integer> getDimensionValueIds() {
-		return dataLayer.getDimensionValueIds();
+		return scenarioDataLayer.getDimensionValueIds();
 	}
 	/**
 	 * @param id of a dimension value
@@ -152,7 +144,7 @@ public class DistributedScenarioDataLayer {
 		return scenarioDataLayer.getDimensionValueIds(dimension);
 	}
 	public String getDimensionValue(int id) {
-		return dataLayer.getDimensionValue(id);
+		return scenarioDataLayer.getDimensionValue(id);
 	}
 	public void initializeDimensions(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
 		scenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);

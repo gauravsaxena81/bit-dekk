@@ -17,7 +17,7 @@ import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
 
 import com.esotericsoftware.kryonet.Client;
 
-public class BitDekkClient extends Client{
+public class BitDekkScenarioClient extends Client{
 	private IBitDekkScenarioInstance bitDekkScenarioInstance;
 
 	public IBitDekkScenarioInstance getBitDekkScenarioInstance() {

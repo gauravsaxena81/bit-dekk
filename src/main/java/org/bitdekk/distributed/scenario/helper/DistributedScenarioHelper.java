@@ -16,6 +16,10 @@ package org.bitdekk.distributed.scenario.helper;
 import java.util.Set;
 
 import org.bitdekk.api.IBitSet;
+import org.bitdekk.api.Processor;
+import org.bitdekk.distributed.scenario.server.model.DeleteRuleRequest;
+import org.bitdekk.distributed.server.model.AssociateRuleRequest;
+import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.scenario.ScenarioUtil;
 import org.bitdekk.scenario.helper.DimensionHelper;
 import org.bitdekk.scenario.helper.ScenarioDataHelper;
@@ -23,7 +27,14 @@ import org.bitdekk.scenario.helper.ScenarioDataHelper;
 public class DistributedScenarioHelper {
 	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
+	private long timeout = Long.MAX_VALUE;
 	
+	public long getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
 	public DimensionHelper getDimensionHelper() {
 		return dimensionHelper;
 	}
@@ -44,8 +55,32 @@ public class DistributedScenarioHelper {
 					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), scenarioDataHelper), dimensionHelper, scenarioDataHelper), factor);
 		} else 
 			scenarioDataHelper.associateRule(id, ruleBitSet, ruleBitSet, factor);
+		AssociateRuleRequest associateRuleRequest = new AssociateRuleRequest();
+		associateRuleRequest.setId(id);
+		associateRuleRequest.setRuleBitSet(ruleBitSet);
+		associateRuleRequest.setFactor(factor);
+		final boolean[] success = new boolean[]{true};
+		if(!BitDekkDistributedUtil.evaluate(timeout, associateRuleRequest, Boolean.class, new Processor<Boolean>() {
+			@Override
+			public void process(Boolean t) {
+				success[0] &= t;
+			}
+		}) && success[0])
+			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
 	public boolean deleteRule(int id, IBitSet ruleBitSet) {
-		return scenarioDataHelper.deleteRule(id, ruleBitSet);
+		boolean deleteRule = scenarioDataHelper.deleteRule(id, ruleBitSet);
+		DeleteRuleRequest deleteRuleRequest = new DeleteRuleRequest();
+		deleteRuleRequest.setId(id);
+		deleteRuleRequest.setKey(ruleBitSet);
+		final boolean[] success = new boolean[]{true};
+		if(!BitDekkDistributedUtil.evaluate(timeout, deleteRuleRequest, Boolean.class, new Processor<Boolean>() {
+			@Override
+			public void process(Boolean t) {
+				success[0] &= t;
+			}
+		}) && success[0])
+			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
+		return deleteRule & success[0];
 	}
 }

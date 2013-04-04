@@ -105,7 +105,7 @@ public class DistributedEvaluationHelper implements IEvaluation {
 		request.setMeasureExpression(functionExpression.getExpression());
 		request.setTableName(tableName);
 		request.setViewBitSet(viewBitSet);
-		if(BitDekkDistributedUtil.evaluate(timeout, request, new Processor<Double>() {
+		if(BitDekkDistributedUtil.evaluate(timeout, request, Double.class, new Processor<Double>() {
 			@Override
 			public void process(Double t) {
 				functionExpression.getAggregation().aggregate(t);

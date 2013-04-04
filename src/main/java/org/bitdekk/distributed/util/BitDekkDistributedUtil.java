@@ -21,7 +21,9 @@ import org.bitdekk.api.Processor;
 import org.bitdekk.distributed.cluster.ClusterConfig;
 import org.bitdekk.distributed.scenario.server.model.CreateDimensionValueRequest;
 import org.bitdekk.distributed.scenario.server.model.DeleteDimensionValueRequest;
+import org.bitdekk.distributed.scenario.server.model.DeleteRuleRequest;
 import org.bitdekk.distributed.scenario.server.model.ExpressionEvaluationRequest;
+import org.bitdekk.distributed.server.model.AssociateRuleRequest;
 import org.bitdekk.util.OpenBitSet;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -34,6 +36,8 @@ public class BitDekkDistributedUtil {
 		kryo.register(ExpressionEvaluationRequest.class);
 		kryo.register(CreateDimensionValueRequest.class);
 		kryo.register(DeleteDimensionValueRequest.class);
+		kryo.register(AssociateRuleRequest.class);
+		kryo.register(DeleteRuleRequest.class);
 		kryo.register(Double.class);
 		kryo.register(OpenBitSet.class);
 		kryo.register(long[][].class);
@@ -42,14 +46,14 @@ public class BitDekkDistributedUtil {
 		kryo.register(int.class);
 		kryo.register(double[].class);
 	}
-	public static <T> boolean evaluate(long timeout, Object request, final Processor<T> processor) {
+	public static <T> boolean evaluate(long timeout, Object request, final Class<T> clazz, final Processor<T> processor) {
 		final CountDownLatch doneSignal = new CountDownLatch(ClusterConfig.getInstance().getClusterSize());
 		final Client client = new Client();
 		BitDekkDistributedUtil.registerClasses(client.getKryo());
 		client.addListener(new Listener() {
 			@SuppressWarnings("unchecked")
 			public void received (final Connection connection, Object object) {
-				if(object instanceof Double) {
+				if(clazz.isInstance(object)) {
 					processor.process((T)object);
 					doneSignal.countDown();
 				}
@@ -67,6 +71,8 @@ public class BitDekkDistributedUtil {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			return false;
+		} finally {
+			client.stop();
 		}
 	}
 }

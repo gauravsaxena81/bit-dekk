@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.bitdekk.api.Processor;
 import org.bitdekk.distributed.scenario.server.model.CreateDimensionValueRequest;
+import org.bitdekk.distributed.scenario.server.model.DeleteDimensionValueRequest;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.DataHelper;
 import org.bitdekk.scenario.helper.DimensionHelper;
@@ -61,7 +62,7 @@ public class DistributedScenarioDimensionValueHelper {
 		createDimensionValueRequest.setDimension(dimension);
 		createDimensionValueRequest.setId(id);
 		final boolean[] success = new boolean[]{true};
-		if(!BitDekkDistributedUtil.evaluate(timeout, createDimensionValueRequest, new Processor<Boolean>() {
+		if(!BitDekkDistributedUtil.evaluate(timeout, createDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
 			@Override
 			public void process(Boolean t) {
 				success[0] &= t;
@@ -73,6 +74,18 @@ public class DistributedScenarioDimensionValueHelper {
 		dataHelper.getDimensionValueMap().remove(dimensionValue);
 		dataHelper.getIdToDimensionValueMap().remove(id);
 		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+		final boolean[] success = new boolean[]{true};
+		DeleteDimensionValueRequest deleteDimensionValueRequest = new DeleteDimensionValueRequest();
+		deleteDimensionValueRequest.setDimensionValue(dimensionValue);
+		deleteDimensionValueRequest.setDimension(dimension);
+		deleteDimensionValueRequest.setId(id);
+		if(!BitDekkDistributedUtil.evaluate(timeout, deleteDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
+			@Override
+			public void process(Boolean t) {
+				success[0] &= t;
+			}
+		}) && success[0])
+			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
 	public List<Integer> getDimensionValueIds(String dimension) {
 		return scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension);
