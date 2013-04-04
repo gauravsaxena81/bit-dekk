@@ -38,14 +38,17 @@ public class DistributedTest extends AbstractTestNGSpringContextTests {
 	                new ProcessBuilder(path, "-cp", 
 	                classpath, 
 	                TestBitDekkNodeA.class.getName());
+		processBuilderA.inheritIO();
 		ProcessBuilder processBuilderAA = 
                 new ProcessBuilder(path, "-cp", 
                 classpath, 
                 TestBitDekkNodeAA.class.getName());
+		processBuilderAA.inheritIO();
 		ProcessBuilder processBuilderAB = 
                 new ProcessBuilder(path, "-cp", 
                 classpath, 
                 TestBitDekkNodeAB.class.getName());
+		processBuilderAB.inheritIO();
 		try {
 			processA = processBuilderA.start();
 			processAA = processBuilderAA.start();

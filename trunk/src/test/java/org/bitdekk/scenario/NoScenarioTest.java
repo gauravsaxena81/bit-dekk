@@ -19,7 +19,7 @@ import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
-@ContextConfiguration(locations = {"classpath:applicationContext-scenario.xml"})
+@ContextConfiguration(locations = {"classpath:applicationContext-scenario-test.xml"})
 public class NoScenarioTest extends AbstractTestNGSpringContextTests {
 	 @Autowired
 	 private ScenarioDataLayer scenarioDataLayer;

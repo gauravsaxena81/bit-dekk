@@ -33,7 +33,7 @@ public class DistributedDataLayer {
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
-	public void initializeDimensions(HashMap<String, Integer> dimensionMap) {
+	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
 		dataLayer.initializeDimensionValues(dimensionMap);
 	}
 	/**

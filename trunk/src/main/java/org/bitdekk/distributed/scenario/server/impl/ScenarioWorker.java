@@ -22,13 +22,13 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 public class ScenarioWorker {
-	public void distribute(Object request, List<BitDekkClient> bitDekkClients, final Connection connection) throws IOException {
-		for(final BitDekkClient client : bitDekkClients) {
+	public void distribute(Object request, List<BitDekkScenarioClient> bitDekkClients, final Connection connection) throws IOException {
+		for(final BitDekkScenarioClient client : bitDekkClients) {
 			BitDekkDistributedUtil.registerClasses(client.getKryo());
 			client.addListener(new Listener() {
 				public void received (final Connection conn, Object object) {
-					if(object instanceof Double) {
-						connection.sendTCP((Double)object);//Received from a server
+					if(object instanceof Double || object instanceof Boolean) {
+						connection.sendTCP(object);//Received from a server
 						client.removeListener(this);
 					}
 				}
