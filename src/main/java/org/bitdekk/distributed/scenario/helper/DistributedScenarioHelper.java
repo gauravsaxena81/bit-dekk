@@ -52,7 +52,8 @@ public class DistributedScenarioHelper {
 		if(!scenarios.isEmpty()) {
 			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper))
 				scenarioDataHelper.associateRule(id, i
-					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), scenarioDataHelper), dimensionHelper, scenarioDataHelper), factor);
+					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), ruleBitSet, scenarioDataHelper, dimensionHelper), dimensionHelper, scenarioDataHelper)
+					, factor);
 		} else 
 			scenarioDataHelper.associateRule(id, ruleBitSet, ruleBitSet, factor);
 		AssociateRuleRequest associateRuleRequest = new AssociateRuleRequest();

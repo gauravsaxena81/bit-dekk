@@ -24,6 +24,7 @@ import org.bitdekk.scenario.model.ScenarioRowQuery;
 public class ScenarioDataHelper {
 	private HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>> scenarioRules = new HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>>();
 	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap;
+	private HashMap<Integer, String> DimensonValueToDimensionMap = new HashMap<Integer, String>();
 	
 	public void associateRule(int id, IBitSet keyBitSet, IBitSet ruleBitSet, double[] factor) {
 		HashMap<IBitSet, ArrayList<ScenarioRowQuery>> rules = scenarioRules.get(id);
@@ -47,16 +48,23 @@ public class ScenarioDataHelper {
 	public HashMap<String, List<Integer>> getDimensionToDimensionValueIdMap() {
 		return dimensionToDimensionValueIdMap;
 	}
-	public ArrayList<ScenarioRowQuery> getScenarioValueQueries(Integer id) {
-		ArrayList<ScenarioRowQuery> arrayList = new ArrayList<>();
-		for(ArrayList<ScenarioRowQuery> i : scenarioRules.get(id).values())
-			arrayList.addAll(i);
-		return arrayList;
+	public HashMap<IBitSet, ArrayList<ScenarioRowQuery>> getScenarioRules(Integer id) {
+		return scenarioRules.get(id);
 	}
 	public void associateRule(int id, IBitSet key, ArrayList<ScenarioRowQuery> listOfRealRowQueries, double[] factor) {
 		for(ScenarioRowQuery i : listOfRealRowQueries)
 			for(int j = 0; j < i.getFactor().length; j++)
 				i.getFactor()[j] = i.getFactor()[j] * factor[j];
+		HashMap<IBitSet, ArrayList<ScenarioRowQuery>> rules = scenarioRules.get(id);
+		if(rules == null) {
+			rules = new HashMap<IBitSet, ArrayList<ScenarioRowQuery>>();
+			scenarioRules.put(id, rules);
+		}
+		ArrayList<ScenarioRowQuery> ruleList = rules.get(key);
+		if(ruleList == null) {
+			ruleList = new ArrayList<ScenarioRowQuery>();
+			rules.put(key, ruleList);
+		}
 		scenarioRules.get(id).put(key, listOfRealRowQueries);		
 	}
 	public Set<IBitSet> getScenarioKeyQueries(Integer id) {
@@ -67,5 +75,8 @@ public class ScenarioDataHelper {
 	}
 	public boolean deleteRule(int id, IBitSet key) {
 		return scenarioRules.get(id).remove(key) != null;
+	}
+	public HashMap<Integer, String> getDimensonValueToDimensionMap() {
+		return DimensonValueToDimensionMap;
 	}
 }

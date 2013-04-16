@@ -37,11 +37,18 @@ public class ScenarioHelper {
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		Set<Integer> scenarios = ScenarioUtil.pi(ruleBitSet, scenarioDataHelper);
 		if(!scenarios.isEmpty()) {
-			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper))
-				scenarioDataHelper.associateRule(id, i
-					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), scenarioDataHelper), dimensionHelper, scenarioDataHelper), factor);
-		} else 
-			scenarioDataHelper.associateRule(id, ruleBitSet, ruleBitSet, factor);
+			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper)) {
+				IBitSet key = i.clone();
+				key.set(id);
+				scenarioDataHelper.associateRule(id, key
+					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), ruleBitSet, scenarioDataHelper, dimensionHelper), dimensionHelper
+					, scenarioDataHelper), factor);
+			}
+		} else {
+			IBitSet key = ruleBitSet.clone();
+			key.set(id);
+			scenarioDataHelper.associateRule(id, key, ruleBitSet, factor);
+		}
 	}
 	public boolean deleteRule(int id, IBitSet ruleBitSet) {
 		return scenarioDataHelper.deleteRule(id, ruleBitSet);
