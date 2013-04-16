@@ -23,20 +23,29 @@ import org.bitdekk.scenario.helper.ScenarioDataHelper;
 import org.bitdekk.scenario.model.ScenarioRowQuery;
 
 public class ScenarioUtil {
-	public static ArrayList<ScenarioRowQuery> mu(ArrayList<ArrayList<ScenarioRowQuery>> scenarioRowQueriesList, DimensionHelper dimensionHelper, ScenarioDataHelper scenarioDataHelper) {
+	/**
+	 * Intersect various lists of scenario queries and select those queries which have all the dimension values present
+	 * @param scenarioRowQueriesList
+	 * @param dimensionHelper
+	 * @param scenarioDataHelper
+	 * @return
+	 */
+	public static ArrayList<ScenarioRowQuery> mu(ArrayList<ArrayList<ScenarioRowQuery>> scenarioRowQueriesLists, DimensionHelper dimensionHelper
+			, ScenarioDataHelper scenarioDataHelper) {
 		ArrayList<ScenarioRowQuery> currentList = new ArrayList<ScenarioRowQuery>();
 		ArrayList<ScenarioRowQuery> tempList = new ArrayList<ScenarioRowQuery>();
-		for(ArrayList<ScenarioRowQuery> i : scenarioRowQueriesList) {
-			if(currentList.isEmpty())
-				currentList.addAll(i);
-			else {
+		for(ArrayList<ScenarioRowQuery> i : scenarioRowQueriesLists) {
+			if(currentList.isEmpty()) {
+				for(ScenarioRowQuery k : i)
+					currentList.add(k.clone());
+			} else {
 				for(ScenarioRowQuery j : i) {
 					for(ScenarioRowQuery k : currentList) {
 						ScenarioRowQuery clone = k.clone();
 						clone.getQuery().and(j.getQuery());
 						for(int l = 0; l < clone.getFactor().length; l++)
 							clone.getFactor()[l] = clone.getFactor()[l] * j.getFactor()[l];
-						if(!containsAllDimensions(clone.getQuery(), dimensionHelper, scenarioDataHelper))
+						if(containsAllDimensions(clone.getQuery(), dimensionHelper, scenarioDataHelper))
 							tempList.add(clone);
 					}
 				}
@@ -47,24 +56,32 @@ public class ScenarioUtil {
 		}
 		return currentList;
 	}
-	public static ArrayList<ScenarioRowQuery> nonNullQueries(ArrayList<ScenarioRowQuery> nullQueryList) {
-		ArrayList<ScenarioRowQuery> nonNullQueryList = new ArrayList<ScenarioRowQuery>(nullQueryList.size());
-		for(ScenarioRowQuery i : nullQueryList)
-			if(i != null)
-				nonNullQueryList.add(i);
-		return nonNullQueryList;
-	}
 	public static boolean containsAllDimensions(IBitSet query, DimensionHelper dimensionHelper, ScenarioDataHelper scenarioDataHelper) {
 		for(String i : scenarioDataHelper.getDimensionToDimensionValueIdMap().keySet())
 			if(!dimensionHelper.getDimensionValuesBitSet(i).intersects(query))
 				return false;
 		return true;
 	}
-	public static ArrayList<ArrayList<ScenarioRowQuery>> theta(Set<Integer> scenarios, ScenarioDataHelper scenarioDataHelper) {
-		ArrayList<ArrayList<ScenarioRowQuery>> listsOfQueries = new ArrayList<ArrayList<ScenarioRowQuery>>();
-		for(Integer i : scenarios)
-			listsOfQueries.add(scenarioDataHelper.getScenarioValueQueries(i));
-		return listsOfQueries;
+	/**
+	 * Given a set of scenarios get a list of list of queries. They can be found in the value part of the scenarioRules
+	 * @param scenarios
+	 * @param ruleBitSet 
+	 * @param scenarioDataHelper
+	 * @param dimensionHelper 
+	 * @return
+	 */
+	public static ArrayList<ArrayList<ScenarioRowQuery>> theta(Set<Integer> scenarios, IBitSet ruleBitSet, ScenarioDataHelper scenarioDataHelper
+			, DimensionHelper dimensionHelper) {
+		ArrayList<ArrayList<ScenarioRowQuery>> scenarioRowQueriesLists = new ArrayList<ArrayList<ScenarioRowQuery>>();
+		for(Integer i : scenarios) {
+			for(IBitSet j : scenarioDataHelper.getScenarioRules(i).keySet()) {
+				IBitSet clone = j.clone();
+				clone.and(ruleBitSet);
+				if(containsAllDimensions(clone, dimensionHelper, scenarioDataHelper))
+					scenarioRowQueriesLists.add(scenarioDataHelper.getScenarioRules(i).get(j));
+			}
+		}
+		return scenarioRowQueriesLists;
 	}
 	public static Set<Integer> pi(IBitSet query, ScenarioDataHelper scenarioDataHelper) {
 		Set<Integer> set = new HashSet<Integer>();
@@ -73,6 +90,15 @@ public class ScenarioUtil {
 				set.add(i);
 		return set;
 	}
+	/**
+	 * Create combination of query such that each combination has at most 1 scenario dimension value for each dimension. Combination doesn't need to be made for real
+	 * dimension values.
+	 * @param scenarios
+	 * @param query
+	 * @param scenarioDataHelper
+	 * @param dimensionHelper
+	 * @return
+	 */
 	public static ArrayList<IBitSet> neeta(Set<Integer> scenarios, IBitSet query, ScenarioDataHelper scenarioDataHelper, DimensionHelper dimensionHelper) {
 		ArrayList<IBitSet> list = new ArrayList<IBitSet>();
 		ArrayList<IBitSet> tempList = new ArrayList<IBitSet>();
@@ -82,8 +108,12 @@ public class ScenarioUtil {
 			IBitSet dimensionValuesBitSet = dimensionHelper.getDimensionValuesBitSet(i);
 			dimensionValuesBitSet.and(query);
 			if(containsScenario(scenarios, dimensionValuesBitSet)) {
+				//I need all the queries which have other real dimension values for a dimension as it is. 
+				//In case the query has only scenario dimension values for a dimension, the list is of no use. 
+				//The list with combination of these scenarios will be made later below
 				if(scenarioTrimmedQuery.intersects(dimensionValuesBitSet))
 					tempList.addAll(list);
+				//combination creating tree. Pick root and create children which have a particular scenario dimension value set. Repeat with the next dimension
 				for(int j = dimensionValuesBitSet.nextSetBit(0); j > -1; j = dimensionValuesBitSet.nextSetBit(j + 1)) {
 					for(IBitSet k : list) {
 						IBitSet clone = k.clone();

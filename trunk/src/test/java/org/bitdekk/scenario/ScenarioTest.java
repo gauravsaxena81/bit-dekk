@@ -40,29 +40,34 @@ public class ScenarioTest extends AbstractTestNGSpringContextTests {
 		scenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
 		
 		DataTable dataTable = new DataTable();
+		dataTable.addColumn(new ColumnDescription("0", ValueType.TEXT, "Year"));
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
 		dataTable.addColumn(new ColumnDescription("2", ValueType.TEXT, "Product"));
 		dataTable.addColumn(new ColumnDescription("3", ValueType.NUMBER, "Volume"));
 		dataTable.addColumn(new ColumnDescription("4", ValueType.NUMBER, "Cost"));
 		TableRow row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S1");
 		row.addCell("P1");
 		row.addCell(10);
 		row.addCell(1.0);
 		dataTable.addRow(row);
 		row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S1");
 		row.addCell("P2");
 		row.addCell(11);
 		row.addCell(1.5);
 		dataTable.addRow(row);
 		row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S2");
 		row.addCell("P1");
 		row.addCell(12);
 		row.addCell(1.1);
 		dataTable.addRow(row);
 		row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S2");
 		row.addCell("P2");
 		row.addCell(13);
@@ -114,9 +119,24 @@ public class ScenarioTest extends AbstractTestNGSpringContextTests {
 		ruleBitSet1.set(2);
 		ruleBitSet1.set(3);
 		ruleBitSet1.set(4);
+		ruleBitSet1.toString();
 		scenarioDataLayer.associateRule(5, ruleBitSet1, new double[]{3, 1});
-		Assert.assertEquals(75, scenarioDataLayer.aggregate("VolumeTable", new String[]{"S3", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)"), 0.000001);
-		double aggregate = scenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S3","P1","P2","2011","2012"}, "SUM(Volume * Cost)");
-		Assert.assertEquals(137.78, aggregate, 0.000001);
+		Assert.assertEquals(75, scenarioDataLayer.aggregate("VolumeTable", new String[]{"S3", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)")
+				, 0.000001);
+		Assert.assertEquals(137.78, scenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S3","P1","P2","2011","2012"}, "SUM(Volume * Cost)")
+				, 0.000001);
+	}
+	@Test(dependsOnMethods="scenario3rdLevelTest")
+	public void scenario4thLevelTest() {
+		scenarioDataLayer.createDimensionValue("Supplier", "S4", 7);
+		OpenBitSet ruleBitSet1 = new OpenBitSet();
+		ruleBitSet1.set(6);
+		ruleBitSet1.set(2);
+		ruleBitSet1.set(3);
+		ruleBitSet1.set(5);
+		scenarioDataLayer.associateRule(7, ruleBitSet1, new double[]{2, 1.1});
+		Assert.assertEquals(150, scenarioDataLayer.aggregate("VolumeTable", new String[]{"S4"}, new String[]{"S1","S2","S3","S4","P1","P2","2011","2012"}, "SUM(Volume)"), 0.000001);
+		/*double aggregate = scenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S3","P1","P2","2011","2012"}, "SUM(Volume * Cost)");
+		Assert.assertEquals(137.78, aggregate, 0.000001);*/
 	}
 }

@@ -28,11 +28,11 @@ public interface IBitSet {
 	/**
 	 * @param position bit at this position is set
 	 */
-	void set(int position);
+	void set(long position);
 	/**
 	 * @param position bit at this position is cleared
 	 */
-	void clear(int position);
+	void clear(long position);
 	/**
 	 * Returns the position of the next set bit start from the given position, inclusive
 	 * @param position look up begins from this position in bitset
@@ -45,5 +45,6 @@ public interface IBitSet {
 	 */
 	boolean get(int position);
 	void and(IBitSet query);
+	void or(IBitSet query);
 	IBitSet clone();
 }

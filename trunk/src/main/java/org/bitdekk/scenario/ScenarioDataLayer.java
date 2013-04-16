@@ -166,6 +166,9 @@ public class ScenarioDataLayer {
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		scenarioHelper.associateRule(id, ruleBitSet, factor);
 	}
+	public void associateRule(int id, String[] query, double[] factor) {
+		scenarioHelper.associateRule(id, scenarioDimensionValueHelper.getBitSet(query), factor);
+	}
 	/**
 	 * @param id
 	 * @param ruleBitSet

@@ -51,7 +51,11 @@ public class DimensionValueHelper {
 					dimensionMap.put(((TextValue)j.getValue()).getValue(), index++);
 	}
 	public int getId(String dimensionValue) {
-		return dataHelper.getDimensionValueMap().get(dimensionValue);
+		Integer id = dataHelper.getDimensionValueMap().get(dimensionValue);
+		if(id != null)
+			return id;
+		else
+			return -1;
 	}
 	public String getDimensionValue(int id) {
 		String dimension = dataHelper.getIdToDimensionValueMap().get(id);
@@ -73,9 +77,5 @@ public class DimensionValueHelper {
 	}
 	public Set<Integer> getDimensionValueIds() {
 		return dataHelper.getIdToDimensionValueMap().keySet();
-	}
-	public void addDimensionValue(String dimensionValue, int id) {
-		dataHelper.getIdToDimensionValueMap().put(id, dimensionValue);
-		dataHelper.getDimensionValueMap().put(dimensionValue, id);
 	}
 }
