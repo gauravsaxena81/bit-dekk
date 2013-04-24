@@ -22,9 +22,11 @@ public class MinAggregation implements IAggregation {
 	private MeasureExpression me;
 	@Override
 	public void aggregate(double measureValue) {
-		if(value > measureValue)
-			value = measureValue;
-		anyValueFound = true;
+		if(!Double.isNaN(measureValue)) {
+			if(value > measureValue)
+				value = measureValue;
+			anyValueFound = true;
+		}
 	}
 	@Override
 	public double getValue() {
@@ -35,9 +37,11 @@ public class MinAggregation implements IAggregation {
 	}
 	@Override
 	public void aggregate(double[] measureValues) {
-		if(value > measureValues[0])
-			value = measureValues[0];
-		anyValueFound = true;
+		if(!Double.isNaN(measureValues[0])) {
+			if(value > measureValues[0])
+				value = measureValues[0];
+			anyValueFound = true;
+		}
 	}
 	@Override
 	public void setMeasureExpression(MeasureExpression me) {

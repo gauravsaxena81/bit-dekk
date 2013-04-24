@@ -62,10 +62,15 @@ public class MeasureHelper {
 			table.getRows().add(dataRow);
 			int index = 0;
 			for(TableCell j : i.getCells()) {
-				if(j.getType().equals(ValueType.TEXT))
-					dataRow.getMeasureQuery().set(dimensionValueHelper.getId(((TextValue)j.getValue()).getValue()));
-				else if(j.getType().equals(ValueType.NUMBER))
-					dataRow.getMeasureValues()[index++] = ((NumberValue)j.getValue()).getValue();
+				if(j.getType().equals(ValueType.TEXT)) {
+					if(!j.isNull())
+						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(((TextValue)j.getValue()).getValue()));
+				} else if(j.getType().equals(ValueType.NUMBER)) {
+					if(j.isNull())
+						dataRow.getMeasureValues()[index++] = Double.NaN;
+					else
+						dataRow.getMeasureValues()[index++] = ((NumberValue)j.getValue()).getValue();
+				}
 			}
 		}
 		dataHelper.getTableMap().put(dataTableName, table);

@@ -22,8 +22,10 @@ public class CountAggregation implements IAggregation{
 	private MeasureExpression me;
 	@Override
 	public void aggregate(double measureValue) {
-		number++;
-		anyValueFound = true;
+		if(!Double.isNaN(measureValue)) {
+			number++;
+			anyValueFound = true;
+		}
 	}
 	@Override
 	public double getValue() {
@@ -34,8 +36,10 @@ public class CountAggregation implements IAggregation{
 	}
 	@Override
 	public void aggregate(double[] measureValues) {
-		number++;
-		anyValueFound = true;
+		if(!Double.isNaN(measureValues[0])) {
+			number++;
+			anyValueFound = true;
+		}
 	}
 	@Override
 	public void setMeasureExpression(MeasureExpression me) {
