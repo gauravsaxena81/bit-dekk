@@ -136,7 +136,37 @@ public class ScenarioTest extends AbstractTestNGSpringContextTests {
 		ruleBitSet1.set(5);
 		scenarioDataLayer.associateRule(7, ruleBitSet1, new double[]{2, 1.1});
 		Assert.assertEquals(150, scenarioDataLayer.aggregate("VolumeTable", new String[]{"S4"}, new String[]{"S1","S2","S3","S4","P1","P2","2011","2012"}, "SUM(Volume)"), 0.000001);
-		/*double aggregate = scenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S3","P1","P2","2011","2012"}, "SUM(Volume * Cost)");
-		Assert.assertEquals(137.78, aggregate, 0.000001);*/
+	}
+	@Test(dependsOnMethods="scenario4thLevelTest")
+	public void updateRuleTest() {
+		double s12012 = scenarioDataLayer.aggregate("VolumeTable", new String[]{"S1", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)");
+		OpenBitSet ruleBitSet1 = new OpenBitSet();
+		ruleBitSet1.set(0);
+		ruleBitSet1.set(2);
+		ruleBitSet1.set(3);
+		ruleBitSet1.set(4);
+		scenarioDataLayer.associateRule(5, ruleBitSet1, new double[] {3,1});
+		Assert.assertEquals(s12012 * 3 / 2, scenarioDataLayer.aggregate("VolumeTable", new String[]{"S1", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}
+			, "SUM(Volume)"), 0.000001);
+	}
+	@Test(dependsOnMethods="updateRuleTest")
+	public void deleteRuleTest() {
+		double s12012 = scenarioDataLayer.aggregate("VolumeTable", new String[]{"S1", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)");
+		double only2012 = scenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)");
+		OpenBitSet ruleBitSet1 = new OpenBitSet();
+		ruleBitSet1.set(0);
+		ruleBitSet1.set(2);
+		Assert.assertEquals(false, scenarioDataLayer.deleteRule(5, ruleBitSet1));
+		ruleBitSet1.set(3);
+		ruleBitSet1.set(4);
+		Assert.assertEquals(true, scenarioDataLayer.deleteRule(5, ruleBitSet1));
+		Assert.assertEquals(only2012 - s12012, scenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}
+			, "SUM(Volume)"), 0.000001);
+	}
+	@Test(dependsOnMethods="deleteRuleTest")
+	public void deleteScenarioTest() {
+		Assert.assertEquals(false, scenarioDataLayer.deleteDimensionValue("Supplier", "S5", 6));
+		Assert.assertEquals(true, scenarioDataLayer.deleteDimensionValue("Supplier", "S3", 6));
+		Assert.assertEquals(false, scenarioDataLayer.deleteDimensionValue("Supplier", "S3", 6));
 	}
 }

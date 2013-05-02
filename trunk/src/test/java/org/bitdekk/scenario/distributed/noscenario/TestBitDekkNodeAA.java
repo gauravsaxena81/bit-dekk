@@ -1,4 +1,4 @@
-package org.bitdekk.scenario.distributed;
+package org.bitdekk.scenario.distributed.noscenario;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
-public class TestBitDekkNodeAB {
+public class TestBitDekkNodeAA {
 
 	/**
 	 * @param args
@@ -35,7 +35,7 @@ public class TestBitDekkNodeAB {
 	private static BitDekkScenarioInstance getBitDekkScenarioInstance() throws TypeMismatchException {
 		BitDekkScenarioInstance bitDekkInstance = new BitDekkScenarioInstance();
 		bitDekkInstance.setIp("127.0.0.1");
-		bitDekkInstance.setPort(54557);
+		bitDekkInstance.setPort(54566);
 		bitDekkInstance.setScenarioDataLayer(getScenarioDataLayer());
 		return bitDekkInstance;
 	}
@@ -58,29 +58,34 @@ public class TestBitDekkNodeAB {
 		scenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
 		
 		DataTable dataTable = new DataTable();
+		dataTable.addColumn(new ColumnDescription("0", ValueType.TEXT, "Year"));
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
 		dataTable.addColumn(new ColumnDescription("2", ValueType.TEXT, "Product"));
 		dataTable.addColumn(new ColumnDescription("3", ValueType.NUMBER, "Volume"));
 		dataTable.addColumn(new ColumnDescription("4", ValueType.NUMBER, "Cost"));
 		TableRow row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S1");
 		row.addCell("P1");
 		row.addCell(10);
 		row.addCell(1.0);
 		dataTable.addRow(row);
 		row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S1");
 		row.addCell("P2");
 		row.addCell(11);
 		row.addCell(1.5);
 		dataTable.addRow(row);
 		row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S2");
 		row.addCell("P1");
 		row.addCell(12);
 		row.addCell(1.1);
 		dataTable.addRow(row);
 		row = new TableRow();
+		row.addCell("2011");
 		row.addCell("S2");
 		row.addCell("P2");
 		row.addCell(13);

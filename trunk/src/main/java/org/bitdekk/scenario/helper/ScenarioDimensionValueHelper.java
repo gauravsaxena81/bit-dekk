@@ -57,10 +57,14 @@ public class ScenarioDimensionValueHelper {
 		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
 		scenarioDataHelper.getDimensonValueToDimensionMap().put(id, dimension);
 	}
-	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		dataHelper.getDimensionValueMap().remove(dimensionValue);
-		dataHelper.getIdToDimensionValueMap().remove(id);
-		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
+		Integer remove = dataHelper.getDimensionValueMap().remove(dimensionValue);
+		if(remove != null) {
+			dataHelper.getIdToDimensionValueMap().remove(id);
+			scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).remove(Integer.valueOf(id));
+			return true;
+		} else
+			return false;
 	}
 	public List<Integer> getDimensionValueIds(String dimension) {
 		return scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension);

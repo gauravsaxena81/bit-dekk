@@ -3,10 +3,10 @@ package org.bitdekk.distributed.test;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
-import org.bitdekk.distributed.scenario.server.impl.BitDekkScenarioInstance;
-import org.bitdekk.distributed.scenario.server.impl.BitDekkScenarioServer;
-import org.bitdekk.scenario.ScenarioDataLayer;
+import org.bitdekk.DataLayer;
+import org.bitdekk.distributed.server.api.IBitDekkInstance;
+import org.bitdekk.distributed.server.impl.BitDekkInstance;
+import org.bitdekk.distributed.server.impl.BitDekkServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -25,21 +25,21 @@ public class TestBitDekkNodeAB {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws IOException, TypeMismatchException {
-		BitDekkScenarioServer bitDekkServer = new BitDekkScenarioServer();
-		bitDekkServer.setBitDekkScenarioInstance(getBitDekkInstance());
+		BitDekkServer bitDekkServer = new BitDekkServer();
+		bitDekkServer.setBitDekkInstance(getBitDekkInstance());
 		bitDekkServer.launch();
 	}
 
-	private static IBitDekkScenarioInstance getBitDekkInstance() throws TypeMismatchException {
-		BitDekkScenarioInstance bitDekkScenarioInstance = new BitDekkScenarioInstance();
-		bitDekkScenarioInstance.setIp("127.0.0.1");
-		bitDekkScenarioInstance.setPort(54557);
-		bitDekkScenarioInstance.setScenarioDataLayer(getDataLayer());
-		return bitDekkScenarioInstance;
+	private static IBitDekkInstance getBitDekkInstance() throws TypeMismatchException {
+		BitDekkInstance bitDekkInstance = new BitDekkInstance();
+		bitDekkInstance.setIp("127.0.0.1");
+		bitDekkInstance.setPort(54557);
+		bitDekkInstance.setDataLayer(getDataLayer());
+		return bitDekkInstance;
 	}
-	private static ScenarioDataLayer getDataLayer() throws TypeMismatchException {
+	private static DataLayer getDataLayer() throws TypeMismatchException {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-node-test.xml");
-		ScenarioDataLayer dataLayer = ctx.getBean(ScenarioDataLayer.class);
+		DataLayer dataLayer = ctx.getBean(DataLayer.class);
 		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
 		hashMap.put("S1",0);
 		hashMap.put("S2",1);

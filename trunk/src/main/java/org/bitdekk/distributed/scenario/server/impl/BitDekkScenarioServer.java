@@ -115,8 +115,7 @@ public class BitDekkScenarioServer {
 	}
 	private void deleteDimensionValue(Connection connection, DeleteDimensionValueRequest request) {
 		System.err.println("Entering");
-		bitDekkScenarioInstance.getScenarioDataLayer().deleteDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId());
-		connection.sendTCP(true);
+		connection.sendTCP(bitDekkScenarioInstance.getScenarioDataLayer().deleteDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId()));
 		System.err.println("Exiting");		
 	}
 	private void associateRule(Connection connection, AssociateRuleRequest request) {
@@ -127,8 +126,7 @@ public class BitDekkScenarioServer {
 	}
 	private void deleteRule(Connection connection, DeleteRuleRequest request) {
 		System.err.println("Entering");
-		bitDekkScenarioInstance.getScenarioDataLayer().deleteRule(request.getId(), request.getKey());
-		connection.sendTCP(true);
+		connection.sendTCP(bitDekkScenarioInstance.getScenarioDataLayer().deleteRule(request.getId(), request.getKey()));
 		System.err.println("Exiting");
 	}
 }

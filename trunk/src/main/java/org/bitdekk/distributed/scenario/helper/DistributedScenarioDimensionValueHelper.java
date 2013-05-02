@@ -70,8 +70,8 @@ public class DistributedScenarioDimensionValueHelper {
 		}) && success[0])
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
-	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		dataHelper.getDimensionValueMap().remove(dimensionValue);
+	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
+		boolean remove = dataHelper.getDimensionValueMap().remove(dimensionValue) != null;
 		dataHelper.getIdToDimensionValueMap().remove(id);
 		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
 		final boolean[] success = new boolean[]{true};
@@ -79,12 +79,14 @@ public class DistributedScenarioDimensionValueHelper {
 		deleteDimensionValueRequest.setDimensionValue(dimensionValue);
 		deleteDimensionValueRequest.setDimension(dimension);
 		deleteDimensionValueRequest.setId(id);
-		if(!BitDekkDistributedUtil.evaluate(timeout, deleteDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
+		if(BitDekkDistributedUtil.evaluate(timeout, deleteDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
 			@Override
 			public void process(Boolean t) {
 				success[0] &= t;
 			}
-		}) && success[0])
+		}))
+			return remove && success[0];
+		else
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
 	public List<Integer> getDimensionValueIds(String dimension) {

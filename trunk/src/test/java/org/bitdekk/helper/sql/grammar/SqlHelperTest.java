@@ -97,7 +97,7 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
 	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) FROM VolumeTable HAVING 100 < 100");
 	Assert.assertEquals(0, dataTableSelected.getNumberOfRows());
 	
-	dataTableSelected = sqlHelper.result("SELECT SUM(Volume), Supplier FROM VolumeTable");
+	dataTableSelected = sqlHelper.result("SELECT SUM(Volume), Supplier FROM VolumeTable WHERE Product IN (\"P1\",\"P2\")");
 	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(0, 0).getValue()).getValue(), 0.000000000001);
 	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(1, 0).getValue()).getValue(), 0.000000000001);
 	

@@ -55,7 +55,7 @@ whereExpression
 	;
 dimensionCondition
 	:	(a=IDENTIFIER '=' '"' b=IDENTIFIER {state1.addDimensionValue($a.text, $b.text);} '"')
-	| 	(c=IDENTIFIER 'IN' ('(' '"' d=IDENTIFIER {state1.addDimensionValue($b.text, $d.text);} '"' 
+	| 	(c=IDENTIFIER 'IN' ('(' '"' d=IDENTIFIER {state1.addDimensionValue($c.text, $d.text);} '"' 
 			(',' '"' d=IDENTIFIER {state1.addDimensionValue($c.text, $d.text);} '"')* ')'));
 groupedExpression
 	:	a=groupedAddExpression (ADD_SUB b=groupedAddExpression)*;

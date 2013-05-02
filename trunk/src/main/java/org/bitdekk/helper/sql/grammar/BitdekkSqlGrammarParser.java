@@ -1,3 +1,4 @@
+// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g 2013-04-30 14:58:01
 /*
  * Copyright 2013 Contributors of bit-dekk
  * 
@@ -11,8 +12,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-// $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g 2013-02-22 09:37:46
-
 package org.bitdekk.helper.sql.grammar;
 
 import org.antlr.runtime.BitSet;
@@ -866,7 +865,7 @@ public class BitdekkSqlGrammarParser extends Parser {
                     match(input,27,FOLLOW_27_in_dimensionCondition331); 
                     match(input,25,FOLLOW_25_in_dimensionCondition333); 
                     d=(Token)match(input,IDENTIFIER,FOLLOW_IDENTIFIER_in_dimensionCondition337); 
-                    state1.addDimensionValue((b!=null?b.getText():null), (d!=null?d.getText():null));
+                    state1.addDimensionValue((c!=null?c.getText():null), (d!=null?d.getText():null));
                     match(input,25,FOLLOW_25_in_dimensionCondition341); 
                     // C:\\Work\\Personal Workspace\\bitdekk\\src\\main\\java\\org\\bitdekk\\helper\\sql\\grammar\\BitdekkSqlGrammar.g:59:4: ( ',' '\"' d= IDENTIFIER '\"' )*
                     loop14:

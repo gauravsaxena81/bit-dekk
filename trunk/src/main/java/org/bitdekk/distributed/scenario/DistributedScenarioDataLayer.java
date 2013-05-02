@@ -152,8 +152,8 @@ public class DistributedScenarioDataLayer {
 	public void createDimensionValue(String dimension, String dimensionValue, int id) {
 		distributedScenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue, id);
 	}
-	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		distributedScenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
+	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
+		return distributedScenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
 	}
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		distributedScenarioHelper.associateRule(id, ruleBitSet, factor);
@@ -164,7 +164,7 @@ public class DistributedScenarioDataLayer {
 	 * @param factor by which the measure values are to be multiplied
 	 * @return true if ruleBitSet was found and deleted, false if it was not found
 	 */
-	public boolean deleteRule(int id, IBitSet ruleBitSet, double[] factor) {
+	public boolean deleteRule(int id, IBitSet ruleBitSet) {
 		return distributedScenarioHelper.deleteRule(id, ruleBitSet);
 	}
 }
