@@ -65,7 +65,7 @@
 	<!-- Distributed -->
 	<bean id="evaluationHelper" class="org.bitdekk.helper.distributed.helper.DistributedEvaluationHelper">
 		<property name="measureHelper" ref="measureHelper" />
-		<!-- <property name="timeout" value="2000"/> -->
+		<property name="timeout" value="10000"/>
 	</bean>
 	<bean id="distributedScenarioDimensionValueHelper" class="org.bitdekk.distributed.scenario.helper.DistributedScenarioDimensionValueHelper">
 		<property name="dataHelper" ref="dataHelper" />

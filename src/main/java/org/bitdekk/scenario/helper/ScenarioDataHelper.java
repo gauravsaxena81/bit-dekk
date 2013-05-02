@@ -32,11 +32,8 @@ public class ScenarioDataHelper {
 			rules = new HashMap<IBitSet, ArrayList<ScenarioRowQuery>>();
 			scenarioRules.put(id, rules);
 		}
-		ArrayList<ScenarioRowQuery> ruleList = rules.get(keyBitSet);
-		if(ruleList == null) {
-			ruleList = new ArrayList<ScenarioRowQuery>();
-			rules.put(keyBitSet, ruleList);
-		}
+		ArrayList<ScenarioRowQuery> ruleList = new ArrayList<ScenarioRowQuery>();
+		rules.put(keyBitSet, ruleList);
 		ruleList.add(new ScenarioRowQuery(ruleBitSet, factor));
 	}
 	public Set<Integer> getScenrios() {
@@ -60,12 +57,12 @@ public class ScenarioDataHelper {
 			rules = new HashMap<IBitSet, ArrayList<ScenarioRowQuery>>();
 			scenarioRules.put(id, rules);
 		}
-		ArrayList<ScenarioRowQuery> ruleList = rules.get(key);
+		/*ArrayList<ScenarioRowQuery> ruleList = rules.get(key);
 		if(ruleList == null) {
 			ruleList = new ArrayList<ScenarioRowQuery>();
 			rules.put(key, ruleList);
-		}
-		scenarioRules.get(id).put(key, listOfRealRowQueries);		
+		}*/
+		rules.put(key, listOfRealRowQueries);		
 	}
 	public Set<IBitSet> getScenarioKeyQueries(Integer id) {
 		return scenarioRules.get(id).keySet();

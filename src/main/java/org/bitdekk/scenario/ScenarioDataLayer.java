@@ -160,8 +160,8 @@ public class ScenarioDataLayer {
 	public void createDimensionValue(String dimension, String dimensionValue, int id) {
 		scenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue, id);
 	}
-	public void deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
+	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
+		return scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
 	}
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		scenarioHelper.associateRule(id, ruleBitSet, factor);

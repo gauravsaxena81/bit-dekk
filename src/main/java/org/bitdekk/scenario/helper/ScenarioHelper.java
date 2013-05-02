@@ -51,6 +51,8 @@ public class ScenarioHelper {
 		}
 	}
 	public boolean deleteRule(int id, IBitSet ruleBitSet) {
-		return scenarioDataHelper.deleteRule(id, ruleBitSet);
+		IBitSet clone = ruleBitSet.clone();
+		clone.set(id);
+		return scenarioDataHelper.deleteRule(id, clone);
 	}
 }

@@ -50,12 +50,18 @@ public class DistributedScenarioHelper {
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		Set<Integer> scenarios = ScenarioUtil.pi(ruleBitSet, scenarioDataHelper);
 		if(!scenarios.isEmpty()) {
-			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper))
-				scenarioDataHelper.associateRule(id, i
+			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper)) {
+				IBitSet key = i.clone();
+				key.set(id);
+				scenarioDataHelper.associateRule(id, key
 					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), ruleBitSet, scenarioDataHelper, dimensionHelper), dimensionHelper, scenarioDataHelper)
 					, factor);
-		} else 
-			scenarioDataHelper.associateRule(id, ruleBitSet, ruleBitSet, factor);
+			}
+		} else {
+			IBitSet key = ruleBitSet.clone();
+			key.set(id);
+			scenarioDataHelper.associateRule(id, key, ruleBitSet, factor);
+		}
 		AssociateRuleRequest associateRuleRequest = new AssociateRuleRequest();
 		associateRuleRequest.setId(id);
 		associateRuleRequest.setRuleBitSet(ruleBitSet);
@@ -70,18 +76,21 @@ public class DistributedScenarioHelper {
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
 	public boolean deleteRule(int id, IBitSet ruleBitSet) {
-		boolean deleteRule = scenarioDataHelper.deleteRule(id, ruleBitSet);
+		IBitSet clone = ruleBitSet.clone();
+		clone.set(id);
+		boolean deleteRule = scenarioDataHelper.deleteRule(id, clone);
 		DeleteRuleRequest deleteRuleRequest = new DeleteRuleRequest();
 		deleteRuleRequest.setId(id);
-		deleteRuleRequest.setKey(ruleBitSet);
+		deleteRuleRequest.setKey(clone);
 		final boolean[] success = new boolean[]{true};
-		if(!BitDekkDistributedUtil.evaluate(timeout, deleteRuleRequest, Boolean.class, new Processor<Boolean>() {
+		if(BitDekkDistributedUtil.evaluate(timeout, deleteRuleRequest, Boolean.class, new Processor<Boolean>() {
 			@Override
 			public void process(Boolean t) {
 				success[0] &= t;
 			}
-		}) && success[0])
+		}))
+			return deleteRule & success[0];
+		else
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
-		return deleteRule & success[0];
 	}
 }
