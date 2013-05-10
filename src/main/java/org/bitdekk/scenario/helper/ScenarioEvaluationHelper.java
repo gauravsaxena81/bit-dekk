@@ -14,6 +14,7 @@
 package org.bitdekk.scenario.helper;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -84,16 +85,29 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos))];
 	}
 	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
-		ArrayList<ScenarioRowQuery> list = new ArrayList<ScenarioRowQuery>();
+		class D {
+			IBitSet key;
+			ArrayList<ScenarioRowQuery> list = new ArrayList<ScenarioRowQuery>();
+			public D(IBitSet key, ArrayList<ScenarioRowQuery> list) {
+				this.key = key;
+				this.list = list;
+			}
+		}
 		IBitSet viewBitSetClone = viewBitSet.clone();
+		ArrayList<D> list  = new ArrayList<D>();
 		if(filterBitSet.contains(viewBitSet)) {
-			for(Integer i : ScenarioUtil.pi(viewBitSet, scenarioDataHelper)) {
+			Set<Integer> scenarioSet = ScenarioUtil.pi(viewBitSet, scenarioDataHelper);
+			for(Integer i : scenarioSet) {
 				IBitSet clone = viewBitSet.clone();
 				clone.clear(i);
 				viewBitSetClone.clear(i);
 				for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
-					if(filterBitSet.contains(key) && key.contains(clone))
-						list.addAll(scenarioDataHelper.getQueryMap(i).get(key));
+					if(filterBitSet.contains(key) && key.contains(clone)) {
+						IBitSet intersectedFilter = filterBitSet.clone();
+						intersectedFilter.and(key);
+						getRealQuery(scenarioDataHelper.getScenrios(), intersectedFilter);
+						list.add(new D(intersectedFilter, scenarioDataHelper.getQueryMap(i).get(key)));
+					}
 				}
 			}
 		}
@@ -101,8 +115,11 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 			if(filterBitSet.contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSet))
 				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet));
 			for(int j = 0; j < list.size(); j++)
-				if(list.get(j).getQuery().contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSetClone))
-					aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet, list.get(j).getFactor()));
+				if(list.get(j).key.contains(i.getMeasureQuery()))
+					for(ScenarioRowQuery k : list.get(j).list)
+						if(k.getQuery().contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSetClone))
+							aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet
+									, k.getFactor()));
 		}
 		return aggregation.getValue();
 	}
@@ -129,6 +146,13 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 		++pos.pos;
 		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
 		return v1 + v2;
+	}
+	private void getRealQuery(Set<Integer> scenarioSet, IBitSet q) {
+		for(Integer i : scenarioSet)
+			if(q.get(i))
+				q.or(dimensionHelper.getDimensionValuesBitSet(dimensionHelper.getDimension(i)));
+		for(Integer i : scenarioSet)
+			q.clear(i);
 	}
 	@Override
 	public BitdekkErrorHandlingLexer getLexer(String measureExpression) {
