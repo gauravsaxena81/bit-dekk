@@ -36,4 +36,11 @@ public class DimensionHelper {
 			bitSet.set(i);
 		return bitSet;
 	}
+	public String getDimension(int dimensionValueId) {
+		return scenarioDataHelper.getDimensonValueToDimensionMap().get(dimensionValueId);
+	}
+	public void associateDimensionValue(String dimension, int dimensionValueId) {
+		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(dimensionValueId);
+		scenarioDataHelper.getDimensonValueToDimensionMap().put(dimensionValueId, dimension);
+	}
 }

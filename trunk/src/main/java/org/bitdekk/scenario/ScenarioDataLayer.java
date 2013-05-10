@@ -158,7 +158,8 @@ public class ScenarioDataLayer {
 		dimensionHelper.initializeDimensions(dimensionToDimensionValueIdMap);
 	}
 	public void createDimensionValue(String dimension, String dimensionValue, int id) {
-		scenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue, id);
+		scenarioDimensionValueHelper.createDimensionValue(dimensionValue, id);
+		dimensionHelper.associateDimensionValue(dimension, id);
 	}
 	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
 		return scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);

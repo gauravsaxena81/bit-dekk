@@ -51,11 +51,9 @@ public class ScenarioDimensionValueHelper {
 	public void setDataHelper(DataHelper dataHelper) {
 		this.dataHelper = dataHelper;
 	}
-	public void createDimensionValue(String dimension, String dimensionValue, int id) {
+	public void createDimensionValue(String dimensionValue, int id) {
 		dataHelper.getDimensionValueMap().put(dimensionValue, id);
 		dataHelper.getIdToDimensionValueMap().put(id, dimensionValue);
-		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
-		scenarioDataHelper.getDimensonValueToDimensionMap().put(id, dimension);
 	}
 	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
 		Integer remove = dataHelper.getDimensionValueMap().remove(dimensionValue);
