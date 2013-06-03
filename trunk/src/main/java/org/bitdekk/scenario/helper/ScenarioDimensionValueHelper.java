@@ -16,23 +16,16 @@ package org.bitdekk.scenario.helper;
 import java.util.List;
 import java.util.Set;
 
-import org.bitdekk.DataLayer;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.helper.DataHelper;
-import org.bitdekk.util.OpenBitSet;
+import org.bitdekk.model.DimensionValue;
+import org.bitdekk.util.BitDekkUtil;
 
 public class ScenarioDimensionValueHelper {
 	private DataHelper dataHelper;
 	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
-	private DataLayer dataLayer;
-	
-	public DataLayer getDataLayer() {
-		return dataLayer;
-	}
-	public void setDataLayer(DataLayer dataLayer) {
-		this.dataLayer = dataLayer;
-	}
+
 	public ScenarioDataHelper getScenarioDataHelper() {
 		return scenarioDataHelper;
 	}
@@ -51,15 +44,18 @@ public class ScenarioDimensionValueHelper {
 	public void setDataHelper(DataHelper dataHelper) {
 		this.dataHelper = dataHelper;
 	}
-	public void createDimensionValue(String dimensionValue, int id) {
-		dataHelper.getDimensionValueMap().put(dimensionValue, id);
-		dataHelper.getIdToDimensionValueMap().put(id, dimensionValue);
+	public int createDimensionValue(String dimension, String dimensionValue) {
+		String generateDimensionValueString = BitDekkUtil.generateDimensionValueString(dimension, dimensionValue);
+		int id = dataHelper.getId();
+		dataHelper.addToId();
+		dataHelper.getDimensionValueMap().put(generateDimensionValueString, id);
+		dataHelper.getIdToDimensionValueMap().put(id, generateDimensionValueString);
+		return id;
 	}
 	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		Integer remove = dataHelper.getDimensionValueMap().remove(dimensionValue);
+		Integer remove = dataHelper.getDimensionValueMap().remove(BitDekkUtil.generateDimensionValueString(dimension, dimensionValue));
 		if(remove != null) {
 			dataHelper.getIdToDimensionValueMap().remove(id);
-			scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).remove(Integer.valueOf(id));
 			return true;
 		} else
 			return false;
@@ -67,41 +63,27 @@ public class ScenarioDimensionValueHelper {
 	public List<Integer> getDimensionValueIds(String dimension) {
 		return scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension);
 	}
-	public IBitSet getBitSet(String[] dimensionValues) {
-		IBitSet bitSet = new OpenBitSet();
-		for(String i : dimensionValues) {
-			int id = dataLayer.getDimensionId(i);
-			if(id > -1)
+	public IBitSet getBitSet(DimensionValue[] dimensionValues) {
+		IBitSet bitSet = BitDekkUtil.newBitSet();
+		for(DimensionValue i : dimensionValues) {
+			Integer id = dataHelper.getDimensionValueMap().get(BitDekkUtil.generateDimensionValueString(i.getDimension(), i.getDimensionValue()));
+			if(id != null)
 				bitSet.set(id);
-			else {
-				id = getId(i);
-				if(id > -1)
-					bitSet.set(id);
-				else
-					throw new IllegalArgumentException("Dimension " + i + " not found"); 
-			}
+			else
+				throw new IllegalArgumentException("Dimension value " + i.getDimension() + "-" + i.getDimensionValue() + " not found"); 
 		}
 		return bitSet;
 	}
-	public int getId(String dimensionValue) {
-		Integer id = dataHelper.getDimensionValueMap().get(dimensionValue);
+	public int getId(String dimension, String dimensionValue) {
+		Integer id = dataHelper.getDimensionValueMap().get(BitDekkUtil.generateDimensionValueString(dimension, dimensionValue));
 		if(id != null)
 			return id;
 		else
 			return -1;
 	}
-	public String getDimensionValue(int id) {
-		String dimensionValue = dataLayer.getDimensionValue(id);
-		if(dimensionValue != null)
-			return dimensionValue;
-		else {
-			dimensionValue = dataHelper.getIdToDimensionValueMap().get(id);
-			if(dimensionValue != null)
-				return dimensionValue;
-			else
-				throw new IllegalArgumentException("Dimension for " + id + " not found");
-		}
-			
+	public DimensionValue getDimensionValue(int id) {
+		String string = dataHelper.getIdToDimensionValueMap().get(id);
+		return new DimensionValue(string.substring(0, string.indexOf('-') - 1), string.substring(string.indexOf('-') + 1));
 	}
 	public Set<Integer> getDimensionValueIds() {
 		return dataHelper.getIdToDimensionValueMap().keySet();

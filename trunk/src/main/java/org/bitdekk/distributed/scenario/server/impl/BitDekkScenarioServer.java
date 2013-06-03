@@ -109,24 +109,25 @@ public class BitDekkScenarioServer {
 	}
 	private void createDimensionValue(Connection connection, CreateDimensionValueRequest request) {
 		System.err.println("Entering");
-		bitDekkScenarioInstance.getScenarioDataLayer().createDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId());
+		bitDekkScenarioInstance.getScenarioDataLayer().createDimensionValue(request.getDimension(), request.getDimensionValue());
+		System.out.println(bitDekkScenarioInstance.getScenarioDataLayer().getDimensionId(request.getDimension(), request.getDimensionValue()));
 		connection.sendTCP(true);
 		System.err.println("Exiting");
 	}
 	private void deleteDimensionValue(Connection connection, DeleteDimensionValueRequest request) {
 		System.err.println("Entering");
-		connection.sendTCP(bitDekkScenarioInstance.getScenarioDataLayer().deleteDimensionValue(request.getDimension(), request.getDimensionValue(), request.getId()));
+		connection.sendTCP(bitDekkScenarioInstance.getScenarioDataLayer().deleteDimensionValue(request.getDimension(), request.getDimensionValue()));
 		System.err.println("Exiting");		
 	}
 	private void associateRule(Connection connection, AssociateRuleRequest request) {
 		System.err.println("Entering");
-		bitDekkScenarioInstance.getScenarioDataLayer().associateRule(request.getId(), request.getRuleBitSet(), request.getFactor());
+		bitDekkScenarioInstance.getScenarioDataLayer().associateRule(request.getDimension(), request.getScenarioDimensionValue(), request.getRuleBitSet(), request.getFactor());
 		connection.sendTCP(true);
 		System.err.println("Exiting");
 	}
 	private void deleteRule(Connection connection, DeleteRuleRequest request) {
 		System.err.println("Entering");
-		connection.sendTCP(bitDekkScenarioInstance.getScenarioDataLayer().deleteRule(request.getId(), request.getKey()));
+		connection.sendTCP(bitDekkScenarioInstance.getScenarioDataLayer().deleteRule(request.getDimension(), request.getDimensionValue(), request.getKey()));
 		System.err.println("Exiting");
 	}
 }

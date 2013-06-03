@@ -13,25 +13,63 @@
  */
 package org.bitdekk.scenario.helper;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bitdekk.DataLayer;
 import org.bitdekk.api.IBitSet;
-import org.bitdekk.util.OpenBitSet;
+import org.bitdekk.util.BitDekkUtil;
+
+import com.google.visualization.datasource.datatable.DataTable;
+import com.google.visualization.datasource.datatable.TableCell;
+import com.google.visualization.datasource.datatable.value.ValueType;
 
 public class DimensionHelper {
 	private ScenarioDataHelper scenarioDataHelper;
+	private DataLayer dataLayer;
+	public DataLayer getDataLayer() {
+		return dataLayer;
+	}
+	public void setDataLayer(DataLayer dataLayer) {
+		this.dataLayer = dataLayer;
+	}
 	public ScenarioDataHelper getScenarioDataHelper() {
 		return scenarioDataHelper;
 	}
 	public void setScenarioDataHelper(ScenarioDataHelper scenarioDataHelper) {
 		this.scenarioDataHelper = scenarioDataHelper;
 	}
-	public void initializeDimensions(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
-		scenarioDataHelper.setDimensionToDimensionValueIdMap(dimensionToDimensionValueIdMap);
+	public void initializeDimensions(DataTable dataTable) {
+		HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = scenarioDataHelper.getDimensionToDimensionValueIdMap();
+		HashMap<Integer, String> dimensonValueToDimensionMap = scenarioDataHelper.getDimensonValueToDimensionMap();
+		Comparator<TableCell> comparator = new Comparator<TableCell>() {
+			@Override
+			public int compare(TableCell o1, TableCell o2) {
+				return o1.getValue().compareTo(o2.getValue());
+			}
+		};
+		for(int i = 0; i < dataTable.getNumberOfColumns(); i++) {
+			if(!dataTable.getColumnDescription(i).getType().equals(ValueType.NUMBER)) {
+				String label = dataTable.getColumnDescription(i).getLabel();
+				for(TableCell j : dataTable.getColumnDistinctCellsSorted(i, comparator)) {
+					List<Integer> list = dimensionToDimensionValueIdMap.get(label);
+					if(list == null) {
+						list = new ArrayList<Integer>();
+						dimensionToDimensionValueIdMap.put(label, list);
+					}
+					int dimensionId = dataLayer.getDimensionId(label, j.getValue().toString());
+					//System.out.println("---xxx---" + j.getValue().toString() + "," + dimensionId + "," + list);
+					System.out.println("---xxx---" + list + "," + System.identityHashCode(dimensionToDimensionValueIdMap));
+					list.add(dimensionId);
+					dimensonValueToDimensionMap.put(dimensionId, label);
+				}
+			}
+		}
 	}
 	public IBitSet getDimensionValuesBitSet(String dimension) {
-		IBitSet bitSet = new OpenBitSet();
+		IBitSet bitSet = BitDekkUtil.newBitSet();
 		for(Integer i : scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension))
 			bitSet.set(i);
 		return bitSet;
@@ -39,8 +77,16 @@ public class DimensionHelper {
 	public String getDimension(int dimensionValueId) {
 		return scenarioDataHelper.getDimensonValueToDimensionMap().get(dimensionValueId);
 	}
-	public void associateDimensionValue(String dimension, int dimensionValueId) {
+	public void createDimensionValue(String dimension, int dimensionValueId) {
 		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(dimensionValueId);
 		scenarioDataHelper.getDimensonValueToDimensionMap().put(dimensionValueId, dimension);
+	}
+	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
+		boolean remove = scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).remove(Integer.valueOf(id));
+		if(remove) {
+			scenarioDataHelper.getDimensonValueToDimensionMap().remove(id);
+			return true;
+		} else
+			return false;
 	}
 }

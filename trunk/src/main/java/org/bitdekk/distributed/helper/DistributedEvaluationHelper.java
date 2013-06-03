@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.helper.distributed.helper;
+package org.bitdekk.distributed.helper;
 
 import java.util.ArrayList;
 
@@ -22,15 +22,18 @@ import org.antlr.runtime.RecognitionException;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.api.IEvaluation;
 import org.bitdekk.api.Processor;
+import org.bitdekk.distributed.expression.DistributedBitdekkErrorHandlingLexer;
+import org.bitdekk.distributed.expression.DistributedBitdekkErrorHandlingParser;
+import org.bitdekk.distributed.expression.model.FunctionExpression;
 import org.bitdekk.distributed.scenario.server.model.ExpressionEvaluationRequest;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.MeasureHelper;
 import org.bitdekk.helper.Position;
-import org.bitdekk.helper.distributed.expression.DistributedBitdekkErrorHandlingLexer;
-import org.bitdekk.helper.distributed.expression.DistributedBitdekkErrorHandlingParser;
-import org.bitdekk.helper.distributed.expression.model.FunctionExpression;
 import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.model.DataRow;
+
+import com.google.visualization.datasource.base.TypeMismatchException;
+import com.google.visualization.datasource.datatable.DataTable;
 
 public class DistributedEvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
@@ -175,5 +178,9 @@ public class DistributedEvaluationHelper implements IEvaluation {
 	@Override
 	public void parse(CommonTokenStream tokens, GroupedMeasureExpression gme) throws RecognitionException {
 		new DistributedBitdekkErrorHandlingParser(tokens, gme).stat();
+	}
+	@Override
+	public DataTable select(String tableName, IBitSet filterBitSet, String... columnNames) throws TypeMismatchException {
+		return null;
 	}
 }

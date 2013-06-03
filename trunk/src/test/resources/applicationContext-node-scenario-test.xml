@@ -53,6 +53,7 @@
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
 		<property name="dimensionHelper" ref="dimensionHelper" />
+		<property name="scenarioDimensionValueHelper" ref="scenarioDimensionValueHelper" />
 	</bean>
 	<bean id="scenarioHelper" class="org.bitdekk.scenario.helper.ScenarioHelper">
 		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
@@ -65,6 +66,7 @@
 	</bean>
 	<bean id="dimensionHelper" class="org.bitdekk.scenario.helper.DimensionHelper">
 		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
+		<property name="dataLayer" ref="dataLayer" />
 	</bean>
 	<bean id="scenarioDataHelper" class="org.bitdekk.scenario.helper.ScenarioDataHelper" />
 </beans>

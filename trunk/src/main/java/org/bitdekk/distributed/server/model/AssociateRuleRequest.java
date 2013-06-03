@@ -3,14 +3,22 @@ package org.bitdekk.distributed.server.model;
 import org.bitdekk.api.IBitSet;
 
 public class AssociateRuleRequest {
-	private int id;
+	private String dimension;
+	private String scenarioDimensionValue;
 	private IBitSet ruleBitSet;
 	private double[] factor;
-	public int getId() {
-		return id;
+	
+	public String getDimension() {
+		return dimension;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setDimension(String dimension) {
+		this.dimension = dimension;
+	}
+	public String getScenarioDimensionValue() {
+		return scenarioDimensionValue;
+	}
+	public void setScenarioDimensionValue(String scenarioDimensionValue) {
+		this.scenarioDimensionValue = scenarioDimensionValue;
 	}
 	public IBitSet getRuleBitSet() {
 		return ruleBitSet;

@@ -1,7 +1,5 @@
 package org.bitdekk.helper.sql.grammar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
@@ -34,11 +32,6 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
 	hashMap.put("P1",2);
 	hashMap.put("P2",3);
 	
-	HashMap<String, ArrayList<String>> dimensionMap = new HashMap<String, ArrayList<String>>();
-	dimensionMap.put("Supplier", new ArrayList<String>(Arrays.asList(new String[]{"S1","S2"})));
-	dimensionMap.put("Product", new ArrayList<String>(Arrays.asList(new String[]{"P1","P2"})));
-	sqlHelper.initialize(dimensionMap, hashMap);
-	
 	DataTable dataTable = new DataTable();
 	dataTable.addColumn(new ColumnDescription("Supplier", ValueType.TEXT, "Supplier"));
 	dataTable.addColumn(new ColumnDescription("Product", ValueType.TEXT, "Product"));
@@ -69,24 +62,39 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
 	Assert.assertEquals(1000.0, ((NumberValue)dataTableSelected.getCell(0, 0).getValue()).getValue(), 0.000000000001);
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, SUM(Volume) FROM VolumeTable");
-	Assert.assertEquals(100.0, ((NumberValue)dataTableSelected.getCell(0, 2).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(1, 2).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(2, 2).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(400.0, ((NumberValue)dataTableSelected.getCell(3, 2).getValue()).getValue(), 0.000000000001);
-	
-	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume), Product FROM VolumeTable");
-	Assert.assertEquals(100.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(1, 1).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(2, 1).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(400.0, ((NumberValue)dataTableSelected.getCell(3, 1).getValue()).getValue(), 0.000000000001);
+	for(int i = 0; i < dataTableSelected.getNumberOfRows(); i++) {
+		if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1") && dataTableSelected.getCell(i, 1).getValue().toString().equals("P1"))
+			Assert.assertEquals(100.0, ((NumberValue)dataTableSelected.getCell(i, 2).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1") && dataTableSelected.getCell(i, 1).getValue().toString().equals("P2"))
+			Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(i, 2).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2") && dataTableSelected.getCell(i, 1).getValue().toString().equals("P1"))
+			Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(i, 2).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2") && dataTableSelected.getCell(i, 1).getValue().toString().equals("P2"))
+			Assert.assertEquals(400.0, ((NumberValue)dataTableSelected.getCell(i, 2).getValue()).getValue(), 0.000000000001);
+	}
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) AS VOLUME, Product AS PP FROM VolumeTable");
+	for(int i = 0; i < dataTableSelected.getNumberOfRows(); i++) {
+		if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1") && dataTableSelected.getCell(i, 2).getValue().toString().equals("P1"))
+			Assert.assertEquals(100.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1") && dataTableSelected.getCell(i, 2).getValue().toString().equals("P2"))
+			Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2") && dataTableSelected.getCell(i, 2).getValue().toString().equals("P1"))
+			Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2") && dataTableSelected.getCell(i, 2).getValue().toString().equals("P2"))
+			Assert.assertEquals(400.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+	}
+	
 	Assert.assertEquals(dataTableSelected.getColumnDescription(1).getLabel(), "VOLUME");
 	Assert.assertEquals(dataTableSelected.getColumnDescription(2).getLabel(), "PP");
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) FROM VolumeTable");
-	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(1, 1).getValue()).getValue(), 0.000000000001);
+	for(int i = 0; i < dataTableSelected.getNumberOfRows(); i++) {
+		if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1"))
+			Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2"))
+			Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+	}
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, SUM(Volume) FROM VolumeTable HAVING SUM(Volume) > 400");
 	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
@@ -98,17 +106,29 @@ public class SqlHelperTest  extends AbstractTestNGSpringContextTests {
 	Assert.assertEquals(0, dataTableSelected.getNumberOfRows());
 	
 	dataTableSelected = sqlHelper.result("SELECT SUM(Volume), Supplier FROM VolumeTable WHERE Product IN (\"P1\",\"P2\")");
-	Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(0, 0).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(1, 0).getValue()).getValue(), 0.000000000001);
+	for(int i = 0; i < dataTableSelected.getNumberOfRows(); i++) {
+		if(dataTableSelected.getCell(i, 1).getValue().toString().equals("S1"))
+			Assert.assertEquals(300.0, ((NumberValue)dataTableSelected.getCell(i, 0).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 1).getValue().toString().equals("S2"))
+			Assert.assertEquals(700.0, ((NumberValue)dataTableSelected.getCell(i, 0).getValue()).getValue(), 0.000000000001);
+	}
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, 2 * SUM(Volume) FROM VolumeTable WHERE Product = \"P1\"");
-	Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(600.0, ((NumberValue)dataTableSelected.getCell(1, 1).getValue()).getValue(), 0.000000000001);
+	for(int i = 0; i < dataTableSelected.getNumberOfRows(); i++) {
+		if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1"))
+			Assert.assertEquals(200.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2"))
+			Assert.assertEquals(600.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+	}
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, 2 * SUM(Volume) + 2 FROM VolumeTable WHERE Product = \"P1\"");
 	//DataTable applyQuery = DataSourceHelper.applyQuery(DataSourceHelper.parseQuery("SELECT Supplier, (2 * SUM(Volume)) + 2 WHERE Product = \"P1\" group by Supplier"), dataTable, ULocale.US);
-	Assert.assertEquals(202.0, ((NumberValue)dataTableSelected.getCell(0, 1).getValue()).getValue(), 0.000000000001);
-	Assert.assertEquals(602.0, ((NumberValue)dataTableSelected.getCell(1, 1).getValue()).getValue(), 0.000000000001);
+	for(int i = 0; i < dataTableSelected.getNumberOfRows(); i++) {
+		if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S1"))
+			Assert.assertEquals(202.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+		else if(dataTableSelected.getCell(i, 0).getValue().toString().equals("S2"))
+			Assert.assertEquals(602.0, ((NumberValue)dataTableSelected.getCell(i, 1).getValue()).getValue(), 0.000000000001);
+	}
 	
 	dataTableSelected = sqlHelper.result("SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume DESC");
 	Assert.assertEquals(800.0, ((NumberValue)dataTableSelected.getCell(0, 2).getValue()).getValue(), 0.000000000001);

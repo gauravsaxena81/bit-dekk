@@ -1,7 +1,6 @@
 package org.bitdekk.distributed.test;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.bitdekk.DataLayer;
 import org.bitdekk.distributed.server.api.IBitDekkInstance;
@@ -40,13 +39,6 @@ public class TestBitDekkNodeAB {
 	private static DataLayer getDataLayer() throws TypeMismatchException {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-node-test.xml");
 		DataLayer dataLayer = ctx.getBean(DataLayer.class);
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
-		
-		dataLayer.initializeDimensionValues(hashMap);
 		
 		DataTable dataTable = new DataTable();
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));

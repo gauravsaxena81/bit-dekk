@@ -2,9 +2,6 @@ package org.bitdekk.scenario.distributed.noscenario;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.bitdekk.distributed.scenario.server.api.IBitDekkScenarioInstance;
 import org.bitdekk.distributed.scenario.server.impl.BitDekkScenarioInstance;
@@ -60,21 +57,7 @@ public class TestBitDekkNodeA {
 	private static ScenarioDataLayer getScenarioDataLayer() throws TypeMismatchException {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:applicationContext-node-scenario-test.xml");
 		ScenarioDataLayer scenarioDataLayer = ctx.getBean(ScenarioDataLayer.class);
-		
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
-		hashMap.put("2011",4);
-		scenarioDataLayer.initializeDimensionValues(hashMap);
-		
-		HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
-		dimensionToDimensionValueIdMap.put("Supplier", new ArrayList<Integer>(Arrays.asList(new Integer[]{0,1})));
-		dimensionToDimensionValueIdMap.put("Product", new ArrayList<Integer>(Arrays.asList(new Integer[]{2,3})));
-		dimensionToDimensionValueIdMap.put("Year", new ArrayList<Integer>(Arrays.asList(new Integer[]{4})));
-		scenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
-		
+
 		DataTable dataTable = new DataTable();
 		dataTable.addColumn(new ColumnDescription("0", ValueType.TEXT, "Year"));
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));

@@ -23,10 +23,19 @@ import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.scenario.ScenarioUtil;
 import org.bitdekk.scenario.helper.DimensionHelper;
 import org.bitdekk.scenario.helper.ScenarioDataHelper;
+import org.bitdekk.scenario.helper.ScenarioDimensionValueHelper;
 
 public class DistributedScenarioHelper {
 	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
+	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
+	public ScenarioDimensionValueHelper getScenarioDimensionValueHelper() {
+		return scenarioDimensionValueHelper;
+	}
+	public void setScenarioDimensionValueHelper(
+			ScenarioDimensionValueHelper scenarioDimensionValueHelper) {
+		this.scenarioDimensionValueHelper = scenarioDimensionValueHelper;
+	}
 	private long timeout = Long.MAX_VALUE;
 	
 	public long getTimeout() {
@@ -47,8 +56,9 @@ public class DistributedScenarioHelper {
 	public void setScenarioDataHelper(ScenarioDataHelper scenarioDataHelper) {
 		this.scenarioDataHelper = scenarioDataHelper;
 	}
-	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
+	public void associateRule(String dimension, String scenarioDimensionValue, IBitSet ruleBitSet, double[] factor) {
 		Set<Integer> scenarios = ScenarioUtil.pi(ruleBitSet, scenarioDataHelper);
+		int id = scenarioDimensionValueHelper.getId(dimension, scenarioDimensionValue);
 		if(!scenarios.isEmpty()) {
 			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper)) {
 				IBitSet key = i.clone();
@@ -63,9 +73,10 @@ public class DistributedScenarioHelper {
 			scenarioDataHelper.associateRule(id, key, ruleBitSet, factor);
 		}
 		AssociateRuleRequest associateRuleRequest = new AssociateRuleRequest();
-		associateRuleRequest.setId(id);
 		associateRuleRequest.setRuleBitSet(ruleBitSet);
 		associateRuleRequest.setFactor(factor);
+		associateRuleRequest.setDimension(dimension);
+		associateRuleRequest.setScenarioDimensionValue(scenarioDimensionValue);
 		final boolean[] success = new boolean[]{true};
 		if(!BitDekkDistributedUtil.evaluate(timeout, associateRuleRequest, Boolean.class, new Processor<Boolean>() {
 			@Override
@@ -75,12 +86,13 @@ public class DistributedScenarioHelper {
 		}) && success[0])
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
 	}
-	public boolean deleteRule(int id, IBitSet ruleBitSet) {
+	public boolean deleteRule(String dimension, String dimensionValue, int id, IBitSet ruleBitSet) {
 		IBitSet clone = ruleBitSet.clone();
 		clone.set(id);
 		boolean deleteRule = scenarioDataHelper.deleteRule(id, clone);
 		DeleteRuleRequest deleteRuleRequest = new DeleteRuleRequest();
-		deleteRuleRequest.setId(id);
+		deleteRuleRequest.setDimension(dimension);
+		deleteRuleRequest.setDimensionValue(dimensionValue);
 		deleteRuleRequest.setKey(clone);
 		final boolean[] success = new boolean[]{true};
 		if(BitDekkDistributedUtil.evaluate(timeout, deleteRuleRequest, Boolean.class, new Processor<Boolean>() {

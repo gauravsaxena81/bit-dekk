@@ -61,10 +61,11 @@ public class MeasureHelper {
 			DataRow dataRow = new DataRow(table.getMeasureIndexMap().size());
 			table.getRows().add(dataRow);
 			int index = 0;
-			for(TableCell j : i.getCells()) {
-				if(j.getType().equals(ValueType.TEXT)) {
+			for(int k = 0; k < i.getCells().size(); k++) {
+				TableCell j = i.getCells().get(k);
+				if(j.getType().equals(ValueType.TEXT) || j.getType().equals(ValueType.DATE)) {
 					if(!j.isNull())
-						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(((TextValue)j.getValue()).getValue()));
+						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(dataTable.getColumnDescription(k).getLabel(), ((TextValue)j.getValue()).getValue()));
 				} else if(j.getType().equals(ValueType.NUMBER)) {
 					if(j.isNull())
 						dataRow.getMeasureValues()[index++] = Double.NaN;
@@ -116,7 +117,7 @@ public class MeasureHelper {
 					case Types.TINYINT:
 						dataRow.getMeasureValues()[index++] = resultSet.getDouble(i);
 					default:
-						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(resultSet.getString(i)));
+						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(resultSet.getMetaData().getColumnLabel(i), resultSet.getString(i)));
 				}
 			}
 		}

@@ -3,7 +3,6 @@ package org.bitdekk.distributed.scenario.server.model;
 public class DeleteDimensionValueRequest {
 	private String dimension;
 	private String dimensionValue;
-	private int id;
 	public String getDimension() {
 		return dimension;
 	}
@@ -15,11 +14,5 @@ public class DeleteDimensionValueRequest {
 	}
 	public void setDimensionValue(String dimensionValue) {
 		this.dimensionValue = dimensionValue;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 }
