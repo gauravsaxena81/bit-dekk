@@ -32,10 +32,23 @@ import org.bitdekk.model.DataRow;
 import org.bitdekk.scenario.ScenarioUtil;
 import org.bitdekk.scenario.model.ScenarioRowQuery;
 
+import com.google.visualization.datasource.base.TypeMismatchException;
+import com.google.visualization.datasource.datatable.ColumnDescription;
+import com.google.visualization.datasource.datatable.DataTable;
+import com.google.visualization.datasource.datatable.TableRow;
+import com.google.visualization.datasource.datatable.value.ValueType;
+
 public class ScenarioEvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
 	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
+	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
+	public ScenarioDimensionValueHelper getScenarioDimensionValueHelper() {
+		return scenarioDimensionValueHelper;
+	}
+	public void setScenarioDimensionValueHelper(ScenarioDimensionValueHelper scenarioDimensionValueHelper) {
+		this.scenarioDimensionValueHelper = scenarioDimensionValueHelper;
+	}
 	public DimensionHelper getDimensionHelper() {
 		return dimensionHelper;
 	}
@@ -84,7 +97,7 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 		} else
 			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos))];
 	}
-	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+	/*private double aggregate1(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
 		class D {
 			IBitSet key;
 			ArrayList<ScenarioRowQuery> list = new ArrayList<ScenarioRowQuery>();
@@ -105,7 +118,7 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 					if(filterBitSet.contains(key) && key.contains(clone)) {
 						IBitSet intersectedFilter = filterBitSet.clone();
 						intersectedFilter.and(key);
-						getRealQuery(scenarioDataHelper.getScenrios(), intersectedFilter);
+						getRealQuery(scenarioDataHelper.getScenarios(), intersectedFilter);
 						list.add(new D(intersectedFilter, scenarioDataHelper.getQueryMap(i).get(key)));
 					}
 				}
@@ -120,6 +133,39 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 						if(k.getQuery().contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSetClone))
 							aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet
 									, k.getFactor()));
+		}
+		return aggregation.getValue();
+	}*/
+	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+		if(filterBitSet.contains(viewBitSet)) {
+			IBitSet unifiedQuery = filterBitSet.clone();
+			for(int i = viewBitSet.nextSetBit(0); i > -1; i = viewBitSet.nextSetBit(i + 1))
+				unifiedQuery.andNot(dimensionHelper.getDimensionValuesBitSet(dimensionHelper.getDimension(i)));
+			unifiedQuery.or(viewBitSet);
+			Set<Integer> scenarioSet = ScenarioUtil.pi(unifiedQuery, scenarioDataHelper);
+			if(scenarioSet.isEmpty()) {
+				for(DataRow j : measureHelper.getTable(tableName).getRows())
+					if(unifiedQuery.contains(j.getMeasureQuery()))
+						aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, viewBitSet, filterBitSet));
+			} else {
+				for(Integer i : scenarioSet) {
+					for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
+						IBitSet intersectedFilter = unifiedQuery.clone();
+						intersectedFilter.and(key);
+						getRealQuery(scenarioDataHelper.getScenarios(), intersectedFilter);
+						if(ScenarioUtil.containsAllDimensions(intersectedFilter, dimensionHelper, scenarioDataHelper)) {
+							for(DataRow j : measureHelper.getTable(tableName).getRows()) {
+								if(unifiedQuery.contains(j.getMeasureQuery()))
+									aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, viewBitSet, filterBitSet));
+								for(ScenarioRowQuery k : scenarioDataHelper.getQueryMap(i).get(key))
+									if(intersectedFilter.contains(j.getMeasureQuery()) && k.getQuery().contains(j.getMeasureQuery()))
+										aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, viewBitSet, filterBitSet
+												, k.getFactor()));
+							}
+						}
+					}
+				}
+			}
 		}
 		return aggregation.getValue();
 	}
@@ -161,5 +207,81 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 	@Override
 	public void parse(CommonTokenStream tokens, GroupedMeasureExpression gme) throws RecognitionException {
 		new BitdekkErrorHandlingParser(tokens, gme).stat();
+	}
+	@Override
+	public DataTable select(String tableName, IBitSet filterBitSet, String... columnNames) throws TypeMismatchException {
+		class D {
+			IBitSet key;
+			ArrayList<ScenarioRowQuery> list = new ArrayList<ScenarioRowQuery>();
+			int scenarioDimensionValue;
+			private IBitSet origkey;
+			public D(int scenarioDimensionValue, IBitSet origkey, IBitSet key, ArrayList<ScenarioRowQuery> list) {
+				this.scenarioDimensionValue = scenarioDimensionValue;
+				this.origkey = origkey;
+				this.key = key;
+				this.list = list;
+			}
+		}
+		DataTable dataTable = new DataTable();
+		for(String i : columnNames)
+			if(measureHelper.getTable(tableName).getDimensionIndexMap().get(i) != null)
+				dataTable.addColumn(new ColumnDescription(i, ValueType.TEXT, i));
+			else if(measureHelper.getTable(tableName).getMeasureIndexMap().get(i) != null)
+				dataTable.addColumn(new ColumnDescription(i, ValueType.NUMBER, i));
+			else
+				throw new IllegalArgumentException("Column Name " + i + "not found in table " + tableName);
+			
+		ArrayList<D> list  = new ArrayList<D>();
+		for(Integer i : ScenarioUtil.pi(filterBitSet, scenarioDataHelper)) {
+			for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
+				if(filterBitSet.contains(key)) {
+					IBitSet intersectedFilter = filterBitSet.clone();
+					intersectedFilter.and(key);
+					getRealQuery(scenarioDataHelper.getScenarios(), intersectedFilter);
+					list.add(new D(i, key, intersectedFilter, scenarioDataHelper.getQueryMap(i).get(key)));
+				}
+			}
+		}
+		for(DataRow i : measureHelper.getTable(tableName).getRows()) {
+			if(filterBitSet.contains(i.getMeasureQuery()))
+				accumulator(dataTable, i.getMeasureQuery(), i.getMeasureValues(), tableName, columnNames);
+			for(int j = 0; j < list.size(); j++) {
+				if(list.get(j).key.contains(i.getMeasureQuery())) {
+					for(ScenarioRowQuery k : list.get(j).list) {
+						IBitSet clone = k.getQuery().clone();
+						if(k.getQuery().contains(i.getMeasureQuery())) {
+							for(Integer w : ScenarioUtil.pi(list.get(j).origkey, scenarioDataHelper))
+								clone = f(clone, w);
+							accumulator(dataTable, f(clone, list.get(j).scenarioDimensionValue), p(i.getMeasureValues(), k.getFactor()), tableName, columnNames);
+						}
+					}
+				}
+			}
+		}
+		return dataTable;
+	}
+	private void accumulator(DataTable dataTable, IBitSet measureQuery, double[] measureValues, String tableName, String[] columnNames) throws TypeMismatchException {
+		TableRow row = new TableRow();
+		for(ColumnDescription i : dataTable.getColumnDescriptions()) {
+			if(i.getType().equals(ValueType.TEXT)) {
+				IBitSet dimensionValuesBitSet = dimensionHelper.getDimensionValuesBitSet(i.getId());
+				dimensionValuesBitSet.and(measureQuery);
+				row.addCell(scenarioDimensionValueHelper.getDimensionValue(dimensionValuesBitSet.nextSetBit(0)).getDimensionValue());
+			} else
+				row.addCell(measureValues[measureHelper.getTable(tableName).getMeasureIndexMap().get(i.getId())]);
+		}
+		dataTable.addRow(row);
+	}
+	private IBitSet f(IBitSet query, Integer w) {
+		IBitSet clone = query.clone();
+		clone.andNot(dimensionHelper.getDimensionValuesBitSet(dimensionHelper.getDimension(w)));
+		clone.set(w);
+		return clone;
+	}
+	private double[] p(double[] measureValues, double[] factor) {
+		double[] r = new double[measureValues.length];
+		for(int i = 0; i < r.length; i++)
+			r[i] = measureValues[i] * factor[i];
+		return r;
 	}
 }

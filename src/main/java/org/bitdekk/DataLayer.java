@@ -15,7 +15,6 @@ package org.bitdekk;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Set;
 
 import org.bitdekk.aggregation.IAggregation;
@@ -24,6 +23,8 @@ import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.helper.AggregationHelper;
 import org.bitdekk.helper.DimensionValueHelper;
 import org.bitdekk.helper.MeasureHelper;
+import org.bitdekk.helper.SelectHelper;
+import org.bitdekk.model.DimensionValue;
 
 import com.google.visualization.datasource.datatable.DataTable;
 
@@ -32,7 +33,14 @@ public class DataLayer {
 	private DimensionValueHelper dimensionValueHelper;
 	private MeasureHelper measureHelper;
 	private AggregationHelper aggregationHelper;
+	private SelectHelper selectHelper;
 	
+	public SelectHelper getSelectHelper() {
+		return selectHelper;
+	}
+	public void setSelectHelper(SelectHelper selectHelper) {
+		this.selectHelper = selectHelper;
+	}
 	public DimensionValueHelper getDimensionValueHelper() {
 		return dimensionValueHelper;
 	}
@@ -52,20 +60,18 @@ public class DataLayer {
 		this.aggregationHelper = aggregationHelper;
 	}
 	/**
-	 * @param dimensionMap Map of dimension name and its id
-	 */
-	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
-		dimensionValueHelper.initialize(dimensionMap);
-	}
-	/**
 	 * @param tableName a string to uniquely identify this table
 	 * @param dataTable <a href='http://gwt-google-apis.googlecode.com/svn/javadoc/visualization/1.1/com/google/gwt/visualization/client/DataTable.html'>Google DataTable</a> 
 	 */
 	public void initializeTable(String tableName, DataTable dataTable) {
+		dimensionValueHelper.initializeDimensionValues(dataTable);
 		measureHelper.intializeTable(tableName, dataTable);
 	}
 	public void initializeTable(String tableName, ResultSet resultSet) throws SQLException {
 		measureHelper.intializeTable(tableName, resultSet);
+	}
+	public Set<String> getDimensions(String tableName) {
+		return measureHelper.getTable(tableName).getMeasureIndexMap().keySet();
 	}
 	/**
 	 * 
@@ -88,14 +94,14 @@ public class DataLayer {
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
-	public double aggregate(String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
+	public double aggregate(String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
 		return aggregationHelper.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
 	}
 	/**
 	 * @param dimensionValues Array of dimension values
 	 * @return A {@link IBitSet} object having those bits set position of which matches with the ids of dimension values 
 	 */
-	public IBitSet getBitSet(String[] dimensionValues) {
+	public IBitSet getBitSet(DimensionValue[] dimensionValues) {
 		return dimensionValueHelper.getBitSet(dimensionValues);
 	}
 	/**
@@ -119,27 +125,30 @@ public class DataLayer {
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException
 	 */
-	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
+	public double aggregate(IAggregation aggregation, String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
 		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
 	/**
 	 * @param dimensionValue
 	 * @return id of the dimension value
 	 */
-	public int getDimensionId(String dimensionValue) {
-		return dimensionValueHelper.getId(dimensionValue);
-	}
-	/**
-	 * @return set of all the ids
-	 */
-	public Set<Integer> getDimensionValueIds() {
-		return dimensionValueHelper.getDimensionValueIds();
+	public int getDimensionId(String dimension, String dimensionValue) {
+		return dimensionValueHelper.getId(dimension, dimensionValue);
 	}
 	/**
 	 * @param id of a dimension value
 	 * @return Dimension value
 	 */
-	public String getDimensionValue(int id) {
+	public DimensionValue getDimensionValue(int id) {
 		return dimensionValueHelper.getDimensionValue(id);
+	}
+	public DataTable select(String tableName, IBitSet filterbitSet, String... columnNames) {
+		return selectHelper.select(tableName, filterbitSet, columnNames);
+	}
+	public DataTable select(String tableName, DimensionValue[] filterDimensionValues, String... columnNames) {
+		return selectHelper.select(tableName, getBitSet(filterDimensionValues), columnNames);
+	}
+	public Set<Integer> getDimensionValueIds() {
+		return dimensionValueHelper.getDimensionValueIds();
 	}
 }

@@ -27,6 +27,9 @@ import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.helper.expression.model.MeasureExpression;
 import org.bitdekk.model.DataRow;
 
+import com.google.visualization.datasource.base.TypeMismatchException;
+import com.google.visualization.datasource.datatable.DataTable;
+
 public class EvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
 	public MeasureHelper getMeasureHelper() {
@@ -126,5 +129,11 @@ public class EvaluationHelper implements IEvaluation {
 	@Override
 	public void parse(CommonTokenStream tokens, GroupedMeasureExpression gme) throws RecognitionException {
 		new BitdekkErrorHandlingParser(tokens, gme).stat();
+	}
+	@Override
+	public DataTable select(String tableName, IBitSet filterBitSet,
+			String... columnNames) throws TypeMismatchException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

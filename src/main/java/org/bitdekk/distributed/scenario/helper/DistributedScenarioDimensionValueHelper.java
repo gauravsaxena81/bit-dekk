@@ -22,6 +22,7 @@ import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.DataHelper;
 import org.bitdekk.scenario.helper.DimensionHelper;
 import org.bitdekk.scenario.helper.ScenarioDataHelper;
+import org.bitdekk.util.BitDekkUtil;
 
 public class DistributedScenarioDimensionValueHelper {
 	private DataHelper dataHelper;
@@ -53,14 +54,17 @@ public class DistributedScenarioDimensionValueHelper {
 	public void setDataHelper(DataHelper dataHelper) {
 		this.dataHelper = dataHelper;
 	}
-	public void createDimensionValue(String dimension, String dimensionValue, int id) {
-		dataHelper.getDimensionValueMap().put(dimensionValue, id);
-		dataHelper.getIdToDimensionValueMap().put(id, dimensionValue);
+	public int createDimensionValue(String dimension, String dimensionValue) {
+		String generateDimensionValueString = BitDekkUtil.generateDimensionValueString(dimension, dimensionValue);
+		int id = dataHelper.getId();
+		dataHelper.addToId();
+		dataHelper.getDimensionValueMap().put(generateDimensionValueString, id);
+		dataHelper.getIdToDimensionValueMap().put(id, generateDimensionValueString);
 		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+		scenarioDataHelper.getDimensonValueToDimensionMap().put(id, dimension);
 		CreateDimensionValueRequest createDimensionValueRequest = new CreateDimensionValueRequest();
 		createDimensionValueRequest.setDimensionValue(dimensionValue);
 		createDimensionValueRequest.setDimension(dimension);
-		createDimensionValueRequest.setId(id);
 		final boolean[] success = new boolean[]{true};
 		if(!BitDekkDistributedUtil.evaluate(timeout, createDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
 			@Override
@@ -69,25 +73,30 @@ public class DistributedScenarioDimensionValueHelper {
 			}
 		}) && success[0])
 			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
+		return id;
 	}
-	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		boolean remove = dataHelper.getDimensionValueMap().remove(dimensionValue) != null;
-		dataHelper.getIdToDimensionValueMap().remove(id);
-		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
-		final boolean[] success = new boolean[]{true};
-		DeleteDimensionValueRequest deleteDimensionValueRequest = new DeleteDimensionValueRequest();
-		deleteDimensionValueRequest.setDimensionValue(dimensionValue);
-		deleteDimensionValueRequest.setDimension(dimension);
-		deleteDimensionValueRequest.setId(id);
-		if(BitDekkDistributedUtil.evaluate(timeout, deleteDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
-			@Override
-			public void process(Boolean t) {
-				success[0] &= t;
-			}
-		}))
-			return remove && success[0];
-		else
-			throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
+	public boolean deleteDimensionValue(String dimension, String dimensionValue) {
+		Integer id = dataHelper.getDimensionValueMap().get(BitDekkUtil.generateDimensionValueString(dimension, dimensionValue));
+		if(id != null) {
+			boolean remove = dataHelper.getDimensionValueMap().remove(BitDekkUtil.generateDimensionValueString(dimension, dimensionValue)) != null;
+			dataHelper.getIdToDimensionValueMap().remove(id);
+			scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+			scenarioDataHelper.getDimensonValueToDimensionMap().remove(id);
+			final boolean[] success = new boolean[]{true};
+			DeleteDimensionValueRequest deleteDimensionValueRequest = new DeleteDimensionValueRequest();
+			deleteDimensionValueRequest.setDimensionValue(dimensionValue);
+			deleteDimensionValueRequest.setDimension(dimension);
+			if(BitDekkDistributedUtil.evaluate(timeout, deleteDimensionValueRequest, Boolean.class, new Processor<Boolean>() {
+				@Override
+				public void process(Boolean t) {
+					success[0] &= t;
+				}
+			}))
+				return remove && success[0];
+			else
+				throw new RuntimeException("Timeout occured while waiting for response. One or more nodes may be down.");
+		}
+		return false;
 	}
 	public List<Integer> getDimensionValueIds(String dimension) {
 		return scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension);

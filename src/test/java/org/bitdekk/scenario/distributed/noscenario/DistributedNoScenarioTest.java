@@ -1,14 +1,11 @@
 package org.bitdekk.scenario.distributed.noscenario;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.bitdekk.distributed.cluster.ClusterConfig;
 import org.bitdekk.distributed.scenario.DistributedScenarioDataLayer;
 import org.bitdekk.distributed.server.impl.BitDekkInstance;
+import org.bitdekk.model.DimensionValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -23,7 +20,7 @@ import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
-@ContextConfiguration(locations = {"classpath:applicationContext-reducer-scenario-test.xml"})
+@ContextConfiguration(locations = {"classpath:applicationContext-reducer-noscenario-test.xml"})
 @Test(singleThreaded=true)
 public class DistributedNoScenarioTest extends AbstractTestNGSpringContextTests {
 	@Autowired
@@ -73,20 +70,6 @@ public class DistributedNoScenarioTest extends AbstractTestNGSpringContextTests 
 	}
 	@BeforeClass
 	public void initialize() throws TypeMismatchException, IOException, InterruptedException {
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
-		hashMap.put("2011",4);
-		distributedScenarioDataLayer.initializeDimensionValues(hashMap);
-		
-		HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
-		dimensionToDimensionValueIdMap.put("Supplier", new ArrayList<Integer>(Arrays.asList(new Integer[]{0,1})));
-		dimensionToDimensionValueIdMap.put("Product", new ArrayList<Integer>(Arrays.asList(new Integer[]{2,3})));
-		dimensionToDimensionValueIdMap.put("Year", new ArrayList<Integer>(Arrays.asList(new Integer[]{4})));
-		distributedScenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
-		
 		DataTable dataTable = new DataTable();
 		dataTable.addColumn(new ColumnDescription("0", ValueType.TEXT, "Year"));
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
@@ -121,34 +104,28 @@ public class DistributedNoScenarioTest extends AbstractTestNGSpringContextTests 
 		row.addCell(13);
 		row.addCell(1.4);
 		dataTable.addRow(row);
+		System.out.println("DistributedNoScenarioTest " + distributedScenarioDataLayer.hashCode());
 		distributedScenarioDataLayer.initializeTable("VolumeTable", dataTable);
 	}
 	@Test
 	public void distributedTest() {
 		startCluster();
-		Assert.assertEquals(42 * 3, distributedScenarioDataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2","2011"}, "SUM(2 * Volume)"), 0.00000001);
-		Assert.assertEquals(23.0, (distributedScenarioDataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2","2011"}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
+		Assert.assertEquals(42 * 3, distributedScenarioDataLayer.aggregate("VolumeTable",  new DimensionValue[]{new DimensionValue("Supplier","S1")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Supplier","S2"),new DimensionValue("Year","2011")}, "SUM(2 * Volume)"), 0.00000001);
+		Assert.assertEquals(23.0, (distributedScenarioDataLayer.aggregate("VolumeTable",  new DimensionValue[]{new DimensionValue("Supplier","S1")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Supplier","S2"),new DimensionValue("Year","2011")}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
 				, 0.00000001);
 	}
 	@Test(dependsOnMethods="distributedTest", expectedExceptions=RuntimeException.class)
 	public void distributedTestNodeFailure() {
 		startCluster();
 		processAB.destroy();
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
-		
-		distributedScenarioDataLayer.initializeDimensionValues(hashMap);
-		Assert.assertEquals(42 * 3, distributedScenarioDataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2","2011"}, "SUM(2 * Volume)"), 0.00000001);
+		Assert.assertEquals(42 * 3, distributedScenarioDataLayer.aggregate("VolumeTable",  new DimensionValue[]{new DimensionValue("Supplier","S1")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Supplier","S2"),new DimensionValue("Year","2011")}, "SUM(2 * Volume)"), 0.00000001);
 	}
 	@AfterClass
 	public void destroyServers() {
 		System.out.println("---------------------------------Distributed No Scenario Test Done------------------------------------------");
 		processA.destroy();
 		processAA.destroy();
-		//processAB.destroy();
+		processAB.destroy();
 		System.out.println("---------------------------------Distributed No Scenario Test Done------------------------------------------");
 	}
 }

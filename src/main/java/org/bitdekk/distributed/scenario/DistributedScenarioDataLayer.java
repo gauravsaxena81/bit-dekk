@@ -15,7 +15,6 @@ package org.bitdekk.distributed.scenario;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +23,7 @@ import org.bitdekk.api.IBitSet;
 import org.bitdekk.distributed.scenario.helper.DistributedScenarioDimensionValueHelper;
 import org.bitdekk.distributed.scenario.helper.DistributedScenarioHelper;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
+import org.bitdekk.model.DimensionValue;
 import org.bitdekk.scenario.ScenarioDataLayer;
 
 import com.google.visualization.datasource.datatable.DataTable;
@@ -51,12 +51,6 @@ public class DistributedScenarioDataLayer {
 	}
 	public void setScenarioDataLayer(ScenarioDataLayer scenarioDataLayer) {
 		this.scenarioDataLayer = scenarioDataLayer;
-	}
-	/**
-	 * @param dimensionMap Map of dimension name and its id
-	 */
-	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
-		scenarioDataLayer.initializeDimensionValues(dimensionMap);
 	}
 	/**
 	 * @param tableName a string to uniquely identify this table
@@ -89,14 +83,14 @@ public class DistributedScenarioDataLayer {
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
-	public double aggregate(String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
+	public double aggregate(String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
 		return scenarioDataLayer.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
 	}
 	/**
 	 * @param dimensionValues Array of dimension values
 	 * @return A {@link IBitSet} object having those bits set position of which matches with the ids of dimension values 
 	 */
-	public IBitSet getBitSet(String[] dimensionValues) {
+	public IBitSet getBitSet(DimensionValue[] dimensionValues) {
 		return scenarioDataLayer.getBitSet(dimensionValues);
 	}
 	/**
@@ -120,15 +114,15 @@ public class DistributedScenarioDataLayer {
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException
 	 */
-	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
+	public double aggregate(IAggregation aggregation, String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
 		return scenarioDataLayer.aggregate(aggregation, tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
 	/**
 	 * @param dimensionValue
 	 * @return id of the dimension value
 	 */
-	public int getDimensionId(String dimensionValue) {
-		return scenarioDataLayer.getDimensionId(dimensionValue);
+	public int getDimensionId(String dimension, String dimensionValue) {
+		return scenarioDataLayer.getDimensionId(dimension, dimensionValue);
 	}
 	/**
 	 * @return set of all the ids
@@ -143,20 +137,17 @@ public class DistributedScenarioDataLayer {
 	public List<Integer> getDimensionValueIds(String dimension) {
 		return scenarioDataLayer.getDimensionValueIds(dimension);
 	}
-	public String getDimensionValue(int id) {
+	public DimensionValue getDimensionValue(int id) {
 		return scenarioDataLayer.getDimensionValue(id);
 	}
-	public void initializeDimensions(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
-		scenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
+	public void createDimensionValue(String dimension, String dimensionValue) {
+		distributedScenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue);
 	}
-	public void createDimensionValue(String dimension, String dimensionValue, int id) {
-		distributedScenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue, id);
+	public boolean deleteDimensionValue(String dimension, String dimensionValue) {
+		return distributedScenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue);
 	}
-	public boolean deleteDimensionValue(String dimension, String dimensionValue, int id) {
-		return distributedScenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id);
-	}
-	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
-		distributedScenarioHelper.associateRule(id, ruleBitSet, factor);
+	public void associateRule(String dimension, String scenarioDimensionvalue, IBitSet ruleBitSet, double[] factor) {
+		distributedScenarioHelper.associateRule(dimension, scenarioDimensionvalue, ruleBitSet, factor);
 	}
 	/**
 	 * @param dimension value id
@@ -164,7 +155,7 @@ public class DistributedScenarioDataLayer {
 	 * @param factor by which the measure values are to be multiplied
 	 * @return true if ruleBitSet was found and deleted, false if it was not found
 	 */
-	public boolean deleteRule(int id, IBitSet ruleBitSet) {
-		return distributedScenarioHelper.deleteRule(id, ruleBitSet);
+	public boolean deleteRule(String dimension, String dimensionValue, IBitSet ruleBitSet) {
+		return distributedScenarioHelper.deleteRule(dimension, dimensionValue, getDimensionId(dimension, dimensionValue), ruleBitSet);
 	}
 }

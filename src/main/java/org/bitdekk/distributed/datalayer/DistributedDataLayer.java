@@ -13,17 +13,27 @@
  */
 package org.bitdekk.distributed.datalayer;
 
-import java.util.HashMap;
 import java.util.Set;
 
 import org.bitdekk.DataLayer;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
+import org.bitdekk.helper.DimensionValueHelper;
+import org.bitdekk.model.DimensionValue;
+
+import com.google.visualization.datasource.datatable.DataTable;
 
 
 public class DistributedDataLayer {
 	private DataLayer dataLayer;
+	private DimensionValueHelper dimensionValueHelper;
+	public DimensionValueHelper getDimensionValueHelper() {
+		return dimensionValueHelper;
+	}
+	public void setDimensionValueHelper(DimensionValueHelper dimensionValueHelper) {
+		this.dimensionValueHelper = dimensionValueHelper;
+	}
 	public DataLayer getDataLayer() {
 		return dataLayer;
 	}
@@ -33,8 +43,8 @@ public class DistributedDataLayer {
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
-	public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
-		dataLayer.initializeDimensionValues(dimensionMap);
+	public void initializeDimensionValues(DataTable dataTable) {
+		dimensionValueHelper.initializeDimensionValues(dataTable);
 	}
 	/**
 	 * 
@@ -57,14 +67,14 @@ public class DistributedDataLayer {
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
-	public double aggregate(String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
+	public double aggregate(String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
 		return dataLayer.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
 	}
 	/**
 	 * @param dimensionValues Array of dimension values
 	 * @return A {@link IBitSet} object having those bits set position of which matches with the ids of dimension values 
 	 */
-	public IBitSet getBitSet(String[] dimensionValues) {
+	public IBitSet getBitSet(DimensionValue[] dimensionValues) {
 		return dataLayer.getBitSet(dimensionValues);
 	}
 	/**
@@ -88,15 +98,15 @@ public class DistributedDataLayer {
 	 * @return aggregated value
 	 * @throws InvalidBitDekkExpressionException
 	 */
-	public double aggregate(IAggregation aggregation, String tableName, String[] viewDimensionValues, String[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
+	public double aggregate(IAggregation aggregation, String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
 		return dataLayer.aggregate(aggregation,tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
 	}
 	/**
 	 * @param dimensionValue
 	 * @return id of the dimension value
 	 */
-	public int getDimensionId(String dimensionValue) {
-		return dataLayer.getDimensionId(dimensionValue);
+	public int getDimensionId(String dimension, String dimensionValue) {
+		return dataLayer.getDimensionId(dimension, dimensionValue);
 	}
 	/**
 	 * @return set of all the ids
@@ -108,7 +118,7 @@ public class DistributedDataLayer {
 	 * @param id of a dimension value
 	 * @return Dimension value
 	 */
-	public String getDimensionValue(int id) {
+	public DimensionValue getDimensionValue(int id) {
 		return dataLayer.getDimensionValue(id);
 	}
 }

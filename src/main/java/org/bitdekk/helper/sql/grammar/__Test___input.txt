@@ -1,1 +1,1 @@
-SELECT Supplier, Product, 2 * SUM(Volume) AS Volume FROM VolumeTable ORDER BY Volume desc
+SELECT campaign AS Campaign, website AS Website, client AS Client, MAX(start_date) AS StartDate, MAX(end_date) AS EndDate, MAX(delivery) / 100 AS Delivery, MAX(variance) * MAX(sign) AS Variance FROM

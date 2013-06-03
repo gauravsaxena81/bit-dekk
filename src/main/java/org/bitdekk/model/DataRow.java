@@ -13,15 +13,16 @@
  */
 package org.bitdekk.model;
 
-import org.bitdekk.util.OpenBitSet;
+import org.bitdekk.api.IBitSet;
+import org.bitdekk.util.BitDekkUtil;
 
 public class DataRow {
-	private OpenBitSet measureQuery = new OpenBitSet();
+	private IBitSet measureQuery = BitDekkUtil.newBitSet();
 	private double[] measureValues;
 	public DataRow(int measureNumber) {
 		measureValues = new double[measureNumber];
 	}
-	public OpenBitSet getMeasureQuery() {
+	public IBitSet getMeasureQuery() {
 		return measureQuery;
 	}
 	public double[] getMeasureValues() {

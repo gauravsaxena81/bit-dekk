@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.helper.distributed.expression.model;
+package org.bitdekk.distributed.expression.model;
 
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.aggregation.impl.CountAggregation;

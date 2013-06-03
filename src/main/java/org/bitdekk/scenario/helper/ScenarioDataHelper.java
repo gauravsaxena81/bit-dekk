@@ -23,7 +23,7 @@ import org.bitdekk.scenario.model.ScenarioRowQuery;
 
 public class ScenarioDataHelper {
 	private HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>> scenarioRules = new HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>>();
-	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap;
+	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
 	private HashMap<Integer, String> DimensonValueToDimensionMap = new HashMap<Integer, String>();
 	
 	public void associateRule(int id, IBitSet keyBitSet, IBitSet ruleBitSet, double[] factor) {
@@ -36,7 +36,7 @@ public class ScenarioDataHelper {
 		rules.put(keyBitSet, ruleList);
 		ruleList.add(new ScenarioRowQuery(ruleBitSet, factor));
 	}
-	public Set<Integer> getScenrios() {
+	public Set<Integer> getScenarios() {
 		return scenarioRules.keySet();
 	}
 	public void setDimensionToDimensionValueIdMap(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {

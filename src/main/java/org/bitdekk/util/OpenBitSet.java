@@ -765,7 +765,12 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
     }
     return (int)((h>>32) ^ h);  // fold leftmost bits into right
   }
-
+    @Override
+	public void andNot(IBitSet bitset) {
+		if(bitset != null && bitset instanceof OpenBitSet) {
+			andNot((OpenBitSet)bitset);
+		}
+	}
 	@Override
 	public void and(IBitSet bitset) {
 		if(bitset != null && bitset instanceof OpenBitSet) {

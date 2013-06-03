@@ -13,7 +13,7 @@
  */
 // $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\BitDekkServer\\src\\org\\bitdekk\\helper\\distributed\\expression\\DistributedBitdekkMeasureExpression.g 2013-03-04 15:05:29
 
-package org.bitdekk.helper.distributed.expression;
+package org.bitdekk.distributed.expression;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ import org.bitdekk.aggregation.impl.CountAggregation;
 import org.bitdekk.aggregation.impl.MaxAggregation;
 import org.bitdekk.aggregation.impl.MinAggregation;
 import org.bitdekk.aggregation.impl.SumAggregation;
-import org.bitdekk.helper.distributed.expression.model.FunctionExpression;
+import org.bitdekk.distributed.expression.model.FunctionExpression;
 import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 
 public class DistributedBitdekkMeasureExpressionParser extends Parser {

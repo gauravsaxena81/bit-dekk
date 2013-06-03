@@ -13,7 +13,7 @@
  */
 // $ANTLR 3.3 Nov 30, 2010 12:45:30 C:\\Work\\Personal Workspace\\BitDekkServer\\src\\org\\bitdekk\\helper\\distributed\\expression\\DistributedBitdekkMeasureExpression.g 2013-03-04 15:05:29
 
-package org.bitdekk.helper.distributed.expression;
+package org.bitdekk.distributed.expression;
 
 
 import org.antlr.runtime.BaseRecognizer;

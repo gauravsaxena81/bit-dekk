@@ -2,7 +2,10 @@ package org.bitdekk.helper.sql.grammar;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -11,11 +14,16 @@ import org.antlr.runtime.TokenStream;
 import org.bitdekk.DataLayer;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
-import org.bitdekk.util.OpenBitSet;
+import org.bitdekk.helper.MeasureHelper;
+import org.bitdekk.model.DataRow;
+import org.bitdekk.model.DimensionValue;
+import org.bitdekk.model.Table;
+import org.bitdekk.util.BitDekkUtil;
 
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
+import com.google.visualization.datasource.datatable.TableCell;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
@@ -23,10 +31,18 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 public class SqlHelper {
 	
 	private DataLayer dataLayer;
-	private HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap;
+	private HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, String> dimensionValuesToDimensionMap = new HashMap<String, String>();
+	private MeasureHelper measureHelper;
 	
 	public DataLayer getDataLayer() {
 		return dataLayer;
+	}
+	public MeasureHelper getMeasureHelper() {
+		return measureHelper;
+	}
+	public void setMeasureHelper(MeasureHelper measureHelper) {
+		this.measureHelper = measureHelper;
 	}
 	public void setDataLayer(DataLayer dataLayer) {
 		this.dataLayer = dataLayer;
@@ -67,17 +83,17 @@ public class SqlHelper {
 	}
 	private ArrayList<TableRow> getRowList(ArrayList<IColumn> columns, int[] counters, IBitSet filterBitSet, String tableName
 			, ArrayList<HavingExpression> havingExpressions) {
-		OpenBitSet viewBitSet;
 		ArrayList<TableRow> rowList = new ArrayList<TableRow>();
-		while((viewBitSet = nextBitSet(dimensionToDimensionValuesMap, columns, counters)) != null) {
+		//while((viewBitSet = nextBitSet(dimensionToDimensionValuesMap, columns, counters)) != null) {
+		for(ArrayList<DimensionValue> list : createBuckets(tableName, columns, filterBitSet)) {
 			TableRow row = new TableRow();
 			boolean isAllMeasuresNull = false;
 			boolean isAnyDimensionPresent = false;
-			int k = -1;
+			int k = 0;
+			IBitSet viewBitSet = dataLayer.getBitSet(list.toArray(new DimensionValue[0]));
 			for(IColumn j : columns) {
 				if(j instanceof Dimension) {
-					k = viewBitSet.nextSetBit(k + 1);
-					row.addCell(dataLayer.getDimensionValue(k));
+					row.addCell(list.get(k++).getDimensionValue());
 					isAnyDimensionPresent = true;
 				} else {
 					double value = dataLayer.aggregate(tableName, viewBitSet, filterBitSet, ((Measure)j).getMeasureExpression());
@@ -101,6 +117,28 @@ public class SqlHelper {
 				break;
 		}
 		return rowList;
+	}
+	private Set<ArrayList<DimensionValue>> createBuckets(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet) {
+		Table table = measureHelper.getTable(tableName);
+		Set<ArrayList<DimensionValue>> buckets = new HashSet<ArrayList<DimensionValue>>();
+		for(DataRow i : table.getRows()) {
+			if(filterBitSet.contains(i.getMeasureQuery())) {
+				ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
+				for(IColumn k : columns) {
+					for(int j = i.getMeasureQuery().nextSetBit(0); j > -1; j = i.getMeasureQuery().nextSetBit(j + 1)) {
+						DimensionValue dimensionValue = dataLayer.getDimensionValue(j);
+						if(k instanceof Dimension && dimensionValue.getDimension().equals(((Dimension) k).getName())) {
+							list.add(dimensionValue);
+							break;
+						}
+					}
+				}
+				buckets.add(list);
+			}
+		}
+		if(buckets.isEmpty())
+			buckets.add(new ArrayList<DimensionValue>());
+		return buckets;
 	}
 	private boolean logicalOperation(double lhsAggregate, String logicOperator, double rhsAggregate) {
 		if(logicOperator.equals("="))
@@ -130,15 +168,16 @@ public class SqlHelper {
 		if(!orderByColumns.isEmpty())
 			Collections.sort(rowList, new TableRowComparator(orderByColumns));		
 	}
-	private OpenBitSet nextBitSet(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, ArrayList<IColumn> columns, int[] counters) {
-		OpenBitSet bitSet = new OpenBitSet();
+	private IBitSet nextBitSet(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, ArrayList<IColumn> columns, int[] counters) {
+		IBitSet bitSet = BitDekkUtil.newBitSet();
 		boolean containsAtLeastOneDimension = false;
 		for(int i = 0, j = 0; i < columns.size(); i++) {
 			if(columns.get(i) instanceof Dimension) {
 				containsAtLeastOneDimension = true;
 				if(j == 0 && counters[j] >= dimensionToDimensionValuesMap.get(((Dimension) columns.get(i)).getName()).size())
 					return null;
-				bitSet.set(dataLayer.getDimensionId(dimensionToDimensionValuesMap.get(((Dimension) columns.get(i)).getName()).get(counters[j])));
+				bitSet.set(dataLayer.getDimensionId(((Dimension) columns.get(i)).getName()
+						, dimensionToDimensionValuesMap.get(((Dimension) columns.get(i)).getName()).get(counters[j])));
 				j++;
 			}
 		}
@@ -162,25 +201,45 @@ public class SqlHelper {
 		return bitSet;
 	}
 
-	private OpenBitSet getFilterOpenBitSet(HashMap<String, ArrayList<String>> hashMap, HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap) {
-		OpenBitSet openBitSet = new OpenBitSet();
+	private IBitSet getFilterOpenBitSet(HashMap<String, ArrayList<String>> hashMap, HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap) {
+		IBitSet bitSet = BitDekkUtil.newBitSet();
 		for(Integer i : dataLayer.getDimensionValueIds())
-			openBitSet.set(i);
+			bitSet.set(i);
 		if(!hashMap.isEmpty()) {
 			for(String i : hashMap.keySet()) {
 				for(String j : dimensionToDimensionValuesMap.get(i))
-					openBitSet.flip(dataLayer.getDimensionId(j));
+					bitSet.clear(dataLayer.getDimensionId(i, j));
 				for(String j : hashMap.get(i))
-					openBitSet.set(dataLayer.getDimensionId(j));
+					bitSet.set(dataLayer.getDimensionId(i, j));
 			}
 		}
-		return openBitSet;
+		return bitSet;
 	}
-	public void initialize(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, HashMap<String, Integer> hashMap) {
+	public void initialize(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap) {
 		this.dimensionToDimensionValuesMap = dimensionToDimensionValuesMap;
-		dataLayer.initializeDimensionValues(hashMap);
 	}
 	public void initializeTable(String name, DataTable dataTable) {
 		dataLayer.initializeTable(name, dataTable);
+		Comparator<TableCell> comparator = new Comparator<TableCell>() {
+			@Override
+			public int compare(TableCell o1, TableCell o2) {
+				return o1.getValue().compareTo(o2.getValue());
+			}
+		};
+		for(int i = 0; i < dataTable.getNumberOfColumns(); i++) {
+			for(TableCell j : dataTable.getColumnDistinctCellsSorted(i, comparator)) {
+				if(!j.getType().equals(ValueType.NUMBER)) {
+					String label = dataTable.getColumnDescription(i).getLabel();
+					String dimensionValue = j.getValue().toString();
+					dimensionValuesToDimensionMap.put(dimensionValue, label);
+					ArrayList<String> list = dimensionToDimensionValuesMap.get(label);
+					if(list == null) {
+						list = new ArrayList<String>();
+						dimensionToDimensionValuesMap.put(label, list);
+					}
+					list.add(dimensionValue);
+				}
+			}
+		}
 	}
 }

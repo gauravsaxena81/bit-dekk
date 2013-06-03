@@ -85,7 +85,7 @@ public class ScenarioUtil {
 	}
 	public static Set<Integer> pi(IBitSet query, ScenarioDataHelper scenarioDataHelper) {
 		Set<Integer> set = new HashSet<Integer>();
-		for(Integer i : scenarioDataHelper.getScenrios())
+		for(Integer i : scenarioDataHelper.getScenarios())
 			if(query.get(i))
 				set.add(i);
 		return set;

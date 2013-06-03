@@ -1,15 +1,14 @@
 package org.bitdekk.scenario.distributed.scenario;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
+import org.bitdekk.api.IBitSet;
 import org.bitdekk.distributed.cluster.ClusterConfig;
 import org.bitdekk.distributed.scenario.DistributedScenarioDataLayer;
 import org.bitdekk.distributed.server.impl.BitDekkInstance;
-import org.bitdekk.util.OpenBitSet;
+import org.bitdekk.model.DimensionValue;
+import org.bitdekk.util.BitDekkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -73,20 +72,6 @@ public class DistributedScenarioTest extends AbstractTestNGSpringContextTests {
 	}
 	@BeforeClass
 	public void initialize() throws TypeMismatchException, IOException, InterruptedException {
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
-		hashMap.put("2011",4);
-		distributedScenarioDataLayer.initializeDimensionValues(hashMap);
-		
-		HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
-		dimensionToDimensionValueIdMap.put("Supplier", new ArrayList<Integer>(Arrays.asList(new Integer[]{0,1})));
-		dimensionToDimensionValueIdMap.put("Product", new ArrayList<Integer>(Arrays.asList(new Integer[]{2,3})));
-		dimensionToDimensionValueIdMap.put("Year", new ArrayList<Integer>(Arrays.asList(new Integer[]{4})));
-		distributedScenarioDataLayer.initializeDimensions(dimensionToDimensionValueIdMap);
-		
 		DataTable dataTable = new DataTable();
 		dataTable.addColumn(new ColumnDescription("0", ValueType.TEXT, "Year"));
 		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
@@ -121,14 +106,17 @@ public class DistributedScenarioTest extends AbstractTestNGSpringContextTests {
 		row.addCell(13);
 		row.addCell(1.4);
 		dataTable.addRow(row);
+		System.out.println("DistributedScenarioTest " + distributedScenarioDataLayer.hashCode());
 		distributedScenarioDataLayer.initializeTable("VolumeTable", dataTable);
 	}
 	@Test
 	public void dimensionTest() {
 		startCluster();
-		Assert.assertEquals(distributedScenarioDataLayer.getDimensionValueIds("Supplier"), Arrays.asList(new Integer[]{0,1}));
-		Assert.assertEquals(distributedScenarioDataLayer.getDimensionValueIds("Product"), Arrays.asList(new Integer[]{2,3}));
-		Assert.assertEquals(distributedScenarioDataLayer.getDimensionValueIds("Year"), Arrays.asList(new Integer[]{4}));
+		Assert.assertEquals(distributedScenarioDataLayer.getDimensionValueIds("Supplier"), Arrays.asList(new Integer[]{distributedScenarioDataLayer.getDimensionId("Supplier", "S1")
+				,distributedScenarioDataLayer.getDimensionId("Supplier", "S2")}));
+		Assert.assertEquals(distributedScenarioDataLayer.getDimensionValueIds("Product"), Arrays.asList(new Integer[]{distributedScenarioDataLayer.getDimensionId("Product", "P1")
+				,distributedScenarioDataLayer.getDimensionId("Product", "P2")}));
+		Assert.assertEquals(distributedScenarioDataLayer.getDimensionValueIds("Year"), Arrays.asList(new Integer[]{distributedScenarioDataLayer.getDimensionId("Year", "2011")}));
 		distributedScenario1stLevelTest();
 		distributedScenario2ndLevelTest();
 		distributedScenario3rdLevelTest();
@@ -138,82 +126,83 @@ public class DistributedScenarioTest extends AbstractTestNGSpringContextTests {
 		distributedDeleteScenarioTest();
 	}
 	private void distributedScenario1stLevelTest() {
-		distributedScenarioDataLayer.createDimensionValue("Year", "2012", 5);
-		OpenBitSet ruleBitSet1 = new OpenBitSet();
-		ruleBitSet1.set(0);
-		ruleBitSet1.set(2);
-		ruleBitSet1.set(3);
-		ruleBitSet1.set(4);
-		distributedScenarioDataLayer.associateRule(5, ruleBitSet1, new double[]{2, 1});
-		OpenBitSet ruleBitSet2 = new OpenBitSet();
-		ruleBitSet2.set(1);
-		ruleBitSet2.set(2);
-		ruleBitSet2.set(3);
-		ruleBitSet2.set(4);
-		distributedScenarioDataLayer.associateRule(5, ruleBitSet2, new double[]{3, 1});
-		Assert.assertEquals(117 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S2","P1","P2","2011","2012"}, "SUM(Volume)"), 0.000001);
-		Assert.assertEquals(56 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"P1", "2012"}, new String[]{"S1","S2","P1","P2","2011","2012"}, "SUM(Volume)"), 0.00001);
-		Assert.assertEquals(61 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"P2", "2012"}, new String[]{"S1","S2","P1","P2","2011","2012"}, "SUM(Volume)"), 0.00001);
+		distributedScenarioDataLayer.createDimensionValue("Year", "2012");
+		System.out.println(distributedScenarioDataLayer.getDimensionId("Year", "2012"));
+		IBitSet ruleBitSet1 = BitDekkUtil.newBitSet();
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Year", "2011"));
+		distributedScenarioDataLayer.associateRule("Year", "2012", ruleBitSet1, new double[]{2, 1});
+		IBitSet ruleBitSet2 = BitDekkUtil.newBitSet();
+		ruleBitSet2.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S2"));
+		ruleBitSet2.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		ruleBitSet2.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet2.set(distributedScenarioDataLayer.getDimensionId("Year", "2011"));
+		distributedScenarioDataLayer.associateRule("Year", "2012", ruleBitSet2, new double[]{3, 1});
+		Assert.assertEquals(117 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)"), 0.000001);
+		Assert.assertEquals(56 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Product","P1"), new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)"), 0.00001);
+		Assert.assertEquals(61 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Product","P2"), new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)"), 0.00001);
 	}
 	private void distributedScenario2ndLevelTest() {
-		distributedScenarioDataLayer.createDimensionValue("Supplier", "S3", 6);
-		OpenBitSet ruleBitSet1 = new OpenBitSet();
-		ruleBitSet1.set(1);
-		ruleBitSet1.set(2);
-		ruleBitSet1.set(3);
-		ruleBitSet1.set(4);
-		distributedScenarioDataLayer.associateRule(6, ruleBitSet1, new double[]{1, 0.9});
-		Assert.assertEquals(28.26 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"S3"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume * Cost)")
+		IBitSet ruleBitSet1 = BitDekkUtil.newBitSet();
+		distributedScenarioDataLayer.createDimensionValue("Supplier", "S3");
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Year", "2011"));
+		distributedScenarioDataLayer.associateRule("Supplier", "S3", ruleBitSet1, new double[]{1, 0.9});
+		Assert.assertEquals(28.26 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Supplier","S3")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume * Cost)")
 				, 0.000001);
 	}
 	private void distributedScenario3rdLevelTest() {
-		OpenBitSet ruleBitSet1 = new OpenBitSet();
-		ruleBitSet1.set(6);
-		ruleBitSet1.set(2);
-		ruleBitSet1.set(3);
-		ruleBitSet1.set(4);
-		distributedScenarioDataLayer.associateRule(5, ruleBitSet1, new double[]{3, 1});
-		Assert.assertEquals(75 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"S3", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)"), 0.000001);
-		Assert.assertEquals(137.78 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S3","P1","P2","2011","2012"}, "SUM(Volume * Cost)"), 0.000001);
+		IBitSet ruleBitSet1 = BitDekkUtil.newBitSet();
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S3"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Year", "2011"));
+		distributedScenarioDataLayer.associateRule("Year", "2012", ruleBitSet1, new double[]{3, 1});
+		Assert.assertEquals(75 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Supplier","S3"), new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)"), 0.000001);
+		Assert.assertEquals(137.78 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume * Cost)"), 0.000001);
 	}
 	private void distributedScenario4thLevelTest() {
-		distributedScenarioDataLayer.createDimensionValue("Supplier", "S4", 7);
-		OpenBitSet ruleBitSet1 = new OpenBitSet();
-		ruleBitSet1.set(6);
-		ruleBitSet1.set(2);
-		ruleBitSet1.set(3);
-		ruleBitSet1.set(5);
-		distributedScenarioDataLayer.associateRule(7, ruleBitSet1, new double[]{2, 1.1});
-		Assert.assertEquals(150 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"S4"}, new String[]{"S1","S2","S3","S4","P1","P2","2011","2012"}, "SUM(Volume)"), 0.000001);
+		distributedScenarioDataLayer.createDimensionValue("Supplier", "S4");
+		IBitSet ruleBitSet1 = BitDekkUtil.newBitSet();
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S3"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Year", "2012"));
+		distributedScenarioDataLayer.associateRule("Supplier", "S4", ruleBitSet1, new double[]{2, 1.1});
+		Assert.assertEquals(150 * 3, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Supplier","S4")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Supplier","S4"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)"), 0.000001);
 	}
 	private void distributedUpdateRuleTest() {
-		double s12012 = distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"S1", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)");
-		OpenBitSet ruleBitSet1 = new OpenBitSet();
-		ruleBitSet1.set(0);
-		ruleBitSet1.set(2);
-		ruleBitSet1.set(3);
-		ruleBitSet1.set(4);
-		distributedScenarioDataLayer.associateRule(5, ruleBitSet1, new double[] {3,1});
-		Assert.assertEquals(s12012 * 3 / 2, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"S1", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}
+		double s12012 = distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Supplier","S1"), new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)");
+		IBitSet ruleBitSet1 = BitDekkUtil.newBitSet();
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Year", "2011"));
+		distributedScenarioDataLayer.associateRule("Year", "2012", ruleBitSet1, new double[] {3,1});
+		Assert.assertEquals(s12012 * 3 / 2, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Supplier","S1"), new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}
 			, "SUM(Volume)"), 0.000001);
 	}
 	private void distributedDeleteRuleTest() {
-		double s12012 = distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"S1", "2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)");
-		double only2012 = distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}, "SUM(Volume)");
-		OpenBitSet ruleBitSet1 = new OpenBitSet();
-		ruleBitSet1.set(0);
-		ruleBitSet1.set(2);
-		Assert.assertEquals(false, distributedScenarioDataLayer.deleteRule(5, ruleBitSet1));
-		ruleBitSet1.set(3);
-		ruleBitSet1.set(4);
-		Assert.assertEquals(true, distributedScenarioDataLayer.deleteRule(5, ruleBitSet1));
-		Assert.assertEquals(only2012 - s12012, distributedScenarioDataLayer.aggregate("VolumeTable", new String[]{"2012"}, new String[]{"S1","S2","S3","P1","P2","2011","2012"}
+		double s12012 = distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Supplier","S1"), new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)");
+		double only2012 = distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}, "SUM(Volume)");
+		IBitSet ruleBitSet1 = BitDekkUtil.newBitSet();
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Supplier", "S1"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P1"));
+		Assert.assertEquals(false, distributedScenarioDataLayer.deleteRule("Year", "2012", ruleBitSet1));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Product", "P2"));
+		ruleBitSet1.set(distributedScenarioDataLayer.getDimensionId("Year", "2011"));
+		Assert.assertEquals(true, distributedScenarioDataLayer.deleteRule("Year", "2012", ruleBitSet1));
+		Assert.assertEquals(only2012 - s12012, distributedScenarioDataLayer.aggregate("VolumeTable", new DimensionValue[]{new DimensionValue("Year","2012")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Supplier","S3"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2"),new DimensionValue("Year","2011"),new DimensionValue("Year","2012")}
 			, "SUM(Volume)"), 0.000001);
 	}
 	private void distributedDeleteScenarioTest() {
-		Assert.assertEquals(false, distributedScenarioDataLayer.deleteDimensionValue("Supplier", "S5", 6));
-		Assert.assertEquals(true, distributedScenarioDataLayer.deleteDimensionValue("Supplier", "S3", 6));
-		Assert.assertEquals(false, distributedScenarioDataLayer.deleteDimensionValue("Supplier", "S3", 6));
+		Assert.assertEquals(false, distributedScenarioDataLayer.deleteDimensionValue("Supplier", "S5"));
+		Assert.assertEquals(true, distributedScenarioDataLayer.deleteDimensionValue("Supplier", "S3"));
+		Assert.assertEquals(false, distributedScenarioDataLayer.deleteDimensionValue("Supplier", "S3"));
 	}
 	@AfterClass
 	public void destroyServers() {

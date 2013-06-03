@@ -47,4 +47,5 @@ public interface IBitSet {
 	void and(IBitSet query);
 	void or(IBitSet query);
 	IBitSet clone();
+	void andNot(IBitSet bitset);
 }

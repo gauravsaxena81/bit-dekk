@@ -16,10 +16,11 @@ package org.bitdekk.helper;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.bitdekk.util.OpenBitSet;
+import org.bitdekk.api.IBitSet;
+import org.bitdekk.model.DimensionValue;
+import org.bitdekk.util.BitDekkUtil;
 
 import com.google.visualization.datasource.datatable.DataTable;
-import com.google.visualization.datasource.datatable.TableCell;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.TextValue;
 import com.google.visualization.datasource.datatable.value.ValueType;
@@ -35,46 +36,73 @@ public class DimensionValueHelper {
 	public void setDataHelper(DataHelper dataHelper) {
 		this.dataHelper = dataHelper;
 	}
-	public void initialize(HashMap<String, Integer> dimensionMap) {
+	/*public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
 		dataHelper.setDimensionValueMap(dimensionMap);
 		HashMap<Integer, String> idMap = new HashMap<Integer, String>();
 		for(String i : dimensionMap.keySet())
 			idMap.put(dimensionMap.get(i), i);
 		dataHelper.setIdToDimensionValueMap(idMap);
-	}
-	public void initialize(DataTable dataTable) {
+	}*/
+	/**
+	 * Iterates over the Text and Date type columns to generate ids for dimension values
+	 * @param dataTable
+	 */
+	public void initializeDimensionValues(DataTable dataTable) {
 		HashMap<String, Integer> dimensionMap = dataHelper.getDimensionValueMap();
-		int index = 0;
-		for(TableRow i : dataTable.getRows())
-			for(TableCell j : i.getCells())
-				if(j.getType().equals(ValueType.TEXT) && !dimensionMap.containsKey(((TextValue)j.getValue()).getValue()))
-					dimensionMap.put(((TextValue)j.getValue()).getValue(), index++);
+		for(TableRow i : dataTable.getRows()) {
+			for(int j = 0; j < i.getCells().size(); j++) {
+				if((i.getCells().get(j).getType().equals(ValueType.TEXT) || i.getCells().get(j).getType().equals(ValueType.DATE))) { 
+					String generateDimensionValueString = BitDekkUtil.generateDimensionValueString(dataTable.getColumnDescription(j).getLabel()
+							, ((TextValue)i.getCells().get(j).getValue()).getValue());
+					if(!dimensionMap.containsKey(generateDimensionValueString)) {
+						dimensionMap.put(generateDimensionValueString, dataHelper.getId());
+						dataHelper.getIdToDimensionValueMap().put(dataHelper.getId(), generateDimensionValueString);
+						dataHelper.addToId();
+					}
+				}
+			}
+		}
 	}
-	public int getId(String dimensionValue) {
-		Integer id = dataHelper.getDimensionValueMap().get(dimensionValue);
+	/**
+	 * 
+	 * @param dimensionValue
+	 * @return id for dimensionValue if found, -1 otherwise
+	 */
+	public int getId(String dimension, String dimensionValue) {
+		Integer id = dataHelper.getDimensionValueMap().get(BitDekkUtil.generateDimensionValueString(dimension, dimensionValue));
 		if(id != null)
 			return id;
 		else
-			return -1;
+			throw new IllegalArgumentException("Dimension Value with name " + dimension + "-" + dimensionValue + " not found");
 	}
-	public String getDimensionValue(int id) {
-		String dimension = dataHelper.getIdToDimensionValueMap().get(id);
-		if(dimension != null)
-			return dimension;
-		else
-			throw new IllegalArgumentException("Dimension for " + id + " not found");
+	/**
+	 * @param id
+	 * @return dimensionValue for the id
+	 */
+	public DimensionValue getDimensionValue(int id) {
+		String string = dataHelper.getIdToDimensionValueMap().get(id);
+		return new DimensionValue(string.substring(0, string.indexOf('-')), string.substring(string.indexOf('-') + 1));
 	}
-	public OpenBitSet getBitSet(String[] dimensions) {
-		OpenBitSet OpenBitSet = new OpenBitSet();
-		for(String i : dimensions) {
-			Integer id = dataHelper.getDimensionValueMap().get(i);
+	/**
+	 * 
+	 * @param dimensionValues
+	 * @returns bitset with bits set for ids of dimensionValues
+	 * @throws IllegalArgumentException if any of the dimensionValue is not found
+	 */
+	public IBitSet getBitSet(DimensionValue[] dimensionValues) {
+		IBitSet bitSet = BitDekkUtil.newBitSet();
+		for(DimensionValue i : dimensionValues) {
+			Integer id = getId(i.getDimension(), i.getDimensionValue());
 			if(id != null)
-				OpenBitSet.set(id);
+				bitSet.set(id);
 			else
-				throw new IllegalArgumentException("Dimension " + i + " not found");
+				throw new IllegalArgumentException("Dimension value " + i.getDimension() + "-" + i.getDimensionValue() + " not found");
 		}
-		return OpenBitSet;
+		return bitSet;
 	}
+	/**
+	 * @return all the dimension value ids
+	 */
 	public Set<Integer> getDimensionValueIds() {
 		return dataHelper.getIdToDimensionValueMap().keySet();
 	}

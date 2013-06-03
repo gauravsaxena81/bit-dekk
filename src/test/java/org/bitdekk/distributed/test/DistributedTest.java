@@ -1,23 +1,30 @@
 package org.bitdekk.distributed.test;
 
 import java.io.IOException;
-import java.util.HashMap;
 
-import org.bitdekk.DataLayer;
 import org.bitdekk.distributed.cluster.ClusterConfig;
+import org.bitdekk.distributed.datalayer.DistributedDataLayer;
 import org.bitdekk.distributed.server.impl.BitDekkInstance;
+import org.bitdekk.model.DimensionValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import com.google.visualization.datasource.base.TypeMismatchException;
+import com.google.visualization.datasource.datatable.ColumnDescription;
+import com.google.visualization.datasource.datatable.DataTable;
+import com.google.visualization.datasource.datatable.TableRow;
+import com.google.visualization.datasource.datatable.value.ValueType;
 @ContextConfiguration(locations = {"classpath:applicationContext-reducer-test.xml"})
 @Test(singleThreaded=true)
 public class DistributedTest extends AbstractTestNGSpringContextTests {
 	@Autowired
-	private DataLayer dataLayer;
+	private DistributedDataLayer dataLayer;
 	private Process processA;
 	private Process processAA;
 	private Process processAB;
@@ -61,39 +68,54 @@ public class DistributedTest extends AbstractTestNGSpringContextTests {
 			e.printStackTrace();
 		}	
 	}
-	@Test
-	public void distributedTest() {
-		startCluster();
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
+	@BeforeClass
+	public void initialize() throws TypeMismatchException {
+		DataTable dataTable = new DataTable();
+		dataTable.addColumn(new ColumnDescription("1", ValueType.TEXT, "Supplier"));
+		dataTable.addColumn(new ColumnDescription("2", ValueType.TEXT, "Product"));
+		dataTable.addColumn(new ColumnDescription("3", ValueType.NUMBER, "Volume"));
+		TableRow row = new TableRow();
+		row.addCell("S1");
+		row.addCell("P1");
+		row.addCell(100);
+		dataTable.addRow(row);
+		row = new TableRow();
+		row.addCell("S1");
+		row.addCell("P2");
+		row.addCell(200);
+		dataTable.addRow(row);
+		row = new TableRow();
+		row.addCell("S2");
+		row.addCell("P1");
+		row.addCell(300);
+		dataTable.addRow(row);
+		row = new TableRow();
+		row.addCell("S2");
+		row.addCell("P2");
+		row.addCell(400);
+		dataTable.addRow(row);
 		
-		dataLayer.initializeDimensionValues(hashMap);
-		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"), 0.00000001);
-		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
+		dataLayer.initializeDimensionValues(dataTable);
+	}
+	@Test
+	public void distributedTest() throws TypeMismatchException {
+		startCluster();
+		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new DimensionValue[]{new DimensionValue("Supplier","S1")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2")}, "SUM(2 * Volume)"), 0.00000001);
+		Assert.assertEquals(302.0, (dataLayer.aggregate("VolumeTable",  new DimensionValue[]{new DimensionValue("Supplier","S1")}, new DimensionValue[]{new DimensionValue("Supplier","S1"),new DimensionValue("Supplier","S2"),new DimensionValue("Product","P1"),new DimensionValue("Product","P2")}, "(SUM(2 * Volume) / COUNT(Volume)) + 2"))
 				, 0.00000001);
 	}
 	@Test(expectedExceptions=RuntimeException.class,dependsOnMethods="distributedTest")
-	public void distributedTestFailure() {
+	public void distributedTestFailure() throws TypeMismatchException {
 		startCluster();
 		processAB.destroy();
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		hashMap.put("S1",0);
-		hashMap.put("S2",1);
-		hashMap.put("P1",2);
-		hashMap.put("P2",3);
-		
-		dataLayer.initializeDimensionValues(hashMap);
-		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new String[]{"S1"}, new String[]{"S1","P1","P2","S2"}, "SUM(2 * Volume)"), 0.00000001);
+		Assert.assertEquals(1800, dataLayer.aggregate("VolumeTable",  new DimensionValue[]{new DimensionValue("Product","P2")}, new DimensionValue[]{new DimensionValue("Product","P1"),new DimensionValue("Supplier","S1"),new DimensionValue("Product","P2"),new DimensionValue("Supplier","S2")}, "SUM(2 * Volume)"), 0.00000001);
 	}
 	@AfterClass
 	public void destroyServers() {
 		System.out.println("---------------------------------Distributed Test Done------------------------------------------");
 		processA.destroy();
 		processAA.destroy();
-		//processAB.destroy();
+		processAB.destroy();
 		System.out.println("---------------------------------Distributed Test Done------------------------------------------");
 	}
 }
