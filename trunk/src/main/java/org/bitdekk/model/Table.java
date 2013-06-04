@@ -16,6 +16,11 @@ package org.bitdekk.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Stores tables in Bit-Dekk datastore
+ * @author gaurav.saxena
+ *
+ */
 public class Table {
 	private ArrayList<DataRow> arrayList = new ArrayList<DataRow>();
 	private HashMap<String, Integer> measureIndexMap = new HashMap<String, Integer>();

@@ -24,6 +24,11 @@ import org.bitdekk.helper.expression.model.GroupedMeasureExpression;
 import org.bitdekk.model.DataRow;
 import org.bitdekk.model.Table;
 
+/**
+ * Contains all the methods do do with aggregations
+ * @author gaurav.saxena
+ *
+ */
 public class AggregationHelper {
 	private IEvaluation evaluator;
 

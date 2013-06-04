@@ -16,6 +16,11 @@ package org.bitdekk.model;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.util.BitDekkUtil;
 
+/**
+ * Encapsulates a row in Bit-Dekk data store
+ * @author gaurav.saxena
+ *
+ */
 public class DataRow {
 	private IBitSet measureQuery = BitDekkUtil.newBitSet();
 	private double[] measureValues;

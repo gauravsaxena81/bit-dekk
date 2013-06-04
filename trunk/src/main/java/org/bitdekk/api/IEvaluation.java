@@ -25,6 +25,11 @@ import org.bitdekk.model.DataRow;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.DataTable;
 
+/**
+ * interface for measure expression evaluation
+ * @author gaurav.saxena
+ *
+ */
 public interface IEvaluation {
 	double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens,	Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet);
 

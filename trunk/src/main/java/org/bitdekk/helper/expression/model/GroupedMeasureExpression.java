@@ -15,6 +15,11 @@ package org.bitdekk.helper.expression.model;
 
 import java.util.ArrayList;
 
+/**
+ * It helps store the information captured from GROUP functions like SUM, COUNT etc. in grammar
+ * @author gaurav.saxena
+ *
+ */
 public class GroupedMeasureExpression {
 	private ArrayList<Object> groupedTokens;
 

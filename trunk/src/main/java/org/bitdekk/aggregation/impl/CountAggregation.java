@@ -16,6 +16,11 @@ package org.bitdekk.aggregation.impl;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.helper.expression.model.MeasureExpression;
 
+/**
+ * Computes the count of measure
+ * @author gaurav.saxena
+ *
+ */
 public class CountAggregation implements IAggregation{
 	private int number = 0;
 	private boolean anyValueFound = false;

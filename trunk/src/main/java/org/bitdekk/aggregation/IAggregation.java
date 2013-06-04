@@ -15,6 +15,11 @@ package org.bitdekk.aggregation;
 
 import org.bitdekk.helper.expression.model.MeasureExpression;
 
+/**
+ * Interface used in grammar to create aggrgation types for SUM, COUNT etc.
+ * @author gaurav.saxena
+ *
+ */
 public interface IAggregation {
 	public void aggregate(double[] measureValues);
 	public double getValue();

@@ -15,6 +15,11 @@ package org.bitdekk.helper.expression.model;
 
 import java.util.ArrayList;
 
+/**
+ * It helps store information from ungrouped measure expression like 5 * volume etc.
+ * @author gaurav.saxena
+ *
+ */
 public class MeasureExpression {
 	private ArrayList<Object> tokens;
 	public ArrayList<Object> getTokens() {

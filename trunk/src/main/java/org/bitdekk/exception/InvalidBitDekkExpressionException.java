@@ -13,6 +13,11 @@
  */
 package org.bitdekk.exception;
 
+/**
+ * Thrown when measure expression doesn't agree with its grammar
+ * @author gaurav.saxena
+ *
+ */
 @SuppressWarnings("serial")
 public class InvalidBitDekkExpressionException extends RuntimeException {
 

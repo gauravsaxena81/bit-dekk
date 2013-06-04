@@ -16,6 +16,12 @@ package org.bitdekk.aggregation.impl;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.helper.expression.model.MeasureExpression;
 
+/**
+ * Computes average of a list
+ * @author gaurav.saxena
+ * @deprecated because bit-dekk doesn't support aggregation which use division because it creates problem with distributed implementation.
+ * Use SUM(column)/COUNT(column)
+ */
 public class AvgAggregation implements IAggregation{
 	private double value = 0;
 	private int number = 0;
