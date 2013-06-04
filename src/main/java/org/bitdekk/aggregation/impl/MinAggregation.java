@@ -16,6 +16,11 @@ package org.bitdekk.aggregation.impl;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.helper.expression.model.MeasureExpression;
 
+/**
+ * computes min value from a list of measures
+ * @author gaurav.saxena
+ *
+ */
 public class MinAggregation implements IAggregation {
 	private double value = Double.MAX_VALUE;
 	private boolean anyValueFound = false;

@@ -17,6 +17,11 @@ import java.util.HashMap;
 
 import org.bitdekk.model.Table;
 
+/**
+ * A POJO which contains all the data
+ * @author gaurav.saxena
+ *
+ */
 public class DataHelper {
 	public int id = 0;
 	private HashMap<String, Integer> dimensionValueMap = new HashMap<String, Integer>();

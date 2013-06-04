@@ -25,10 +25,14 @@ import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableCell;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.NumberValue;
-import com.google.visualization.datasource.datatable.value.TextValue;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
 
+/**
+ * Contains methods for processing of measures
+ * @author gaurav.saxena
+ *
+ */
 public class MeasureHelper {
 	
 	private DimensionValueHelper dimensionValueHelper;
@@ -65,7 +69,7 @@ public class MeasureHelper {
 				TableCell j = i.getCells().get(k);
 				if(j.getType().equals(ValueType.TEXT) || j.getType().equals(ValueType.DATE)) {
 					if(!j.isNull())
-						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(dataTable.getColumnDescription(k).getLabel(), ((TextValue)j.getValue()).getValue()));
+						dataRow.getMeasureQuery().set(dimensionValueHelper.getId(dataTable.getColumnDescription(k).getLabel(), j.getValue().toString()));
 				} else if(j.getType().equals(ValueType.NUMBER)) {
 					if(j.isNull())
 						dataRow.getMeasureValues()[index++] = Double.NaN;

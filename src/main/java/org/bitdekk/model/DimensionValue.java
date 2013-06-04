@@ -1,5 +1,11 @@
 package org.bitdekk.model;
 
+/**
+ * 
+ * Dimenson Value qualified by dimension
+ * @author gaurav.saxena
+ *
+ */
 public class DimensionValue {
 	private String dimension;
 	private String dimensionValue;

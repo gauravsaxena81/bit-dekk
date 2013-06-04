@@ -30,6 +30,11 @@ import org.bitdekk.model.DataRow;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.DataTable;
 
+/**
+ * Contains methods to do with evaluation of an expression
+ * @author gaurav.saxena
+ *
+ */
 public class EvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
 	public MeasureHelper getMeasureHelper() {

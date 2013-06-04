@@ -6,6 +6,11 @@ import org.bitdekk.api.IEvaluation;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.DataTable;
 
+/**
+ * Contains methods to support select clause on the data cube
+ * @author gaurav.saxena
+ *
+ */
 public class SelectHelper {
 	private IEvaluation evaluator;
 

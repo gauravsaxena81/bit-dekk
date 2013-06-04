@@ -13,6 +13,11 @@
  */
 package org.bitdekk.api;
 
+/**
+ * A bitset interface. All the implementation which are to be used in bit-dekk for bitsets must implement it
+ * @author gaurav.saxena
+ *
+ */
 public interface IBitSet {
 	/**
 	 * @param bitSet

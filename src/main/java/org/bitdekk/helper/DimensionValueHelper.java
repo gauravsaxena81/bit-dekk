@@ -22,10 +22,14 @@ import org.bitdekk.util.BitDekkUtil;
 
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableRow;
-import com.google.visualization.datasource.datatable.value.TextValue;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
 
+/**
+ * Contains all the methods to do with processing of dimension values
+ * @author gaurav.saxena
+ *
+ */
 public class DimensionValueHelper {
 	
 	private DataHelper dataHelper;
@@ -53,7 +57,7 @@ public class DimensionValueHelper {
 			for(int j = 0; j < i.getCells().size(); j++) {
 				if((i.getCells().get(j).getType().equals(ValueType.TEXT) || i.getCells().get(j).getType().equals(ValueType.DATE))) { 
 					String generateDimensionValueString = BitDekkUtil.generateDimensionValueString(dataTable.getColumnDescription(j).getLabel()
-							, ((TextValue)i.getCells().get(j).getValue()).getValue());
+							, i.getCells().get(j).getValue().toString());
 					if(!dimensionMap.containsKey(generateDimensionValueString)) {
 						dimensionMap.put(generateDimensionValueString, dataHelper.getId());
 						dataHelper.getIdToDimensionValueMap().put(dataHelper.getId(), generateDimensionValueString);

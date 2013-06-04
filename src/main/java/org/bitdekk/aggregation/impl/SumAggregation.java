@@ -16,6 +16,11 @@ package org.bitdekk.aggregation.impl;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.helper.expression.model.MeasureExpression;
 
+/**
+ * Computes sum of a list of measures
+ * @author gaurav.saxena
+ *
+ */
 public class SumAggregation implements IAggregation {
 	private double value = 0;
 	private boolean anyValueFound = false;
