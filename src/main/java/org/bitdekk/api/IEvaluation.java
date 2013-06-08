@@ -31,7 +31,7 @@ import com.google.visualization.datasource.datatable.DataTable;
  *
  */
 public interface IEvaluation {
-	double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens,	Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet);
+	double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens,	Position pos, DataRow row, String tableName, IBitSet unifiedQuery);
 
 	Lexer getLexer(String measureExpression);
 

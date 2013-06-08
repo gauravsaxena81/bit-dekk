@@ -18,7 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bitdekk.api.IBitSet;
-import org.bitdekk.scenario.helper.DimensionHelper;
+import org.bitdekk.helper.DataHelper;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.scenario.helper.ScenarioDataHelper;
 import org.bitdekk.scenario.model.ScenarioRowQuery;
 
@@ -31,7 +32,7 @@ public class ScenarioUtil {
 	 * @return
 	 */
 	public static ArrayList<ScenarioRowQuery> mu(ArrayList<ArrayList<ScenarioRowQuery>> scenarioRowQueriesLists, DimensionHelper dimensionHelper
-			, ScenarioDataHelper scenarioDataHelper) {
+			, DataHelper dataHelper) {
 		ArrayList<ScenarioRowQuery> currentList = new ArrayList<ScenarioRowQuery>();
 		ArrayList<ScenarioRowQuery> tempList = new ArrayList<ScenarioRowQuery>();
 		for(ArrayList<ScenarioRowQuery> i : scenarioRowQueriesLists) {
@@ -45,7 +46,7 @@ public class ScenarioUtil {
 						clone.getQuery().and(j.getQuery());
 						for(int l = 0; l < clone.getFactor().length; l++)
 							clone.getFactor()[l] = clone.getFactor()[l] * j.getFactor()[l];
-						if(containsAllDimensions(clone.getQuery(), dimensionHelper, scenarioDataHelper))
+						if(containsAllDimensions(clone.getQuery(), dimensionHelper, dataHelper))
 							tempList.add(clone);
 					}
 				}
@@ -56,8 +57,8 @@ public class ScenarioUtil {
 		}
 		return currentList;
 	}
-	public static boolean containsAllDimensions(IBitSet query, DimensionHelper dimensionHelper, ScenarioDataHelper scenarioDataHelper) {
-		for(String i : scenarioDataHelper.getDimensionToDimensionValueIdMap().keySet())
+	public static boolean containsAllDimensions(IBitSet query, DimensionHelper dimensionHelper, DataHelper dataHelper) {
+		for(String i : dataHelper.getDimensionToDimensionValueIdMap().keySet())
 			if(!dimensionHelper.getDimensionValuesBitSet(i).intersects(query))
 				return false;
 		return true;
@@ -70,14 +71,14 @@ public class ScenarioUtil {
 	 * @param dimensionHelper 
 	 * @return
 	 */
-	public static ArrayList<ArrayList<ScenarioRowQuery>> theta(Set<Integer> scenarios, IBitSet ruleBitSet, ScenarioDataHelper scenarioDataHelper
-			, DimensionHelper dimensionHelper) {
+	public static ArrayList<ArrayList<ScenarioRowQuery>> theta(Set<Integer> scenarios, IBitSet ruleBitSet, ScenarioDataHelper scenarioDataHelper, 
+			DataHelper dataHelper, DimensionHelper dimensionHelper) {
 		ArrayList<ArrayList<ScenarioRowQuery>> scenarioRowQueriesLists = new ArrayList<ArrayList<ScenarioRowQuery>>();
 		for(Integer i : scenarios) {
 			for(IBitSet j : scenarioDataHelper.getScenarioRules(i).keySet()) {
 				IBitSet clone = j.clone();
 				clone.and(ruleBitSet);
-				if(containsAllDimensions(clone, dimensionHelper, scenarioDataHelper))
+				if(containsAllDimensions(clone, dimensionHelper, dataHelper))
 					scenarioRowQueriesLists.add(scenarioDataHelper.getScenarioRules(i).get(j));
 			}
 		}
@@ -99,12 +100,12 @@ public class ScenarioUtil {
 	 * @param dimensionHelper
 	 * @return
 	 */
-	public static ArrayList<IBitSet> neeta(Set<Integer> scenarios, IBitSet query, ScenarioDataHelper scenarioDataHelper, DimensionHelper dimensionHelper) {
+	public static ArrayList<IBitSet> neeta(Set<Integer> scenarios, IBitSet query, DataHelper dataHelper, DimensionHelper dimensionHelper) {
 		ArrayList<IBitSet> list = new ArrayList<IBitSet>();
 		ArrayList<IBitSet> tempList = new ArrayList<IBitSet>();
 		IBitSet scenarioTrimmedQuery = trimScenarios(scenarios, query);
 		list.add(scenarioTrimmedQuery);
-		for(String i : scenarioDataHelper.getDimensionToDimensionValueIdMap().keySet()) {
+		for(String i : dataHelper.getDimensionToDimensionValueIdMap().keySet()) {
 			IBitSet dimensionValuesBitSet = dimensionHelper.getDimensionValuesBitSet(i);
 			dimensionValuesBitSet.and(query);
 			if(containsScenario(scenarios, dimensionValuesBitSet)) {
@@ -114,7 +115,8 @@ public class ScenarioUtil {
 				if(scenarioTrimmedQuery.intersects(dimensionValuesBitSet))
 					tempList.addAll(list);
 				//combination creating tree. Pick root and create children which have a particular scenario dimension value set. Repeat with the next dimension
-				for(int j = dimensionValuesBitSet.nextSetBit(0); j > -1; j = dimensionValuesBitSet.nextSetBit(j + 1)) {
+				//for(int j = dimensionValuesBitSet.nextSetBit(0); j > -1; j = dimensionValuesBitSet.nextSetBit(j + 1)) {
+				for(Integer j : dimensionValuesBitSet) {
 					for(IBitSet k : list) {
 						IBitSet clone = k.clone();
 						tempList.add(clone);

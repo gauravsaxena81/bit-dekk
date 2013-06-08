@@ -40,14 +40,20 @@
 	<bean id="distributedDataLayer" class="org.bitdekk.distributed.datalayer.DistributedDataLayer" autowire-candidate="true">
 		<property name="dataLayer" ref="dataLayer" />
 		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
+		<property name="dimensionHelper" ref="dimensionHelper" />
 	</bean>
 	<bean id="dataLayer" class="org.bitdekk.DataLayer" autowire-candidate="true">
 		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="aggregationHelper" ref="aggregationHelper" />
+		<property name="dimensionHelper" ref="dimensionHelper" />
 	</bean>
 	<bean id="evaluationHelper" class="org.bitdekk.distributed.helper.DistributedEvaluationHelper">
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="timeout" value="2000"/>
+	</bean>
+	<bean id="dimensionHelper" class="org.bitdekk.helper.DimensionHelper">
+		<property name="dataHelper" ref="dataHelper" />
+		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 	</bean>
 </beans>

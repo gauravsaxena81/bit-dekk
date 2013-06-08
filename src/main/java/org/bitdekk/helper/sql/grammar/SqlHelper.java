@@ -59,8 +59,7 @@ public class SqlHelper {
 			dataTable = new DataTable();
 			int dimensionColumnNumber = applyProjection(state.getColumns(), dataTable);
 			ArrayList<TableRow> rowList = getRowList(state.getColumns(), new int[dimensionColumnNumber]
-					, getFilterOpenBitSet(state.getDimensionConditions(), dimensionToDimensionValuesMap), state.getTableName(), state.getHavingExpressions());
-			//rowList = applyHaving(state.getHavingExpressions(), rowList, dataTable.getColumnDescriptions());
+					, getFilterBitSet(state.getDimensionConditions(), dimensionToDimensionValuesMap), state.getTableName(), state.getHavingExpressions());
 			applyOrderBy(state.getOrderByColumns(), rowList);
 			applyLimit(state.getFromRowNumber(), state.getToRowNumber(), rowList, dataTable);
 		} catch (RecognitionException e) {
@@ -118,22 +117,30 @@ public class SqlHelper {
 		}
 		return rowList;
 	}
-	private Set<ArrayList<DimensionValue>> createBuckets(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet) {
+	private ArrayList<ArrayList<DimensionValue>> createBuckets(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet) {
 		Table table = measureHelper.getTable(tableName);
-		Set<ArrayList<DimensionValue>> buckets = new HashSet<ArrayList<DimensionValue>>();
+		Set<IBitSet> bucketBitSets = new HashSet<IBitSet>();
+		ArrayList<ArrayList<DimensionValue>> buckets = new ArrayList<ArrayList<DimensionValue>>();
 		for(DataRow i : table.getRows()) {
 			if(filterBitSet.contains(i.getMeasureQuery())) {
+				IBitSet bits = BitDekkUtil.newBitSet();
 				ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
+				boolean isDimensionPresent = false;
 				for(IColumn k : columns) {
-					for(int j = i.getMeasureQuery().nextSetBit(0); j > -1; j = i.getMeasureQuery().nextSetBit(j + 1)) {
-						DimensionValue dimensionValue = dataLayer.getDimensionValue(j);
-						if(k instanceof Dimension && dimensionValue.getDimension().equals(((Dimension) k).getName())) {
-							list.add(dimensionValue);
-							break;
+					if(k instanceof Dimension) {
+						isDimensionPresent = true;
+						//for(int j = i.getMeasureQuery().nextSetBit(0); j > -1; j = i.getMeasureQuery().nextSetBit(j + 1)) {
+						for(Integer j : i.getMeasureQuery()) {
+							if(dataLayer.getDimension(j).equals(((Dimension) k).getName())) {
+								bits.set(j);
+								list.add(dataLayer.getDimensionValue(j));
+								break;
+							}
 						}
 					}
 				}
-				buckets.add(list);
+				if(isDimensionPresent && bucketBitSets.add(bits))
+					buckets.add(list);
 			}
 		}
 		if(buckets.isEmpty())
@@ -168,7 +175,7 @@ public class SqlHelper {
 		if(!orderByColumns.isEmpty())
 			Collections.sort(rowList, new TableRowComparator(orderByColumns));		
 	}
-	private IBitSet nextBitSet(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, ArrayList<IColumn> columns, int[] counters) {
+	/*private IBitSet nextBitSet(HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap, ArrayList<IColumn> columns, int[] counters) {
 		IBitSet bitSet = BitDekkUtil.newBitSet();
 		boolean containsAtLeastOneDimension = false;
 		for(int i = 0, j = 0; i < columns.size(); i++) {
@@ -193,15 +200,11 @@ public class SqlHelper {
 						break;
 				}
 			}
-		} /*else {
-			for(ArrayList<String> i : dimensionToDimensionValuesMap.values())
-				for(String j : i)
-					bitSet.set(dataLayer.getDimensionId(j));
-		}*/
+		}
 		return bitSet;
-	}
+	}*/
 
-	private IBitSet getFilterOpenBitSet(HashMap<String, ArrayList<String>> hashMap, HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap) {
+	private IBitSet getFilterBitSet(HashMap<String, ArrayList<String>> hashMap, HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap) {
 		IBitSet bitSet = BitDekkUtil.newBitSet();
 		for(Integer i : dataLayer.getDimensionValueIds())
 			bitSet.set(i);

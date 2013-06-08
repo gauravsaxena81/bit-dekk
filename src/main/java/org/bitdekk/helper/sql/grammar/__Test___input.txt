@@ -1,1 +1,1 @@
-SELECT campaign AS Campaign, website AS Website, client AS Client, MAX(start_date) AS StartDate, MAX(end_date) AS EndDate, MAX(delivery) / 100 AS Delivery, MAX(variance) * MAX(sign) AS Variance FROM
+SELECT Supplier AS "12 34", SUM(Volume) AS "VOLUME", Product AS "PP" FROM VolumeTable

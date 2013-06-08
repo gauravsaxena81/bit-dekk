@@ -10,4 +10,7 @@ public class BitDekkUtil {
 	public static IBitSet newBitSet() {
 		return new OpenBitSet();
 	}
+	/*public static IBitSet newBitSet() {
+		return new JavaEwahBitSet();
+	}*/
 }

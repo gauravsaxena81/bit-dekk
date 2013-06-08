@@ -37,6 +37,13 @@ import com.google.visualization.datasource.datatable.DataTable;
  */
 public class EvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
+	private DimensionHelper dimensionHelper;
+	public DimensionHelper getDimensionHelper() {
+		return dimensionHelper;
+	}
+	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+		this.dimensionHelper = dimensionHelper;
+	}
 	public MeasureHelper getMeasureHelper() {
 		return measureHelper;
 	}
@@ -44,89 +51,61 @@ public class EvaluationHelper implements IEvaluation {
 		this.measureHelper = measureHelper;
 	}
 	@Override
-	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet
-			, IBitSet filterBitSet) {
+	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery) {
 		if(measureExpressionTokens.get(pos.pos).equals("+")) {
 			++pos.pos;
-			return add(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+			return add(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		} else if(measureExpressionTokens.get(pos.pos).equals("-")) {
 			++pos.pos;
-			return subtract(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+			return subtract(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		} else if(measureExpressionTokens.get(pos.pos).equals("*"))  {
 			++pos.pos;
-			return multiply(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+			return multiply(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		} else if(measureExpressionTokens.get(pos.pos).equals("/")) {
 			++pos.pos;
-			return divide(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+			return divide(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		} else if(measureExpressionTokens.get(pos.pos) instanceof Double)
 			return (Double)measureExpressionTokens.get(pos.pos);
 		else if(measureExpressionTokens.get(pos.pos) instanceof IAggregation)
 			return aggregate(((IAggregation)measureExpressionTokens.get(pos.pos)), ((IAggregation)measureExpressionTokens.get(pos.pos)).getMeasureExpression(), tableName
-				, viewBitSet, filterBitSet);
+				, unifiedQuery);
 		else
 			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos))];
 	}
-	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
+	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet unifiedQuery) {
+		Position position = new Position();
 		for(DataRow i : measureHelper.getTable(tableName).getRows()) {
-			if(filterBitSet.contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSet)) {
-				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet));
-			}
+			if(unifiedQuery.contains(i.getMeasureQuery())) {
+				position.pos = 0;
+				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), position, i, tableName, unifiedQuery));
+			}			
 		}
 		return aggregation.getValue();
 	}
-	private double divide(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+	private double divide(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		return v1 / v2;
 	}
-	private double multiply(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+	private double multiply(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		return v1 * v2;
 	}
-	private double subtract(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+	private double subtract(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		return v1 - v2;
 	}
-	private double add(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+	private double add(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery);
 		return v1 + v2;
 	}
-	/*public boolean measureCondition(ArrayList<ArrayList<Object>> measureConditionExpressions, DataRow row, HashMap<String, Integer> measureIndexMap) {
-		boolean returnValue = true;
-		for(ArrayList<Object> measureConditionExpression : measureConditionExpressions) {
-			if(measureConditionExpression.get(0).equals("="))
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						== getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else if(measureConditionExpression.get(0).equals("<>"))
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						!= getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else if(measureConditionExpression.get(0).equals(">="))
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						>= getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else if(measureConditionExpression.get(0).equals("<="))
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						<= getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else if(measureConditionExpression.get(0).equals("<"))
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						< getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else if(measureConditionExpression.get(0).equals(">"))
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						> getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else if(measureConditionExpression.get(0).equals("<>"))p
-				returnValue &= row.getMeasureValues()[measureIndexMap.get(measureConditionExpression.get(1))] 
-						> getMeasureValue(measureConditionExpression, 2, row, measureIndexMap);
-			else
-				throw new IllegalArgumentException("Unidentified operator " + measureConditionExpressions.get(0));
-		}
-		return returnValue;
-	}*/
 	@Override
 	public BitdekkErrorHandlingLexer getLexer(String measureExpression) {
 		return new BitdekkErrorHandlingLexer(new ANTLRStringStream(measureExpression));

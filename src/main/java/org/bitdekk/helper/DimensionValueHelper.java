@@ -13,6 +13,7 @@
  */
 package org.bitdekk.helper;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ import org.bitdekk.model.DimensionValue;
 import org.bitdekk.util.BitDekkUtil;
 
 import com.google.visualization.datasource.datatable.DataTable;
-import com.google.visualization.datasource.datatable.TableRow;
+import com.google.visualization.datasource.datatable.TableCell;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
 
@@ -40,20 +41,13 @@ public class DimensionValueHelper {
 	public void setDataHelper(DataHelper dataHelper) {
 		this.dataHelper = dataHelper;
 	}
-	/*public void initializeDimensionValues(HashMap<String, Integer> dimensionMap) {
-		dataHelper.setDimensionValueMap(dimensionMap);
-		HashMap<Integer, String> idMap = new HashMap<Integer, String>();
-		for(String i : dimensionMap.keySet())
-			idMap.put(dimensionMap.get(i), i);
-		dataHelper.setIdToDimensionValueMap(idMap);
-	}*/
 	/**
 	 * Iterates over the Text and Date type columns to generate ids for dimension values
 	 * @param dataTable
 	 */
 	public void initializeDimensionValues(DataTable dataTable) {
-		HashMap<String, Integer> dimensionMap = dataHelper.getDimensionValueMap();
-		for(TableRow i : dataTable.getRows()) {
+		HashMap<String, Integer> dimensionValueMap = dataHelper.getDimensionValueMap();
+		/*for(TableRow i : dataTable.getRows()) {
 			for(int j = 0; j < i.getCells().size(); j++) {
 				if((i.getCells().get(j).getType().equals(ValueType.TEXT) || i.getCells().get(j).getType().equals(ValueType.DATE))) { 
 					String generateDimensionValueString = BitDekkUtil.generateDimensionValueString(dataTable.getColumnDescription(j).getLabel()
@@ -63,6 +57,20 @@ public class DimensionValueHelper {
 						dataHelper.getIdToDimensionValueMap().put(dataHelper.getId(), generateDimensionValueString);
 						dataHelper.addToId();
 					}
+				}
+			}
+		}*/
+		for(int i = 0; i < dataTable.getNumberOfColumns(); i++) {
+			if(dataTable.getColumnDescription(i).getType().equals(ValueType.TEXT) || dataTable.getColumnDescription(i).getType().equals(ValueType.DATE)) {
+				for(TableCell j : dataTable.getColumnDistinctCellsSorted(i, new Comparator<TableCell>(){
+					@Override
+					public int compare(TableCell arg0, TableCell arg1) {
+						return arg0.getValue().compareTo(arg1.getValue());
+					}})) {
+					String generateDimensionValueString = BitDekkUtil.generateDimensionValueString(dataTable.getColumnDescription(i).getLabel(), j.getValue().toString());
+					dimensionValueMap.put(generateDimensionValueString, dataHelper.getId());
+					dataHelper.getIdToDimensionValueMap().put(dataHelper.getId(), generateDimensionValueString);
+					dataHelper.addToId();
 				}
 			}
 		}

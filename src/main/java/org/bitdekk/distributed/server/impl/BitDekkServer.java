@@ -61,8 +61,7 @@ public class BitDekkServer {
 	}
 	private void evaluateExpression(Connection connection, ExpressionEvaluationRequest request) {
 		System.err.println("Entering");
-		double aggregate = bitDekkInstance.getDataLayer().aggregate(request.getTableName(), request.getViewBitSet(), request.getFilterBitSet()
-				, request.getMeasureExpression());
+		double aggregate = bitDekkInstance.getDataLayer().aggregate(request.getTableName(), request.getQuery(), request.getMeasureExpression());
 		System.err.println(aggregate);
 		connection.sendTCP(aggregate);
 		System.err.println("Exiting");							

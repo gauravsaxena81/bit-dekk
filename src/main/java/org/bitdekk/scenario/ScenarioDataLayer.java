@@ -23,7 +23,7 @@ import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.model.DimensionValue;
-import org.bitdekk.scenario.helper.DimensionHelper;
+import org.bitdekk.scenario.helper.ScenarioDimensionHelper;
 import org.bitdekk.scenario.helper.ScenarioDimensionValueHelper;
 import org.bitdekk.scenario.helper.ScenarioHelper;
 
@@ -31,16 +31,17 @@ import com.google.visualization.datasource.datatable.DataTable;
 
 
 public class ScenarioDataLayer {
-	private DimensionHelper dimensionHelper;
 	private ScenarioHelper scenarioHelper;
 	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
 	private DataLayer dataLayer;
+	private ScenarioDimensionHelper scenarioDimensionHelper;
 	
-	public DimensionHelper getDimensionHelper() {
-		return dimensionHelper;
+	public ScenarioDimensionHelper getScenarioDimensionHelper() {
+		return scenarioDimensionHelper;
 	}
-	public void setDimensionHelper(DimensionHelper dimensionHelper) {
-		this.dimensionHelper = dimensionHelper;
+	public void setScenarioDimensionHelper(
+			ScenarioDimensionHelper scenarioDimensionHelper) {
+		this.scenarioDimensionHelper = scenarioDimensionHelper;
 	}
 	public ScenarioDimensionValueHelper getScenarioDimensionValueHelper() {
 		return scenarioDimensionValueHelper;
@@ -66,7 +67,6 @@ public class ScenarioDataLayer {
 	 */
 	public void initializeTable(String tableName, DataTable dataTable) {
 		dataLayer.initializeTable(tableName, dataTable);
-		dimensionHelper.initializeDimensions(dataTable);
 	}
 	public void initializeTable(String tableName, ResultSet resultSet) throws SQLException {
 		dataLayer.initializeTable(tableName, resultSet);
@@ -150,13 +150,12 @@ public class ScenarioDataLayer {
 		return dataLayer.getDimensionValue(id);
 	}
 	public void createDimensionValue(String dimension, String dimensionValue) {
-		int id = scenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue);
-		dimensionHelper.createDimensionValue(dimension, id);
+		scenarioDimensionHelper.createDimensionValue(dimension, scenarioDimensionValueHelper.createDimensionValue(dimension, dimensionValue));
 	}
 	public boolean deleteDimensionValue(String dimension, String dimensionValue) {
 		int id = getDimensionId(dimension, dimensionValue);
 		return scenarioDimensionValueHelper.deleteDimensionValue(dimension, dimensionValue, id) &&
-				dimensionHelper.deleteDimensionValue(dimension, dimensionValue, id);
+				scenarioDimensionHelper.deleteDimensionValue(dimension, dimensionValue, id);
 	}
 	public void associateRule(String dimension, String scenarioDimensionValue, IBitSet ruleBitSet, double[] factor) {
 		scenarioHelper.associateRule(getDimensionId(dimension, scenarioDimensionValue), ruleBitSet, factor);
@@ -178,5 +177,8 @@ public class ScenarioDataLayer {
 	}
 	public DataTable select(String tableName, DimensionValue[] filterDimensionValues, String... columnNames) {
 		return dataLayer.select(tableName, getBitSet(filterDimensionValues), columnNames);
+	}
+	public double aggregate(String tableName, IBitSet query, String measureExpression) {
+		return dataLayer.aggregate(tableName, query, measureExpression);
 	}
 }

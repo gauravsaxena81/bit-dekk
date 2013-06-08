@@ -42,8 +42,14 @@
 		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="aggregationHelper" ref="aggregationHelper" />
+		<property name="dimensionHelper" ref="dimensionHelper" />
 	</bean>
 	<bean id="evaluationHelper" class="org.bitdekk.helper.EvaluationHelper">
 		<property name="measureHelper" ref="measureHelper" />
+		<property name="dimensionHelper" ref="dimensionHelper" />
+	</bean>
+	<bean id="dimensionHelper" class="org.bitdekk.helper.DimensionHelper">
+		<property name="dataHelper" ref="dataHelper" />
+		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 	</bean>
 </beans>

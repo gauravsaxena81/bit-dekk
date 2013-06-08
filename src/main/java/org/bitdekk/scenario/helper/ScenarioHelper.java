@@ -16,12 +16,21 @@ package org.bitdekk.scenario.helper;
 import java.util.Set;
 
 import org.bitdekk.api.IBitSet;
+import org.bitdekk.helper.DataHelper;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.scenario.ScenarioUtil;
 
 public class ScenarioHelper {
 	private ScenarioDataHelper scenarioDataHelper;
+	private DataHelper dataHelper;
 	private DimensionHelper dimensionHelper;
 	
+	public DataHelper getDataHelper() {
+		return dataHelper;
+	}
+	public void setDataHelper(DataHelper dataHelper) {
+		this.dataHelper = dataHelper;
+	}
 	public DimensionHelper getDimensionHelper() {
 		return dimensionHelper;
 	}
@@ -37,12 +46,12 @@ public class ScenarioHelper {
 	public void associateRule(int id, IBitSet ruleBitSet, double[] factor) {
 		Set<Integer> scenarios = ScenarioUtil.pi(ruleBitSet, scenarioDataHelper);
 		if(!scenarios.isEmpty()) {
-			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, scenarioDataHelper, dimensionHelper)) {
+			for(IBitSet i : ScenarioUtil.neeta(scenarios, ruleBitSet, dataHelper, dimensionHelper)) {
 				IBitSet key = i.clone();
 				key.set(id);
 				scenarioDataHelper.associateRule(id, key
-					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), ruleBitSet, scenarioDataHelper, dimensionHelper), dimensionHelper
-					, scenarioDataHelper), factor);
+					, ScenarioUtil.mu(ScenarioUtil.theta(ScenarioUtil.pi(i, scenarioDataHelper), ruleBitSet, scenarioDataHelper, dataHelper, dimensionHelper), dimensionHelper
+					, dataHelper), factor);
 			}
 		} else {
 			IBitSet key = ruleBitSet.clone();
