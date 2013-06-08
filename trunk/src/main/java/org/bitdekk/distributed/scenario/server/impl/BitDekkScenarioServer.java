@@ -101,8 +101,7 @@ public class BitDekkScenarioServer {
 	}
 	private void evaluateExpression(Connection connection, ExpressionEvaluationRequest request) {
 		System.err.println("Entering");
-		double aggregate = bitDekkScenarioInstance.getScenarioDataLayer().aggregate(request.getTableName(), request.getViewBitSet(), request.getFilterBitSet()
-				, request.getMeasureExpression());
+		double aggregate = bitDekkScenarioInstance.getScenarioDataLayer().aggregate(request.getTableName(), request.getQuery(), request.getMeasureExpression());
 		System.err.println(aggregate);
 		connection.sendTCP(aggregate);
 		System.err.println("Exiting");							

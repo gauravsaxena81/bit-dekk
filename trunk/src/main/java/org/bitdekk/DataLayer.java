@@ -21,10 +21,12 @@ import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.helper.AggregationHelper;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.helper.DimensionValueHelper;
 import org.bitdekk.helper.MeasureHelper;
 import org.bitdekk.helper.SelectHelper;
 import org.bitdekk.model.DimensionValue;
+import org.bitdekk.util.BitDekkUtil;
 
 import com.google.visualization.datasource.datatable.DataTable;
 
@@ -34,7 +36,14 @@ public class DataLayer {
 	private MeasureHelper measureHelper;
 	private AggregationHelper aggregationHelper;
 	private SelectHelper selectHelper;
+	private DimensionHelper dimensionHelper;
 	
+	public DimensionHelper getDimensionHelper() {
+		return dimensionHelper;
+	}
+	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+		this.dimensionHelper = dimensionHelper;
+	}
 	public SelectHelper getSelectHelper() {
 		return selectHelper;
 	}
@@ -65,8 +74,15 @@ public class DataLayer {
 	 */
 	public void initializeTable(String tableName, DataTable dataTable) {
 		dimensionValueHelper.initializeDimensionValues(dataTable);
+		dimensionHelper.initializeDimensions(dataTable);
 		measureHelper.intializeTable(tableName, dataTable);
 	}
+	/**
+	 * @deprecated
+	 * @param tableName
+	 * @param resultSet
+	 * @throws SQLException
+	 */
 	public void initializeTable(String tableName, ResultSet resultSet) throws SQLException {
 		measureHelper.intializeTable(tableName, resultSet);
 	}
@@ -84,7 +100,21 @@ public class DataLayer {
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
 	public double aggregate(String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String measureExpression) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(tableName, viewBitSet, filterBitSet, measureExpression);
+		return aggregationHelper.aggregate(tableName, unifyQuery(viewBitSet, filterBitSet), measureExpression);
+	}
+	public double aggregate(String tableName, IBitSet query, String measureExpression) throws InvalidBitDekkExpressionException {
+		return aggregationHelper.aggregate(tableName, query, measureExpression);
+	}
+	private IBitSet unifyQuery(IBitSet viewBitSet, IBitSet filterBitSet) {
+		if(filterBitSet.contains(viewBitSet)) {
+			IBitSet unifiedQuery = filterBitSet.clone();
+			//for(int i = viewBitSet.nextSetBit(0); i > -1; i = viewBitSet.nextSetBit(i + 1))
+			for(Integer i : viewBitSet)
+				unifiedQuery.andNot(dimensionHelper.getDimensionValuesBitSet(dimensionHelper.getDimension(i)));
+			unifiedQuery.or(viewBitSet);
+			return unifiedQuery;
+		} else
+			return BitDekkUtil.newBitSet();
 	}
 	/**
 	 * @param tableName Name of the table which will be queried
@@ -95,7 +125,7 @@ public class DataLayer {
 	 * @throws InvalidBitDekkExpressionException if there is a parsing error
 	 */
 	public double aggregate(String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String measureExpression) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(tableName, getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureExpression);
+		return aggregationHelper.aggregate(tableName, unifyQuery(getBitSet(viewDimensionValues), getBitSet(filterDimensionValues)), measureExpression);
 	}
 	/**
 	 * @param dimensionValues Array of dimension values
@@ -114,7 +144,7 @@ public class DataLayer {
 	 * @throws InvalidBitDekkExpressionException
 	 */
 	public double aggregate(IAggregation aggregation, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String[] measureNames) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), viewBitSet, filterBitSet, measureNames);
+		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), unifyQuery(viewBitSet, filterBitSet), measureNames);
 	}
 	/**
 	 * @param aggregation
@@ -126,7 +156,8 @@ public class DataLayer {
 	 * @throws InvalidBitDekkExpressionException
 	 */
 	public double aggregate(IAggregation aggregation, String tableName, DimensionValue[] viewDimensionValues, DimensionValue[] filterDimensionValues, String[] measureNames) throws InvalidBitDekkExpressionException {
-		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), getBitSet(viewDimensionValues), getBitSet(filterDimensionValues), measureNames);
+		return aggregationHelper.aggregate(aggregation, measureHelper.getTable(tableName), unifyQuery(getBitSet(viewDimensionValues), getBitSet(filterDimensionValues))
+				, measureNames);
 	}
 	/**
 	 * @param dimensionValue
@@ -150,5 +181,11 @@ public class DataLayer {
 	}
 	public Set<Integer> getDimensionValueIds() {
 		return dimensionValueHelper.getDimensionValueIds();
+	}
+	public String getDimension(int j) {
+		return dimensionHelper.getDimension(j);
+	}
+	public IBitSet getDimensionBitSet(String dimension) {
+		return dimensionHelper.getDimensionValuesBitSet(dimension);
 	}
 }

@@ -19,6 +19,7 @@ import org.bitdekk.DataLayer;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.helper.DimensionValueHelper;
 import org.bitdekk.model.DimensionValue;
 
@@ -28,6 +29,13 @@ import com.google.visualization.datasource.datatable.DataTable;
 public class DistributedDataLayer {
 	private DataLayer dataLayer;
 	private DimensionValueHelper dimensionValueHelper;
+	private DimensionHelper dimensionHelper;
+	public DimensionHelper getDimensionHelper() {
+		return dimensionHelper;
+	}
+	public void setDimensionHelper(DimensionHelper dimensionHelper) {
+		this.dimensionHelper = dimensionHelper;
+	}
 	public DimensionValueHelper getDimensionValueHelper() {
 		return dimensionValueHelper;
 	}
@@ -43,8 +51,9 @@ public class DistributedDataLayer {
 	/**
 	 * @param dimensionMap Map of dimension name and its id
 	 */
-	public void initializeDimensionValues(DataTable dataTable) {
+	public void initialize(DataTable dataTable) {
 		dimensionValueHelper.initializeDimensionValues(dataTable);
+		dimensionHelper.initializeDimensions(dataTable);
 	}
 	/**
 	 * 

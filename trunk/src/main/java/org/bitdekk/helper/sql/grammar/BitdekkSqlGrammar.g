@@ -27,15 +27,15 @@ havingExpression
 	};
 columns	:	column  (',' column)*;
 orderByColumns
-	:	a=IDENTIFIER (c=('ASC'|'DESC'))? {state1.addOrderByColumn($a.text, $c.text == null || $c.text.equals("ASC"));} 
-		(','b=IDENTIFIER (d=('ASC'|'DESC'))? {state1.addOrderByColumn($b.text, $d.text == null || $d.text.equals("ASC"));})*;
+	:	 a=stringName  (c=('ASC'|'DESC'))? {state1.addOrderByColumn($a.name,  $c.text == null || $c.text.equals("ASC"));} 
+		(','  b=stringName  (d=('ASC'|'DESC'))? {state1.addOrderByColumn($b.name, $d.text == null || $d.text.equals("ASC"));})*;
 limitClause
 	:	('LIMIT' a=POS_INT {state1.setFromRowNumber(Integer.parseInt($a.text));} 
 	',' b=POS_INT {state1.setToRowNumber(Integer.parseInt($b.text));});
-column	:	(a=dimension ('AS' b=IDENTIFIER)?) {state1.addColumn(new Dimension($a.name, $b == null ? $a.name : $b.text));}
-	| (c=aggregateMeasure ('AS' d=IDENTIFIER)?) {
+column	:	(a=dimension ('AS'  b=stringName  )?) {state1.addColumn(new Dimension($a.name, b == null ? $a.name : $b.name));}
+	| (c=aggregateMeasure ('AS' d=stringName)?) {
 		if(c.expression != null)
-			state1.addColumn(new Measure($c.text, $d == null ? $c.text : $d.text));
+			state1.addColumn(new Measure($c.text, d == null ? $c.text : $d.name));
 		else
 			state1.groupedExpressionNotFound($c.text);
 	};
@@ -54,9 +54,9 @@ whereExpression
 	:	dimensionCondition
 	;
 dimensionCondition
-	:	(a=IDENTIFIER '=' '"' b=IDENTIFIER {state1.addDimensionValue($a.text, $b.text);} '"')
-	| 	(c=IDENTIFIER 'IN' ('(' '"' d=IDENTIFIER {state1.addDimensionValue($c.text, $d.text);} '"' 
-			(',' '"' d=IDENTIFIER {state1.addDimensionValue($c.text, $d.text);} '"')* ')'));
+	:	(a=IDENTIFIER '=' b=stringName {state1.addDimensionValue($a.text, $b.name);} )
+	| 	(c=IDENTIFIER 'IN' ('('  d=stringName  {state1.addDimensionValue($c.text, $d.name);} 
+			(','  e=stringName  {state1.addDimensionValue($c.text, $e.name);})* ')'));
 groupedExpression
 	:	a=groupedAddExpression (ADD_SUB b=groupedAddExpression)*;
 groupedAddExpression
@@ -80,6 +80,8 @@ function
 	|	'MAX'
 	|	'MIN';
 number	:	ADD_SUB? POS_INT('.'POS_INT)?;
+stringName returns[String name] @init{StringBuffer buf = new StringBuffer();}
+	:	'"' (a=(ESC_SEQ | ~('\\'|'"')){buf.append($a.text);})* '"' {$name=buf.toString();};
 //Lexer
 LOGICAL_OPERATORS
 	:	'=' | '<' | '>' | '<>' | '<=' | '>=';
@@ -92,3 +94,22 @@ Letter  : 'a'..'z' | '_' | 'A'..'Z';
 fragment     
 Digit  :  '0'..'9';    
 WS  	:   ( ' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
+fragment
+HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
+fragment
+ESC_SEQ
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    |   UNICODE_ESC
+    |   OCTAL_ESC
+    ;
+fragment
+OCTAL_ESC
+    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7')
+    ;
+
+fragment
+UNICODE_ESC
+    :   '\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+    ;

@@ -95,7 +95,7 @@ public class DistributedTest extends AbstractTestNGSpringContextTests {
 		row.addCell(400);
 		dataTable.addRow(row);
 		
-		dataLayer.initializeDimensionValues(dataTable);
+		dataLayer.initialize(dataTable);
 	}
 	@Test
 	public void distributedTest() throws TypeMismatchException {

@@ -41,32 +41,37 @@
 		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="aggregationHelper" ref="aggregationHelper" />
+		<property name="dimensionHelper" ref="dimensionHelper" />
 	</bean>
 	<!-- Scenario -->
 	<bean id="scenarioDataLayer" class="org.bitdekk.scenario.ScenarioDataLayer" autowire-candidate="true">
-		<property name="dimensionHelper" ref="dimensionHelper" />
 		<property name="scenarioHelper" ref="scenarioHelper" />
 		<property name="scenarioDimensionValueHelper" ref="scenarioDimensionValueHelper" />
 		<property name="dataLayer" ref="dataLayer" />
+		<property name="scenarioDimensionHelper" ref="scenarioDimensionHelper" />
 	</bean>
 	<bean id="evaluationHelper" class="org.bitdekk.scenario.helper.ScenarioEvaluationHelper">
 		<property name="measureHelper" ref="measureHelper" />
 		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
 		<property name="dimensionHelper" ref="dimensionHelper" />
 		<property name="scenarioDimensionValueHelper" ref="scenarioDimensionValueHelper" />
+		<property name="dataHelper" ref="dataHelper" />
 	</bean>
 	<bean id="scenarioHelper" class="org.bitdekk.scenario.helper.ScenarioHelper">
 		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
 		<property name="dimensionHelper" ref="dimensionHelper" />
+		<property name="dataHelper" ref="dataHelper" />
 	</bean>
 	<bean id="scenarioDimensionValueHelper" class="org.bitdekk.scenario.helper.ScenarioDimensionValueHelper">
 		<property name="dataHelper" ref="dataHelper" />
-		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
 		<property name="dimensionHelper" ref="dimensionHelper" />
 	</bean>
-	<bean id="dimensionHelper" class="org.bitdekk.scenario.helper.DimensionHelper">
-		<property name="scenarioDataHelper" ref="scenarioDataHelper" />
-		<property name="dataLayer" ref="dataLayer" />
+	<bean id="dimensionHelper" class="org.bitdekk.helper.DimensionHelper">
+		<property name="dataHelper" ref="dataHelper" />
+		<property name="dimensionValueHelper" ref="dimensionValueHelper" />
 	</bean>
 	<bean id="scenarioDataHelper" class="org.bitdekk.scenario.helper.ScenarioDataHelper" />
+	<bean id="scenarioDimensionHelper" class="org.bitdekk.scenario.helper.ScenarioDimensionHelper" autowire-candidate="true">
+		<property name="dataHelper" ref="dataHelper" />
+	</bean>
 </beans>

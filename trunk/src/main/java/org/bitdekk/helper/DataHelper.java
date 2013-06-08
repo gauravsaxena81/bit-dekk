@@ -14,6 +14,7 @@
 package org.bitdekk.helper;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bitdekk.model.Table;
 
@@ -27,7 +28,15 @@ public class DataHelper {
 	private HashMap<String, Integer> dimensionValueMap = new HashMap<String, Integer>();
 	private HashMap<Integer, String> IdToDimensionMap = new HashMap<Integer, String>();
 	private HashMap<String, Table> tableMap = new HashMap<String, Table>();
+	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
+	private HashMap<Integer, String> DimensonValueToDimensionMap = new HashMap<Integer, String>();
 	
+	public HashMap<String, List<Integer>> getDimensionToDimensionValueIdMap() {
+		return dimensionToDimensionValueIdMap;
+	}
+	public HashMap<Integer, String> getDimensonValueToDimensionMap() {
+		return DimensonValueToDimensionMap;
+	}
 	public HashMap<String, Table> getTableMap() {
 		return tableMap;
 	}

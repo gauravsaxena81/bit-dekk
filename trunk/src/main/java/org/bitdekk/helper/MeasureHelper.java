@@ -52,7 +52,7 @@ public class MeasureHelper {
 	}
 	
 	public void intializeTable(String dataTableName, DataTable dataTable) {
-		Table table = new Table();
+		Table table = new Table(dataTable.getNumberOfRows());
 		int measureIndex = 0;
 		int dimensionIndex = 0;
 		for(ColumnDescription i : dataTable.getColumnDescriptions()) {
@@ -61,9 +61,10 @@ public class MeasureHelper {
 			else
 				table.getDimensionIndexMap().put(i.getLabel(), dimensionIndex++);
 		}
+		int rowIndex = 0;
 		for(TableRow i : dataTable.getRows()) {
 			DataRow dataRow = new DataRow(table.getMeasureIndexMap().size());
-			table.getRows().add(dataRow);
+			table.getRows()[rowIndex++] = dataRow;
 			int index = 0;
 			for(int k = 0; k < i.getCells().size(); k++) {
 				TableCell j = i.getCells().get(k);
@@ -85,8 +86,14 @@ public class MeasureHelper {
 		return dataHelper.getTableMap().get(tableName);
 	}
 
+	/**
+	 * @deprecated under construction, not recommended for use
+	 * @param tableName
+	 * @param resultSet
+	 * @throws SQLException
+	 */
 	public void intializeTable(String tableName, ResultSet resultSet) throws SQLException {
-		Table table = new Table();
+		Table table = new Table(100);
 		int measureIndex = 0;
 		int dimensionIndex = 0;
 		for(int i = 0, columns = resultSet.getMetaData().getColumnCount(); i < columns; i++) {
@@ -105,9 +112,10 @@ public class MeasureHelper {
 					table.getDimensionIndexMap().put(resultSet.getMetaData().getColumnLabel(i), dimensionIndex++);
 			}
 		}
+		int rowIndex = 0;
 		while(resultSet.next()) {
 			DataRow dataRow = new DataRow(table.getMeasureIndexMap().size());
-			table.getRows().add(dataRow);
+			table.getRows()[rowIndex] = (dataRow);
 			int index = 0;
 			for(int i = 0, columns = resultSet.getMetaData().getColumnCount(); i < columns; i++) {	
 				switch(resultSet.getMetaData().getColumnType(i)) {

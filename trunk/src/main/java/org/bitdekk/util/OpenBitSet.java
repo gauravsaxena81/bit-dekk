@@ -19,6 +19,7 @@ package org.bitdekk.util;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.bitdekk.api.IBitSet;
 
@@ -78,8 +79,8 @@ Test system: AMD Opteron, 64 bit linux, Sun Java 1.5_06 -server -Xbatch -Xmx64M
 
 @SuppressWarnings("serial")
 public class OpenBitSet implements Cloneable, Serializable, IBitSet {
-  protected long[] bits;
-  protected int wlen;   // number of words (elements) used in the array
+  private long[] bits;
+  private int wlen;   // number of words (elements) used in the array
 
   /** Constructs an OpenBitSet large enough to hold numBits.
    *
@@ -797,7 +798,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 			OpenBitSet other = (OpenBitSet)bitset;
 			if(other.wlen > this.wlen)
 				return false;
-			int pos = Math.min(this.wlen, other.wlen);
+			int pos = other.wlen;
 		    long[] thisArr = this.bits;
 		    long[] otherArr = other.bits;
 		    while (--pos>=0)
@@ -807,8 +808,48 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 		} else
 			return false;
 	}
+	public boolean contains(OpenBitSet other) {
+			if(other.wlen > this.wlen)
+				return false;
+			//int pos = Math.min(this.wlen, other.wlen);
+			int pos = other.wlen;
+		    long[] thisArr = this.bits;
+		    long[] otherArr = other.bits;
+		    while (--pos>=0)
+		      if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
+		    	  return false;
+		   /* int[] otherZeroes = other.zeroes;
+		    for(int j = 0, i = -1; j < otherZeroes.length; j++) {
+		    	i = i + otherZeroes[j] + 1;
+		    	if(otherArr[i] != (thisArr[i] & otherArr[i]))
+		    		return false;
+		    }*/
+			return true;
+	}
 	@Override
 	public boolean intersects(IBitSet bitSet) {
 		return intersects((OpenBitSet)bitSet);
+	}
+	@Override
+	public Iterator<Integer> iterator() {
+		return new Iterator<Integer>() {
+			private int position = OpenBitSet.this.nextSetBit(0);
+			@Override
+			public boolean hasNext() {
+				return position > -1;
+			}
+
+			@Override
+			public Integer next() {
+				int temp = position;
+				position = OpenBitSet.this.nextSetBit(++position);
+				return temp;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 }

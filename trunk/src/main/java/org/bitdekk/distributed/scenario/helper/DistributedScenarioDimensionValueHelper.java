@@ -20,13 +20,11 @@ import org.bitdekk.distributed.scenario.server.model.CreateDimensionValueRequest
 import org.bitdekk.distributed.scenario.server.model.DeleteDimensionValueRequest;
 import org.bitdekk.distributed.util.BitDekkDistributedUtil;
 import org.bitdekk.helper.DataHelper;
-import org.bitdekk.scenario.helper.DimensionHelper;
-import org.bitdekk.scenario.helper.ScenarioDataHelper;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.util.BitDekkUtil;
 
 public class DistributedScenarioDimensionValueHelper {
 	private DataHelper dataHelper;
-	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
 	private long timeout = Long.MAX_VALUE;
 	
@@ -35,12 +33,6 @@ public class DistributedScenarioDimensionValueHelper {
 	}
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
-	}
-	public ScenarioDataHelper getScenarioDataHelper() {
-		return scenarioDataHelper;
-	}
-	public void setScenarioDataHelper(ScenarioDataHelper scenarioDataHelper) {
-		this.scenarioDataHelper = scenarioDataHelper;
 	}
 	public DimensionHelper getDimensionHelper() {
 		return dimensionHelper;
@@ -60,8 +52,8 @@ public class DistributedScenarioDimensionValueHelper {
 		dataHelper.addToId();
 		dataHelper.getDimensionValueMap().put(generateDimensionValueString, id);
 		dataHelper.getIdToDimensionValueMap().put(id, generateDimensionValueString);
-		scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
-		scenarioDataHelper.getDimensonValueToDimensionMap().put(id, dimension);
+		dataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+		dataHelper.getDimensonValueToDimensionMap().put(id, dimension);
 		CreateDimensionValueRequest createDimensionValueRequest = new CreateDimensionValueRequest();
 		createDimensionValueRequest.setDimensionValue(dimensionValue);
 		createDimensionValueRequest.setDimension(dimension);
@@ -80,8 +72,8 @@ public class DistributedScenarioDimensionValueHelper {
 		if(id != null) {
 			boolean remove = dataHelper.getDimensionValueMap().remove(BitDekkUtil.generateDimensionValueString(dimension, dimensionValue)) != null;
 			dataHelper.getIdToDimensionValueMap().remove(id);
-			scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
-			scenarioDataHelper.getDimensonValueToDimensionMap().remove(id);
+			dataHelper.getDimensionToDimensionValueIdMap().get(dimension).add(id);
+			dataHelper.getDimensonValueToDimensionMap().remove(id);
 			final boolean[] success = new boolean[]{true};
 			DeleteDimensionValueRequest deleteDimensionValueRequest = new DeleteDimensionValueRequest();
 			deleteDimensionValueRequest.setDimensionValue(dimensionValue);
@@ -99,6 +91,6 @@ public class DistributedScenarioDimensionValueHelper {
 		return false;
 	}
 	public List<Integer> getDimensionValueIds(String dimension) {
-		return scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension);
+		return dataHelper.getDimensionToDimensionValueIdMap().get(dimension);
 	}
 }

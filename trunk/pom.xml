@@ -16,6 +16,14 @@
         </resource>
       </resources>
     <plugins>
+    		<!-- <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <version>2.13</version>
+		        <configuration>
+		          <skipTests>true</skipTests>
+		        </configuration>
+	        </plugin> -->
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
@@ -114,5 +122,10 @@
          <artifactId>kryonet</artifactId>
          <version>debug-2.18-all</version>
 	</dependency>
+    <dependency>
+        <groupId>com.googlecode.javaewah</groupId>
+        <artifactId>JavaEWAH</artifactId>
+        <version>0.6.12</version>
+    </dependency>
   </dependencies>
 </project>

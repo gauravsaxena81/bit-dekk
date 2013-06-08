@@ -39,10 +39,10 @@ public class AggregationHelper {
 		this.evaluator = evaluator;
 	}
 
-	public double aggregate(IAggregation aggregation, Table table, IBitSet viewBitSet, IBitSet filterBitSet, String[] measureNames)  {
+	public double aggregate(IAggregation aggregation, Table table, IBitSet unifiedQuery, String[] measureNames)  {
 		double[] measureArray = new double[measureNames.length];
 		for(DataRow i : table.getRows()) {
-			if(filterBitSet.contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSet)) {
+			if(unifiedQuery.contains(i.getMeasureQuery())) {
 				for(int j = 0; j < measureNames.length; j++)
 					measureArray[j] = i.getMeasureValues()[table.getMeasureIndexMap().get(measureNames[j])];
 				aggregation.aggregate(measureArray);
@@ -51,7 +51,7 @@ public class AggregationHelper {
 		return aggregation.getValue();
 	}
 
-	public double aggregate(String tableName, IBitSet viewBitSet, IBitSet filterBitSet, String measureExpression) throws InvalidBitDekkExpressionException{
+	public double aggregate(String tableName, IBitSet unifiedQuery, String measureExpression) throws InvalidBitDekkExpressionException{
 		GroupedMeasureExpression gme = new GroupedMeasureExpression();
 		Lexer lexer = evaluator.getLexer(measureExpression);
 		CommonTokenStream tokens = new CommonTokenStream();
@@ -59,7 +59,7 @@ public class AggregationHelper {
 		//Parser parser = evaluator.getParser(tokens, gme);
 		try {
 			evaluator.parse(tokens, gme);
-			return evaluator.getMeasureExpressionValue(gme.getGroupedTokens(), new Position(), null, tableName, viewBitSet, filterBitSet);
+			return evaluator.getMeasureExpressionValue(gme.getGroupedTokens(), new Position(), null, tableName, unifiedQuery);
 		} catch (RecognitionException e) {
 			e.printStackTrace();
 			throw new InvalidBitDekkExpressionException("Invalid token " + e.token + " found at " + e.line + "," + e.charPositionInLine);

@@ -22,6 +22,8 @@ import org.antlr.runtime.RecognitionException;
 import org.bitdekk.aggregation.IAggregation;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.api.IEvaluation;
+import org.bitdekk.helper.DataHelper;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.helper.MeasureHelper;
 import org.bitdekk.helper.Position;
 import org.bitdekk.helper.expression.BitdekkErrorHandlingLexer;
@@ -41,8 +43,15 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 public class ScenarioEvaluationHelper implements IEvaluation {
 	private MeasureHelper measureHelper;
 	private ScenarioDataHelper scenarioDataHelper;
+	private DataHelper dataHelper;
 	private DimensionHelper dimensionHelper;
 	private ScenarioDimensionValueHelper scenarioDimensionValueHelper;
+	public DataHelper getDataHelper() {
+		return dataHelper;
+	}
+	public void setDataHelper(DataHelper dataHelper) {
+		this.dataHelper = dataHelper;
+	}
 	public ScenarioDimensionValueHelper getScenarioDimensionValueHelper() {
 		return scenarioDimensionValueHelper;
 	}
@@ -68,36 +77,34 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 		this.measureHelper = measureHelper;
 	}
 	@Override
-	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet
-			, IBitSet filterBitSet) {
-		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, null);
+	public double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery) {
+		return getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, null);
 	}
-	private double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet
-			, IBitSet filterBitSet, double[] factors) {
+	private double getMeasureExpressionValue(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery, double[] factors) {
 		if(measureExpressionTokens.get(pos.pos).equals("+")) {
 			++pos.pos;
-			return add(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+			return add(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		} else if(measureExpressionTokens.get(pos.pos).equals("-")) {
 			++pos.pos;
-			return subtract(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+			return subtract(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		} else if(measureExpressionTokens.get(pos.pos).equals("*"))  {
 			++pos.pos;
-			return multiply(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+			return multiply(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		} else if(measureExpressionTokens.get(pos.pos).equals("/")) {
 			++pos.pos;
-			return divide(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+			return divide(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		} else if(measureExpressionTokens.get(pos.pos) instanceof Double)
 			return (Double)measureExpressionTokens.get(pos.pos);
 		else if(measureExpressionTokens.get(pos.pos) instanceof IAggregation)
 			return aggregate(((IAggregation)measureExpressionTokens.get(pos.pos)), ((IAggregation)measureExpressionTokens.get(pos.pos)).getMeasureExpression(), tableName
-				, viewBitSet, filterBitSet, factors);
+				, unifiedQuery, factors);
 		else if (factors != null){
 			Integer measureNumber = measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos));
 			return row.getMeasureValues()[measureNumber] * factors[measureNumber];
 		} else
 			return row.getMeasureValues()[measureHelper.getTable(tableName).getMeasureIndexMap().get(measureExpressionTokens.get(pos.pos))];
 	}
-	/*private double aggregate1(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
+	/*private double aggregate1(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet unifiedQuery, double[] factors) {
 		class D {
 			IBitSet key;
 			ArrayList<ScenarioRowQuery> list = new ArrayList<ScenarioRowQuery>();
@@ -126,42 +133,36 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 		}
 		for(DataRow i : measureHelper.getTable(tableName).getRows()) {
 			if(filterBitSet.contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSet))
-				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet));
+				aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, unifiedQuery));
 			for(int j = 0; j < list.size(); j++)
 				if(list.get(j).key.contains(i.getMeasureQuery()))
 					for(ScenarioRowQuery k : list.get(j).list)
 						if(k.getQuery().contains(i.getMeasureQuery()) && i.getMeasureQuery().contains(viewBitSetClone))
-							aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, viewBitSet, filterBitSet
+							aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), i, tableName, unifiedQuery
 									, k.getFactor()));
 		}
 		return aggregation.getValue();
 	}*/
-	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
-		if(filterBitSet.contains(viewBitSet)) {
-			IBitSet unifiedQuery = filterBitSet.clone();
-			for(int i = viewBitSet.nextSetBit(0); i > -1; i = viewBitSet.nextSetBit(i + 1))
-				unifiedQuery.andNot(dimensionHelper.getDimensionValuesBitSet(dimensionHelper.getDimension(i)));
-			unifiedQuery.or(viewBitSet);
-			Set<Integer> scenarioSet = ScenarioUtil.pi(unifiedQuery, scenarioDataHelper);
-			if(scenarioSet.isEmpty()) {
-				for(DataRow j : measureHelper.getTable(tableName).getRows())
-					if(unifiedQuery.contains(j.getMeasureQuery()))
-						aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, viewBitSet, filterBitSet));
-			} else {
-				for(Integer i : scenarioSet) {
-					for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
-						IBitSet intersectedFilter = unifiedQuery.clone();
-						intersectedFilter.and(key);
-						getRealQuery(scenarioDataHelper.getScenarios(), intersectedFilter);
-						if(ScenarioUtil.containsAllDimensions(intersectedFilter, dimensionHelper, scenarioDataHelper)) {
-							for(DataRow j : measureHelper.getTable(tableName).getRows()) {
-								if(unifiedQuery.contains(j.getMeasureQuery()))
-									aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, viewBitSet, filterBitSet));
-								for(ScenarioRowQuery k : scenarioDataHelper.getQueryMap(i).get(key))
-									if(intersectedFilter.contains(j.getMeasureQuery()) && k.getQuery().contains(j.getMeasureQuery()))
-										aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, viewBitSet, filterBitSet
-												, k.getFactor()));
-							}
+	private double aggregate(IAggregation aggregation, MeasureExpression measureExpression, String tableName, IBitSet unifiedQuery, double[] factors) {
+		Set<Integer> scenarioSet = ScenarioUtil.pi(unifiedQuery, scenarioDataHelper);
+		if(scenarioSet.isEmpty()) {
+			for(DataRow j : measureHelper.getTable(tableName).getRows())
+				if(unifiedQuery.contains(j.getMeasureQuery()))
+					aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, unifiedQuery));
+		} else {
+			for(Integer i : scenarioSet) {
+				for(IBitSet key : scenarioDataHelper.getQueryMap(i).keySet()) {
+					IBitSet intersectedFilter = unifiedQuery.clone();
+					intersectedFilter.and(key);
+					getRealQuery(scenarioDataHelper.getScenarios(), intersectedFilter);
+					if(ScenarioUtil.containsAllDimensions(intersectedFilter, dimensionHelper, dataHelper)) {
+						for(DataRow j : measureHelper.getTable(tableName).getRows()) {
+							if(unifiedQuery.contains(j.getMeasureQuery()))
+								aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, unifiedQuery));
+							for(ScenarioRowQuery k : scenarioDataHelper.getQueryMap(i).get(key))
+								if(intersectedFilter.contains(j.getMeasureQuery()) && k.getQuery().contains(j.getMeasureQuery()))
+									aggregation.aggregate(getMeasureExpressionValue(measureExpression.getTokens(), new Position(), j, tableName, unifiedQuery
+											, k.getFactor()));
 						}
 					}
 				}
@@ -169,28 +170,28 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 		}
 		return aggregation.getValue();
 	}
-	private double divide(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+	private double divide(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		return v1 / v2;
 	}
-	private double multiply(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+	private double multiply(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		return v1 * v2;
 	}
-	private double subtract(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+	private double subtract(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		return v1 - v2;
 	}
-	private double add(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet viewBitSet, IBitSet filterBitSet, double[] factors) {
-		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+	private double add(ArrayList<Object> measureExpressionTokens, Position pos, DataRow row, String tableName, IBitSet unifiedQuery, double[] factors) {
+		double v1 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		++pos.pos;
-		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, viewBitSet, filterBitSet, factors);
+		double v2 = getMeasureExpressionValue(measureExpressionTokens, pos, row, tableName, unifiedQuery, factors);
 		return v1 + v2;
 	}
 	private void getRealQuery(Set<Integer> scenarioSet, IBitSet q) {
@@ -266,7 +267,7 @@ public class ScenarioEvaluationHelper implements IEvaluation {
 			if(i.getType().equals(ValueType.TEXT)) {
 				IBitSet dimensionValuesBitSet = dimensionHelper.getDimensionValuesBitSet(i.getId());
 				dimensionValuesBitSet.and(measureQuery);
-				row.addCell(scenarioDimensionValueHelper.getDimensionValue(dimensionValuesBitSet.nextSetBit(0)).getDimensionValue());
+				row.addCell(scenarioDimensionValueHelper.getDimensionValue(dimensionValuesBitSet.iterator().next()).getDimensionValue());
 			} else
 				row.addCell(measureValues[measureHelper.getTable(tableName).getMeasureIndexMap().get(i.getId())]);
 		}

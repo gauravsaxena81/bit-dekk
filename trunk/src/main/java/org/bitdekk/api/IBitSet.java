@@ -13,12 +13,13 @@
  */
 package org.bitdekk.api;
 
+
 /**
  * A bitset interface. All the implementation which are to be used in bit-dekk for bitsets must implement it
  * @author gaurav.saxena
  *
  */
-public interface IBitSet {
+public interface IBitSet extends Iterable<Integer>{
 	/**
 	 * @param bitSet
 	 * @return true if parameter and this object are the same type and 
@@ -38,12 +39,6 @@ public interface IBitSet {
 	 * @param position bit at this position is cleared
 	 */
 	void clear(long position);
-	/**
-	 * Returns the position of the next set bit start from the given position, inclusive
-	 * @param position look up begins from this position in bitset
-	 * @return the position of the next set bit
-	 */
-	int nextSetBit(int position);
 	/**
 	 * @param position
 	 * @return true if bit at this position is set, false otherwise

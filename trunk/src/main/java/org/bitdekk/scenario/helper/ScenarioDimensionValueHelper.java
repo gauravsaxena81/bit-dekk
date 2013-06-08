@@ -18,20 +18,14 @@ import java.util.Set;
 
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.helper.DataHelper;
+import org.bitdekk.helper.DimensionHelper;
 import org.bitdekk.model.DimensionValue;
 import org.bitdekk.util.BitDekkUtil;
 
 public class ScenarioDimensionValueHelper {
 	private DataHelper dataHelper;
-	private ScenarioDataHelper scenarioDataHelper;
 	private DimensionHelper dimensionHelper;
 
-	public ScenarioDataHelper getScenarioDataHelper() {
-		return scenarioDataHelper;
-	}
-	public void setScenarioDataHelper(ScenarioDataHelper scenarioDataHelper) {
-		this.scenarioDataHelper = scenarioDataHelper;
-	}
 	public DimensionHelper getDimensionHelper() {
 		return dimensionHelper;
 	}
@@ -61,7 +55,7 @@ public class ScenarioDimensionValueHelper {
 			return false;
 	}
 	public List<Integer> getDimensionValueIds(String dimension) {
-		return scenarioDataHelper.getDimensionToDimensionValueIdMap().get(dimension);
+		return dataHelper.getDimensionToDimensionValueIdMap().get(dimension);
 	}
 	public IBitSet getBitSet(DimensionValue[] dimensionValues) {
 		IBitSet bitSet = BitDekkUtil.newBitSet();

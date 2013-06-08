@@ -15,7 +15,6 @@ package org.bitdekk.scenario.helper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 import org.bitdekk.api.IBitSet;
@@ -23,8 +22,6 @@ import org.bitdekk.scenario.model.ScenarioRowQuery;
 
 public class ScenarioDataHelper {
 	private HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>> scenarioRules = new HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>>();
-	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
-	private HashMap<Integer, String> DimensonValueToDimensionMap = new HashMap<Integer, String>();
 	
 	public void associateRule(int id, IBitSet keyBitSet, IBitSet ruleBitSet, double[] factor) {
 		HashMap<IBitSet, ArrayList<ScenarioRowQuery>> rules = scenarioRules.get(id);
@@ -38,12 +35,6 @@ public class ScenarioDataHelper {
 	}
 	public Set<Integer> getScenarios() {
 		return scenarioRules.keySet();
-	}
-	public void setDimensionToDimensionValueIdMap(HashMap<String, List<Integer>> dimensionToDimensionValueIdMap) {
-		this.dimensionToDimensionValueIdMap = dimensionToDimensionValueIdMap;
-	}
-	public HashMap<String, List<Integer>> getDimensionToDimensionValueIdMap() {
-		return dimensionToDimensionValueIdMap;
 	}
 	public HashMap<IBitSet, ArrayList<ScenarioRowQuery>> getScenarioRules(Integer id) {
 		return scenarioRules.get(id);
@@ -72,8 +63,5 @@ public class ScenarioDataHelper {
 	}
 	public boolean deleteRule(int id, IBitSet key) {
 		return scenarioRules.get(id).remove(key) != null;
-	}
-	public HashMap<Integer, String> getDimensonValueToDimensionMap() {
-		return DimensonValueToDimensionMap;
 	}
 }
