@@ -1,12 +1,13 @@
-package org.bitdekk.helper.sql.grammar;
+package org.bitdekk.helper.sql.grammar.model;
 
 import java.util.ArrayList;
+
 
 public class Measure implements IColumn{
 	private ArrayList<Object> measureExpressionTokens;
 	private String label;
 	private String measureExpression;
-	public Measure(String measureExpression/*ArrayList<Object> measureExpressionTokens*/, String label) {
+	public Measure(String measureExpression, String label) {
 		this.measureExpression = measureExpression;
 		this.label = label;
 	}

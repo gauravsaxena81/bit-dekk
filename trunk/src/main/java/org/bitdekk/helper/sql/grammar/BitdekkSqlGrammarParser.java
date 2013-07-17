@@ -11,6 +11,8 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
+import org.bitdekk.helper.sql.grammar.model.Dimension;
+import org.bitdekk.helper.sql.grammar.model.Measure;
 
 public class BitdekkSqlGrammarParser extends Parser {
     public static final String[] tokenNames = new String[] {

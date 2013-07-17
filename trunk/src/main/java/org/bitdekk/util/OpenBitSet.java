@@ -78,10 +78,11 @@ Test system: AMD Opteron, 64 bit linux, Sun Java 1.5_06 -server -Xbatch -Xmx64M
  */
 
 @SuppressWarnings("serial")
-public class OpenBitSet implements Cloneable, Serializable, IBitSet {
+public class OpenBitSet implements Cloneable, Serializable, IBitSet, Comparable<OpenBitSet> {
   private long[] bits;
   private int wlen;   // number of words (elements) used in the array
-
+  public int[] zeroes;
+  
   /** Constructs an OpenBitSet large enough to hold numBits.
    *
    * @param numBits
@@ -796,35 +797,45 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 	public boolean contains(IBitSet bitset) {
 		if(bitset != null && bitset instanceof OpenBitSet) {
 			OpenBitSet other = (OpenBitSet)bitset;
-			if(other.wlen > this.wlen)
-				return false;
-			int pos = other.wlen;
 		    long[] thisArr = this.bits;
 		    long[] otherArr = other.bits;
-		    while (--pos>=0)
-		      if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
-		    	  return false;
+		    int[] otherZeroes = other.zeroes;
+		    if(otherZeroes != null && otherArr.length < thisArr.length) {
+			    for(int j = 0, i = -1, max = otherZeroes.length; j < max; j++) {
+			    	i = i + otherZeroes[j] + 1;
+			    	if(otherArr[i] != (thisArr[i] & otherArr[i]))
+			    		return false;
+			    }
+		    } else {
+		    	int pos = other.wlen;
+			    while (--pos>=0)
+			      if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
+			    	  return false;
+		    }
 			return true;
 		} else
 			return false;
 	}
 	public boolean contains(OpenBitSet other) {
-			if(other.wlen > this.wlen)
-				return false;
-			//int pos = Math.min(this.wlen, other.wlen);
-			int pos = other.wlen;
-		    long[] thisArr = this.bits;
-		    long[] otherArr = other.bits;
-		    while (--pos>=0)
-		      if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
-		    	  return false;
-		   /* int[] otherZeroes = other.zeroes;
-		    for(int j = 0, i = -1; j < otherZeroes.length; j++) {
-		    	i = i + otherZeroes[j] + 1;
-		    	if(otherArr[i] != (thisArr[i] & otherArr[i]))
-		    		return false;
-		    }*/
+		if(other != null) {
+		   long[] thisArr = this.bits;
+		   long[] otherArr = other.bits;
+		   int[] otherZeroes = other.zeroes;
+		   if(otherZeroes != null && otherArr.length < thisArr.length) {
+			    for(int j = 0, i = -1, max = otherZeroes.length; j < max; j++) {
+			    	i = i + otherZeroes[j] + 1;
+			    	if(otherArr[i] != (thisArr[i] & otherArr[i]))
+			    		return false;
+			    }
+		    } else {
+		    	int pos = other.wlen;
+			    while (--pos>=0)
+			      if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
+			    	  return false;
+		    }
 			return true;
+		} else
+			return false;
 	}
 	@Override
 	public boolean intersects(IBitSet bitSet) {
@@ -851,5 +862,55 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 				throw new UnsupportedOperationException();
 			}
 		};
+	}
+
+	@Override
+	public int compareTo(OpenBitSet o) {
+		/*OpenBitSet other = (OpenBitSet)o;
+		int pos = Math.min(other.wlen, this.wlen);
+	    long[] thisArr = this.bits;
+	    long[] otherArr = other.bits;
+	    if(pos > 0) {
+		    while (--pos>=0) {
+		        if (otherArr[pos] > thisArr[pos])
+		    	    return 1;
+		        else if (otherArr[pos] < thisArr[pos])
+		    	    return -1;
+		    }
+		    return 0;
+	    } else
+	    	return this.wlen - other.wlen;*/
+		int index = 0;
+		while(true) {
+			int thisNextSetBit = this.nextSetBit(index);
+			int otherNextSetBit = o.nextSetBit(index);
+			if(thisNextSetBit > otherNextSetBit)
+				return 1;
+			else if(thisNextSetBit < otherNextSetBit)
+				return -1;
+			else if(thisNextSetBit > -1)
+				index = thisNextSetBit + 1;
+			else
+				return 0;
+		}
+	}
+	@Override
+	public void compress() {
+		int[] zeroes = new int[bits.length];
+		int index = 0;
+		int num = 0;
+		for(long i : bits) {
+			if(i == 0)
+				num++;
+			else if(num > 0) {
+				zeroes[index] = num;
+				num = 0;
+				index++;
+			}
+		}
+		if (index > 0) {
+			this.zeroes = new int[index];
+			System.arraycopy(zeroes, 0, this.zeroes, 0, index);
+		}
 	}
 }

@@ -11,7 +11,8 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.bitdekk.helper.sql.grammar;
+package org.bitdekk.helper.sql.grammar.model;
+
 
 public class Dimension implements IColumn {
 	private String label;

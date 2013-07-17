@@ -4,7 +4,9 @@ grammar BitdekkSqlGrammar;
 package org.bitdekk.helper.sql.grammar;
 
 import org.bitdekk.helper.sql.grammar.State;
-import org.bitdekk.helper.sql.grammar.Measure;
+import org.bitdekk.helper.sql.grammar.model.Measure;
+import org.bitdekk.helper.sql.grammar.model.Dimension;
+import org.bitdekk.helper.sql.grammar.model.OrderColumn;
 }
 @lexer::header
 {
