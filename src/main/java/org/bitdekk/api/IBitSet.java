@@ -48,4 +48,6 @@ public interface IBitSet extends Iterable<Integer>{
 	void or(IBitSet query);
 	IBitSet clone();
 	void andNot(IBitSet bitset);
+	int nextSetBit(int position);
+	void compress();
 }

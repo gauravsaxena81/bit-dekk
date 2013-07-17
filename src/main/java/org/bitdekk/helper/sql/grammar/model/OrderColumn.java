@@ -1,4 +1,4 @@
-package org.bitdekk.helper.sql.grammar;
+package org.bitdekk.helper.sql.grammar.model;
 
 public class OrderColumn {
 	private int columnNumner;

@@ -16,7 +16,10 @@ package org.bitdekk.helper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
+import java.util.Comparator;
 
+import org.bitdekk.api.IBitSet;
 import org.bitdekk.model.DataRow;
 import org.bitdekk.model.Table;
 
@@ -78,7 +81,15 @@ public class MeasureHelper {
 						dataRow.getMeasureValues()[index++] = ((NumberValue)j.getValue()).getValue();
 				}
 			}
+			dataRow.getMeasureQuery().compress();
 		}
+		Arrays.sort(table.getRows(), new Comparator<DataRow>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public int compare(DataRow o1, DataRow o2) {
+				return ((Comparable<IBitSet>) o1.getMeasureQuery()).compareTo(o2.getMeasureQuery());
+			}
+		});
 		dataHelper.getTableMap().put(dataTableName, table);
 	}
 

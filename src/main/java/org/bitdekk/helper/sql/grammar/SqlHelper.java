@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -15,10 +13,16 @@ import org.bitdekk.DataLayer;
 import org.bitdekk.api.IBitSet;
 import org.bitdekk.exception.InvalidBitDekkExpressionException;
 import org.bitdekk.helper.MeasureHelper;
+import org.bitdekk.helper.sql.grammar.model.AggregationTreeNode;
+import org.bitdekk.helper.sql.grammar.model.Dimension;
+import org.bitdekk.helper.sql.grammar.model.IColumn;
+import org.bitdekk.helper.sql.grammar.model.Measure;
+import org.bitdekk.helper.sql.grammar.model.OrderColumn;
 import org.bitdekk.model.DataRow;
 import org.bitdekk.model.DimensionValue;
 import org.bitdekk.model.Table;
 import org.bitdekk.util.BitDekkUtil;
+import org.bitdekk.util.OpenBitSet;
 
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
@@ -27,9 +31,7 @@ import com.google.visualization.datasource.datatable.TableCell;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
-
 public class SqlHelper {
-	
 	private DataLayer dataLayer;
 	private HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap = new HashMap<String, ArrayList<String>>();
 	private HashMap<String, String> dimensionValuesToDimensionMap = new HashMap<String, String>();
@@ -83,19 +85,27 @@ public class SqlHelper {
 	private ArrayList<TableRow> getRowList(ArrayList<IColumn> columns, int[] counters, IBitSet filterBitSet, String tableName
 			, ArrayList<HavingExpression> havingExpressions) {
 		ArrayList<TableRow> rowList = new ArrayList<TableRow>();
-		//while((viewBitSet = nextBitSet(dimensionToDimensionValuesMap, columns, counters)) != null) {
-		for(ArrayList<DimensionValue> list : createBuckets(tableName, columns, filterBitSet)) {
+		ArrayList<String> measureExpressions = new ArrayList<String>();
+		for(IColumn j : columns)
+			if(j instanceof Measure)
+				measureExpressions.add(((Measure)j).getMeasureExpression());
+		for(HavingExpression i : havingExpressions) {
+			measureExpressions.add(i.getLhs());
+			measureExpressions.add(i.getRhs());
+		}
+		for(AggregationTreeNode i : createBucketsO1Bucketing(tableName, columns, filterBitSet, measureExpressions.toArray(new String[0]))) {
 			TableRow row = new TableRow();
 			boolean isAllMeasuresNull = false;
 			boolean isAnyDimensionPresent = false;
 			int k = 0;
-			IBitSet viewBitSet = dataLayer.getBitSet(list.toArray(new DimensionValue[0]));
+			double[] aggregatedValues = i.getNodeObject();
+			int measureIndex = 0;
 			for(IColumn j : columns) {
 				if(j instanceof Dimension) {
-					row.addCell(list.get(k++).getDimensionValue());
+					row.addCell(i.getRowDimensionValues().get(k++).getDimensionValue());
 					isAnyDimensionPresent = true;
 				} else {
-					double value = dataLayer.aggregate(tableName, viewBitSet, filterBitSet, ((Measure)j).getMeasureExpression());
+					double value = aggregatedValues[measureIndex++];
 					row.addCell(value);
 					isAllMeasuresNull |= Double.isNaN(value);
 				}
@@ -103,8 +113,7 @@ public class SqlHelper {
 			if(!isAllMeasuresNull) {
 				boolean isHavingTrue = true;
 				for(HavingExpression j : havingExpressions) {
-					if(!logicalOperation(dataLayer.aggregate(tableName, viewBitSet, filterBitSet, j.getLhs()), j.getLogicOperator(), 
-						dataLayer.aggregate(tableName, viewBitSet, filterBitSet, j.getRhs()))) {
+					if(!logicalOperation(aggregatedValues[measureIndex++], j.getLogicOperator(), aggregatedValues[measureIndex++])) {
 						isHavingTrue = false;
 						break;
 					}
@@ -117,34 +126,232 @@ public class SqlHelper {
 		}
 		return rowList;
 	}
-	private ArrayList<ArrayList<DimensionValue>> createBuckets(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet) {
+	/*private ArrayList<TableRow> getRowList(ArrayList<IColumn> columns, int[] counters, IBitSet filterBitSet, String tableName
+			, ArrayList<HavingExpression> havingExpressions) {
+		ArrayList<TableRow> rowList = new ArrayList<TableRow>();
+		ArrayList<String> measureExpressions = new ArrayList<String>();
+		int measureSize = 0;
+		for(IColumn j : columns) {
+			if(j instanceof Measure) {
+				measureExpressions.add(((Measure)j).getMeasureExpression());
+				measureSize++;
+			}
+		}
+		for(HavingExpression i : havingExpressions) {
+			measureExpressions.add(i.getLhs());
+			measureExpressions.add(i.getRhs());
+		}
+		ArrayList<TableCell> cells = new ArrayList<TableCell>();
+		MapIndexedArrayListTree<ITreeNode<?>> bucketTree = null;
+		try {
+			bucketTree = createBucketTree(tableName, columns, filterBitSet, measureExpressions.toArray(new String[0]));
+			for(ITreeNode<?> leaf : bucketTree.leaves()) {
+				cells.clear();
+				ITreeNode<?> parent = bucketTree.parent(leaf);
+				TableRow row = new TableRow();
+				boolean isAllMeasuresNull = false;
+				boolean isAnyDimensionPresent = false;
+				int k = measureSize - 1;
+				double[] aggregatedValues = (double[]) leaf.getNodeObject();
+				for(int i = columns.size() - 1; i >= 0; i--) {
+					if(columns.get(i) instanceof Dimension) {
+						cells.add(0, new TableCell(dataLayer.getDimensionValue((Integer) parent.getNodeObject()).getDimensionValue()));
+						parent = bucketTree.parent(parent);
+						isAnyDimensionPresent = true;
+					} else {
+						double value = aggregatedValues[k--];
+						cells.add(0, new TableCell(value));
+						isAllMeasuresNull |= Double.isNaN(value);
+					}
+				}
+				if(!isAllMeasuresNull) {
+					boolean isHavingTrue = true;
+					for(int j = measureSize, havingIndex = 0; havingIndex < havingExpressions.size(); j += 2, havingIndex++) {
+						if(!logicalOperation(aggregatedValues[j], havingExpressions.get(havingIndex).getLogicOperator(), aggregatedValues[j + 1])) {
+							isHavingTrue = false;
+							break;
+						}
+					}
+					if(isHavingTrue) {
+						for(TableCell i : cells)
+							row.addCell(i);
+						rowList.add(row);
+					}
+				}
+				if(!isAnyDimensionPresent)
+					break;
+			}
+		} catch (NodeNotFoundException e) {
+			e.printStackTrace();
+		}
+		return rowList;
+	}*/
+	/*private MapIndexedArrayListTree<ITreeNode<?>> createBucketTree(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet, String[] measureExpressions) throws NodeNotFoundException {
 		Table table = measureHelper.getTable(tableName);
-		Set<IBitSet> bucketBitSets = new HashSet<IBitSet>();
-		ArrayList<ArrayList<DimensionValue>> buckets = new ArrayList<ArrayList<DimensionValue>>();
+		MapIndexedArrayListTree<ITreeNode<?>> bucketTree = new MapIndexedArrayListTree<ITreeNode<?>>();
+		bucketTree.add(new RootTreeNode(filterBitSet));
+		HashMap<String, IBitSet> dimensionBitSMap = new HashMap<String, IBitSet>();
+		for(IColumn j : columns)
+			if(j instanceof Dimension)
+				dimensionBitSMap.put(((Dimension) j).getName(), dataLayer.getDimensionBitSet(((Dimension) j).getName()));
 		for(DataRow i : table.getRows()) {
-			if(filterBitSet.contains(i.getMeasureQuery())) {
-				IBitSet bits = BitDekkUtil.newBitSet();
-				ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
-				boolean isDimensionPresent = false;
-				for(IColumn k : columns) {
-					if(k instanceof Dimension) {
-						isDimensionPresent = true;
-						//for(int j = i.getMeasureQuery().nextSetBit(0); j > -1; j = i.getMeasureQuery().nextSetBit(j + 1)) {
-						for(Integer j : i.getMeasureQuery()) {
-							if(dataLayer.getDimension(j).equals(((Dimension) k).getName())) {
-								bits.set(j);
-								list.add(dataLayer.getDimensionValue(j));
-								break;
+			IBitSet measureQuery = i.getMeasureQuery();
+			if(filterBitSet.contains(measureQuery)) {
+				ITreeNode<?> parent = bucketTree.root();
+				for(IColumn j : columns) {
+					if(j instanceof Dimension) {
+						IBitSet childrenBitset = parent.childrenBitset();
+						if(childrenBitset.intersects(measureQuery)) {
+							for(ITreeNode<?> k : bucketTree.children(parent)) {
+								if(measureQuery.get((Integer) k.getNodeObject())) {
+									parent = k;
+									break;
+								}
 							}
+						} else {
+							IBitSet dimensionBitSet = dimensionBitSMap.get(((Dimension) j).getName()).clone();
+							dimensionBitSet.and(measureQuery);
+							DimensionValueTreeNode dimensionValueTreeNode = new DimensionValueTreeNode(dimensionBitSet.nextSetBit(0));
+							bucketTree.add(parent, dimensionValueTreeNode);
+							parent.childrenBitset().or(dimensionBitSet);
+							parent = dimensionValueTreeNode;
 						}
 					}
 				}
-				if(isDimensionPresent && bucketBitSets.add(bits))
-					buckets.add(list);
+				List<ITreeNode<?>> children = bucketTree.children(parent);
+				if(children.isEmpty()) {
+					AggregationTreeNode aggregationTreeNode = new AggregationTreeNode(measureHelper.getTable(tableName).getMeasureIndexMap()
+							, measureExpressions);
+					bucketTree.add(parent, aggregationTreeNode);
+					if(measureExpressions.length > 0)
+						aggregationTreeNode.aggregate(i.getMeasureValues());
+				} else if(measureExpressions.length > 0)
+					((AggregationTreeNode) children.get(0)).aggregate(i.getMeasureValues());
 			}
 		}
-		if(buckets.isEmpty())
-			buckets.add(new ArrayList<DimensionValue>());
+		return bucketTree;
+	}*/
+	/*private ArrayList<AggregationTreeNode> createBuckets(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet, String[] aggregationExpressions) {
+		Table table = measureHelper.getTable(tableName);
+		TreeMap<IBitSet, AggregationTreeNode> bucketBitSets = new TreeMap<IBitSet, AggregationTreeNode>();
+		ArrayList<AggregationTreeNode> buckets = new ArrayList<AggregationTreeNode>();
+		
+		boolean isDimensionPresent = false;
+		boolean isMeasuresPresent = false;
+		IBitSet dimensionsPresentInSelectBitSet = BitDekkUtil.newBitSet();
+		for(IColumn k : columns) {
+			if(k instanceof Dimension) {
+				isDimensionPresent = true;
+				dimensionsPresentInSelectBitSet.or(dataLayer.getDimensionBitSet(((Dimension) k).getName()));
+			} else
+				isMeasuresPresent = true;
+		}
+		OpenBitSet filterOpenBitSet = (OpenBitSet)filterBitSet;
+		filterOpenBitSet.compress();
+		if(isDimensionPresent && isMeasuresPresent) {
+			IBitSet bits = null;
+			for(DataRow i : table.getRows()) {
+				if(filterOpenBitSet.contains(i.getMeasureQuery())) {
+					if(bits == null || !i.getMeasureQuery().contains(bits)) {
+						bits = dimensionsPresentInSelectBitSet.clone();
+						bits.and(i.getMeasureQuery());
+					}
+					AggregationTreeNode aggregationTreeNode = bucketBitSets.get(bits);
+					if(aggregationTreeNode == null) {
+						ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
+						for(Integer j : bits)
+							list.add(dataLayer.getDimensionValue(j));
+						aggregationTreeNode= new AggregationTreeNode(table.getMeasureIndexMap(), aggregationExpressions);
+						buckets.add(aggregationTreeNode);
+						aggregationTreeNode.setRowDimensionValues(list);
+						bucketBitSets.put(bits, aggregationTreeNode);
+					}
+					aggregationTreeNode.aggregate(i.getMeasureValues());
+				}
+			}
+		} else if(isDimensionPresent) {
+			for(DataRow i : table.getRows()) {
+				if(filterOpenBitSet.contains(i.getMeasureQuery())) {
+					IBitSet bits = dimensionsPresentInSelectBitSet.clone();
+					bits.and(i.getMeasureQuery());
+					AggregationTreeNode aggregationTreeNode = bucketBitSets.get(bits);
+					if(aggregationTreeNode == null) {
+						ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
+						for(Integer j : bits)
+							list.add(dataLayer.getDimensionValue(j));
+						aggregationTreeNode= new AggregationTreeNode(table.getMeasureIndexMap(), aggregationExpressions);
+						buckets.add(aggregationTreeNode);
+						aggregationTreeNode.setRowDimensionValues(list);
+						bucketBitSets.put(bits, aggregationTreeNode);
+					}
+				}
+			}
+		} else if(isMeasuresPresent) {
+			AggregationTreeNode aggregationTreeNode = new AggregationTreeNode(table.getMeasureIndexMap(), aggregationExpressions);
+			buckets.add(aggregationTreeNode);
+			aggregationTreeNode.setRowDimensionValues(new ArrayList<DimensionValue>());
+			for(DataRow i : table.getRows())
+				aggregationTreeNode.aggregate(i.getMeasureValues());
+		}
+		return buckets;
+	}*/
+	private ArrayList<AggregationTreeNode> createBucketsO1Bucketing(String tableName, ArrayList<IColumn> columns, IBitSet filterBitSet, String[] aggregationExpressions) {
+		Table table = measureHelper.getTable(tableName);
+		ArrayList<AggregationTreeNode> buckets = new ArrayList<AggregationTreeNode>();
+		
+		boolean isDimensionPresent = false;
+		boolean isMeasuresPresent = false;
+		IBitSet dimensionsPresentInSelectBitSet = BitDekkUtil.newBitSet();
+		for(IColumn k : columns) {
+			if(k instanceof Dimension) {
+				isDimensionPresent = true;
+				dimensionsPresentInSelectBitSet.or(dataLayer.getDimensionBitSet(((Dimension) k).getName()));
+			} else
+				isMeasuresPresent = true;
+		}
+		OpenBitSet filterOpenBitSet = (OpenBitSet)filterBitSet;
+		filterOpenBitSet.compress();
+		IBitSet lastBucket = null;
+		AggregationTreeNode lastAggregationTreeNode = null;
+		if(isDimensionPresent && isMeasuresPresent) {
+			for(DataRow i : table.getRows()) {
+				if(filterOpenBitSet.contains(i.getMeasureQuery())) {
+					if(!i.getMeasureQuery().contains(lastBucket)) {
+						lastBucket = dimensionsPresentInSelectBitSet.clone();
+						lastBucket.and(i.getMeasureQuery());
+						lastBucket.compress();
+						ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
+						for(Integer j : lastBucket)
+							list.add(dataLayer.getDimensionValue(j));
+						lastAggregationTreeNode = new AggregationTreeNode(table.getMeasureIndexMap(), aggregationExpressions);
+						buckets.add(lastAggregationTreeNode);
+						lastAggregationTreeNode.setRowDimensionValues(list);
+					}
+					lastAggregationTreeNode.aggregate(i.getMeasureValues());
+				}
+			}
+		} else if(isDimensionPresent) {
+			for(DataRow i : table.getRows()) {
+				if(filterOpenBitSet.contains(i.getMeasureQuery())) {
+					if(!i.getMeasureQuery().contains(lastBucket)) {
+						lastBucket = dimensionsPresentInSelectBitSet.clone();
+						lastBucket.and(i.getMeasureQuery());
+						ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
+						for(Integer j : lastBucket)
+							list.add(dataLayer.getDimensionValue(j));
+						lastAggregationTreeNode = new AggregationTreeNode(table.getMeasureIndexMap(), aggregationExpressions);
+						buckets.add(lastAggregationTreeNode);
+						lastAggregationTreeNode.setRowDimensionValues(list);
+					}
+				}
+			}
+		} else if(isMeasuresPresent) {
+			AggregationTreeNode aggregationTreeNode = new AggregationTreeNode(table.getMeasureIndexMap(), aggregationExpressions);
+			buckets.add(aggregationTreeNode);
+			aggregationTreeNode.setRowDimensionValues(new ArrayList<DimensionValue>());
+			for(DataRow i : table.getRows())
+				aggregationTreeNode.aggregate(i.getMeasureValues());
+		}
 		return buckets;
 	}
 	private boolean logicalOperation(double lhsAggregate, String logicOperator, double rhsAggregate) {

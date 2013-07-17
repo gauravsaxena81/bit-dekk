@@ -3,6 +3,11 @@ package org.bitdekk.helper.sql.grammar;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bitdekk.helper.sql.grammar.model.Dimension;
+import org.bitdekk.helper.sql.grammar.model.IColumn;
+import org.bitdekk.helper.sql.grammar.model.Measure;
+import org.bitdekk.helper.sql.grammar.model.OrderColumn;
+
 public class State {
 	private String tableName;
 	private HashMap<String, ArrayList<String>> dimensionConditions = new HashMap<String, ArrayList<String>>();

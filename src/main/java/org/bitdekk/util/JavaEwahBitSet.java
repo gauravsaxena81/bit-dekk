@@ -78,4 +78,14 @@ public class JavaEwahBitSet implements IBitSet {
 	public int hashCode() {
 		return this.bitMap.hashCode();
 	}
+
+	@Override
+	public int nextSetBit(int position) {
+		return -1;//TODO implement this
+	}
+
+	@Override
+	public void compress() {
+		//already compressed
+	}
 }
