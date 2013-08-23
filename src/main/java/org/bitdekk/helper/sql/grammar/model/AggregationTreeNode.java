@@ -16,7 +16,7 @@ import org.bitdekk.util.BitDekkUtil.OPERATORS;
 public class AggregationTreeNode implements ITreeNode<double[]> {
 
 	/*private String[] aggregationExpressions;*/
-	private HashMap<String, Integer> measureIndexMap;
+	private HashMap<String, Integer> measureIndexMap;//Map of measure name to its index in table
 	private ArrayList<DimensionValue> rowDimensionValues;
 	private Object[][] groupedTokenArray;
 	private OPERATORS[][] operatorsArray;

@@ -33,8 +33,8 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 
 public class SqlHelper {
 	private DataLayer dataLayer;
-	private HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap = new HashMap<String, ArrayList<String>>();
-	private HashMap<String, String> dimensionValuesToDimensionMap = new HashMap<String, String>();
+	private HashMap<String, ArrayList<String>> dimensionToDimensionValuesMap = new HashMap<String, ArrayList<String>>();//Map of dimension name to list of dimension values string
+	private HashMap<String, String> dimensionValuesToDimensionMap = new HashMap<String, String>();//Map of dimension value string to dimension name
 	private MeasureHelper measureHelper;
 	
 	public DataLayer getDataLayer() {

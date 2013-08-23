@@ -22,6 +22,8 @@ import org.bitdekk.scenario.model.ScenarioRowQuery;
 
 public class ScenarioDataHelper {
 	private HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>> scenarioRules = new HashMap<Integer, HashMap<IBitSet, ArrayList<ScenarioRowQuery>>>();
+	//Map of dimension value id (this is a scenario dimension value) to a map of original query (may contain dimension values) to a list of list of reduced queries 
+	//(contains only real dimension values) 
 	
 	public void associateRule(int id, IBitSet keyBitSet, IBitSet ruleBitSet, double[] factor) {
 		HashMap<IBitSet, ArrayList<ScenarioRowQuery>> rules = scenarioRules.get(id);

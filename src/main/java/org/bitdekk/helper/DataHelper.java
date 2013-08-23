@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Contributors of bit-dekk
+\ * Copyright 2013 Contributors of bit-dekk
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -25,11 +25,11 @@ import org.bitdekk.model.Table;
  */
 public class DataHelper {
 	public int id = 0;
-	private HashMap<String, Integer> dimensionValueMap = new HashMap<String, Integer>();
-	private HashMap<Integer, String> IdToDimensionMap = new HashMap<Integer, String>();
-	private HashMap<String, Table> tableMap = new HashMap<String, Table>();
-	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();
-	private HashMap<Integer, String> DimensonValueToDimensionMap = new HashMap<Integer, String>();
+	private HashMap<String, Integer> dimensionValueMap = new HashMap<String, Integer>();//Map of dimension value string to dimension value id
+	private HashMap<Integer, String> IdToDimensionValueMap = new HashMap<Integer, String>();//Map of dimension value id to dimension value string
+	private HashMap<String, Table> tableMap = new HashMap<String, Table>();//Map of table name to Table
+	private HashMap<String, List<Integer>> dimensionToDimensionValueIdMap = new HashMap<String, List<Integer>>();//Map of dimension name to list of dimension value ids
+	private HashMap<Integer, String> DimensonValueToDimensionMap = new HashMap<Integer, String>();//Map of dimension value id to dimension name
 	
 	public HashMap<String, List<Integer>> getDimensionToDimensionValueIdMap() {
 		return dimensionToDimensionValueIdMap;
@@ -46,11 +46,11 @@ public class DataHelper {
 	public void setDimensionValueMap(HashMap<String, Integer> dimensionValueMap) {
 		this.dimensionValueMap = dimensionValueMap;
 	}
-	public void setIdToDimensionValueMap(HashMap<Integer, String> IdToDimensionMap) {
-		this.IdToDimensionMap = IdToDimensionMap;
+	public void setIdToDimensionValueMap(HashMap<Integer, String> IdToDimensionValueMap) {
+		this.IdToDimensionValueMap = IdToDimensionValueMap;
 	}
 	public HashMap<Integer, String> getIdToDimensionValueMap() {
-		return IdToDimensionMap;
+		return IdToDimensionValueMap;
 	}
 	public int getId() {
 		return id;
