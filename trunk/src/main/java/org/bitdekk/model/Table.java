@@ -22,8 +22,8 @@ import java.util.HashMap;
  */
 public class Table {
 	private DataRow[] rows;
-	private HashMap<String, Integer> measureIndexMap = new HashMap<String, Integer>();
-	private HashMap<String, Integer> dimensionIndexMap = new HashMap<String, Integer>();
+	private HashMap<String, Integer> measureIndexMap = new HashMap<String, Integer>();//Map of measure name to its index (column number) in Table
+	private HashMap<String, Integer> dimensionIndexMap = new HashMap<String, Integer>();// Map of dimension name to its index in Table
 	
 	public Table(int rows) {
 		this.rows = new DataRow[rows];

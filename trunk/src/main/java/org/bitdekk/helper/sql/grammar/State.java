@@ -10,7 +10,7 @@ import org.bitdekk.helper.sql.grammar.model.OrderColumn;
 
 public class State {
 	private String tableName;
-	private HashMap<String, ArrayList<String>> dimensionConditions = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, ArrayList<String>> dimensionConditions = new HashMap<String, ArrayList<String>>();//Map of dimension name to list of dimension values string
 	private ArrayList<IColumn> columns = new ArrayList<IColumn>();
 	private ArrayList<ArrayList<Object>> measureConditions = new ArrayList<ArrayList<Object>>();
 	private ArrayList<OrderColumn> orderByColumns = new ArrayList<OrderColumn>();
