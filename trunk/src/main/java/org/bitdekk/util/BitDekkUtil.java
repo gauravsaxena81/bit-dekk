@@ -16,8 +16,11 @@ public class BitDekkUtil {
 		return dimension + "-" + dimensionValue;
 	}
 
-	public static IBitSet newBitSet() {
+	/*public static IBitSet newBitSet() {
 		return new OpenBitSet();
+	}*/
+	public static IBitSet newBitSet() {
+		return new BitDekkSparseBitSet64();
 	}
 	/*public static IBitSet newBitSet() {
 		return new JavaEwahBitSet();

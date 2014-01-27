@@ -81,10 +81,8 @@ public class MeasureHelper {
 						dataRow.getMeasureValues()[index++] = ((NumberValue)j.getValue()).getValue();
 				}
 			}
-			dataRow.getMeasureQuery().compress();
 		}
 		Arrays.sort(table.getRows(), new Comparator<DataRow>() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public int compare(DataRow o1, DataRow o2) {
 				return ((Comparable<IBitSet>) o1.getMeasureQuery()).compareTo(o2.getMeasureQuery());
