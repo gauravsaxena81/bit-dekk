@@ -12,6 +12,7 @@ public class JavaEwahBitSet implements IBitSet {
 	public boolean contains(IBitSet bitSet) {
 		JavaEwahBitSet bitSetCast = (JavaEwahBitSet)bitSet;
 		return bitSetCast.bitMap.cardinality() == (this.bitMap.andCardinality(bitSetCast.bitMap));
+		//return (this.bitMap.and(bitSetCast.bitMap)).equals(bitSetCast.bitMap);
 	}
 
 	@Override
@@ -85,7 +86,8 @@ public class JavaEwahBitSet implements IBitSet {
 	}
 
 	@Override
-	public void compress() {
-		//already compressed
+	public int compareTo(IBitSet o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

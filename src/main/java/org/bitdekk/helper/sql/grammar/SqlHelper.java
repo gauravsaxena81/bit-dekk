@@ -22,7 +22,6 @@ import org.bitdekk.model.DataRow;
 import org.bitdekk.model.DimensionValue;
 import org.bitdekk.model.Table;
 import org.bitdekk.util.BitDekkUtil;
-import org.bitdekk.util.OpenBitSet;
 
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
@@ -309,17 +308,15 @@ public class SqlHelper {
 			} else
 				isMeasuresPresent = true;
 		}
-		OpenBitSet filterOpenBitSet = (OpenBitSet)filterBitSet;
-		filterOpenBitSet.compress();
+		IBitSet filterOpenBitSet = filterBitSet;
 		IBitSet lastBucket = null;
 		AggregationTreeNode lastAggregationTreeNode = null;
 		if(isDimensionPresent && isMeasuresPresent) {
 			for(DataRow i : table.getRows()) {
 				if(filterOpenBitSet.contains(i.getMeasureQuery())) {
-					if(!i.getMeasureQuery().contains(lastBucket)) {
+					if(lastBucket == null || !i.getMeasureQuery().contains(lastBucket)) {
 						lastBucket = dimensionsPresentInSelectBitSet.clone();
 						lastBucket.and(i.getMeasureQuery());
-						lastBucket.compress();
 						ArrayList<DimensionValue> list = new ArrayList<DimensionValue>();
 						for(Integer j : lastBucket)
 							list.add(dataLayer.getDimensionValue(j));

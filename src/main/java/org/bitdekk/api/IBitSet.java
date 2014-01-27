@@ -19,7 +19,7 @@ package org.bitdekk.api;
  * @author gaurav.saxena
  *
  */
-public interface IBitSet extends Iterable<Integer>{
+public interface IBitSet extends Iterable<Integer>, Comparable<IBitSet>{
 	/**
 	 * @param bitSet
 	 * @return true if parameter and this object are the same type and 
@@ -49,5 +49,4 @@ public interface IBitSet extends Iterable<Integer>{
 	IBitSet clone();
 	void andNot(IBitSet bitset);
 	int nextSetBit(int position);
-	void compress();
 }

@@ -24,6 +24,7 @@ import org.bitdekk.distributed.scenario.server.model.DeleteDimensionValueRequest
 import org.bitdekk.distributed.scenario.server.model.DeleteRuleRequest;
 import org.bitdekk.distributed.scenario.server.model.ExpressionEvaluationRequest;
 import org.bitdekk.distributed.server.model.AssociateRuleRequest;
+import org.bitdekk.util.BitDekkSparseBitSet64;
 import org.bitdekk.util.OpenBitSet;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -40,11 +41,13 @@ public class BitDekkDistributedUtil {
 		kryo.register(DeleteRuleRequest.class);
 		kryo.register(Double.class);
 		kryo.register(OpenBitSet.class);
+		kryo.register(BitDekkSparseBitSet64.class);
 		kryo.register(long[][].class);
 		kryo.register(long[].class);
 		kryo.register(String.class);
 		kryo.register(int.class);
 		kryo.register(double[].class);
+		kryo.register(int[].class);
 	}
 	public static <T> boolean evaluate(long timeout, Object request, final Class<T> clazz, final Processor<T> processor) {
 		final CountDownLatch doneSignal = new CountDownLatch(ClusterConfig.getInstance().getClusterSize());

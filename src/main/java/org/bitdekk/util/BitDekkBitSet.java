@@ -78,20 +78,21 @@ Test system: AMD Opteron, 64 bit linux, Sun Java 1.5_06 -server -Xbatch -Xmx64M
  */
 
 @SuppressWarnings("serial")
-public class OpenBitSet implements Cloneable, Serializable, IBitSet {
+public class BitDekkBitSet implements Cloneable, Serializable, IBitSet {
   private long[] bits;
   private int wlen;   // number of words (elements) used in the array
+  public int[] zeroes;
   
   /** Constructs an OpenBitSet large enough to hold numBits.
    *
    * @param numBits
    */
-  public OpenBitSet(long numBits) {
+  public BitDekkBitSet(long numBits) {
     bits = new long[bits2words(numBits)];
     wlen = bits.length;
   }
 
-  public OpenBitSet() {
+  public BitDekkBitSet() {
     this(64);
   }
 
@@ -108,7 +109,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
    * any existing words in the array at position &gt= numWords should be zero.
    *
    */
-  public OpenBitSet(long[] bits, int numWords) {
+  public BitDekkBitSet(long[] bits, int numWords) {
     this.bits = bits;
     this.wlen = numWords;
   }
@@ -505,14 +506,14 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
  /** Returns the popcount or cardinality of the intersection of the two sets.
    * Neither set is modified.
    */
-  public static long intersectionCount(OpenBitSet a, OpenBitSet b) {
+  public static long intersectionCount(BitDekkBitSet a, BitDekkBitSet b) {
     return BitUtil.pop_intersect(a.bits, b.bits, 0, Math.min(a.wlen, b.wlen));
  }
 
   /** Returns the popcount or cardinality of the union of the two sets.
     * Neither set is modified.
     */
-  public static long unionCount(OpenBitSet a, OpenBitSet b) {
+  public static long unionCount(BitDekkBitSet a, BitDekkBitSet b) {
     long tot = BitUtil.pop_union(a.bits, b.bits, 0, Math.min(a.wlen, b.wlen));
     if (a.wlen < b.wlen) {
       tot += BitUtil.pop_array(b.bits, a.wlen, b.wlen-a.wlen);
@@ -526,7 +527,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
    * or "intersection(a, not(b))".
    * Neither set is modified.
    */
-  public static long andNotCount(OpenBitSet a, OpenBitSet b) {
+  public static long andNotCount(BitDekkBitSet a, BitDekkBitSet b) {
     long tot = BitUtil.pop_andnot(a.bits, b.bits, 0, Math.min(a.wlen, b.wlen));
     if (a.wlen > b.wlen) {
       tot += BitUtil.pop_array(a.bits, b.wlen, a.wlen-b.wlen);
@@ -537,7 +538,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
  /** Returns the popcount or cardinality of the exclusive-or of the two sets.
   * Neither set is modified.
   */
-  public static long xorCount(OpenBitSet a, OpenBitSet b) {
+  public static long xorCount(BitDekkBitSet a, BitDekkBitSet b) {
     long tot = BitUtil.pop_xor(a.bits, b.bits, 0, Math.min(a.wlen, b.wlen));
     if (a.wlen < b.wlen) {
       tot += BitUtil.pop_array(b.bits, a.wlen, b.wlen-a.wlen);
@@ -596,7 +597,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
   @Override
   public IBitSet clone() {
     try {
-      OpenBitSet obs = (OpenBitSet)super.clone();
+      BitDekkBitSet obs = (BitDekkBitSet)super.clone();
       obs.bits = obs.bits.clone();  // hopefully an array clone is as fast(er) than arraycopy
       return obs;
     } catch (CloneNotSupportedException e) {
@@ -605,7 +606,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
   }
 
   /** this = this AND other */
-  public void intersect(OpenBitSet other) {
+  public void intersect(BitDekkBitSet other) {
     int newLen= Math.min(this.wlen,other.wlen);
     long[] thisArr = this.bits;
     long[] otherArr = other.bits;
@@ -622,7 +623,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
   }
 
   /** this = this OR other */
-  public void union(OpenBitSet other) {
+  public void union(BitDekkBitSet other) {
     int newLen = Math.max(wlen,other.wlen);
     ensureCapacityWords(newLen);
 
@@ -640,7 +641,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 
 
   /** Remove all elements set in other. this = this AND_NOT other */
-  public void remove(OpenBitSet other) {
+  public void remove(BitDekkBitSet other) {
     int idx = Math.min(wlen,other.wlen);
     long[] thisArr = this.bits;
     long[] otherArr = other.bits;
@@ -650,7 +651,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
   }
 
   /** this = this XOR other */
-  public void xor(OpenBitSet other) {
+  public void xor(BitDekkBitSet other) {
     int newLen = Math.max(wlen,other.wlen);
     ensureCapacityWords(newLen);
 
@@ -670,56 +671,56 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
   // some BitSet comparability methods
   @Override
   public void and(IBitSet other) {
-	  if(other instanceof OpenBitSet)
-		  intersect((OpenBitSet) other);
+	  if(other instanceof BitDekkBitSet)
+		  intersect((BitDekkBitSet) other);
 	  else
 		  throw new RuntimeException("OpenBitSet cannot act on other bitset implementations");
   }
   @Override
   public void or(IBitSet other) {
-	  if(other instanceof OpenBitSet)
-		  or((OpenBitSet) other);
+	  if(other instanceof BitDekkBitSet)
+		  or((BitDekkBitSet) other);
 	  else
 		  throw new RuntimeException("OpenBitSet cannot act on other bitset implementations");
   }
   @Override
   public void andNot(IBitSet other) {
-	  if(other instanceof OpenBitSet)
-		  andNot((OpenBitSet)other);
+	  if(other instanceof BitDekkBitSet)
+		  andNot((BitDekkBitSet)other);
 	  else
 		  throw new RuntimeException("OpenBitSet cannot act on other bitset implementations");
   }
   @Override
   public boolean intersects(IBitSet other) {
-	  if(other instanceof OpenBitSet)
-		  return intersects((OpenBitSet)other);
+	  if(other instanceof BitDekkBitSet)
+		  return intersects((BitDekkBitSet)other);
 	  else
 		  throw new RuntimeException("OpenBitSet cannot act on other bitset implementations");
   }
   @Override
   public boolean contains(IBitSet other) {
-	  if(other instanceof OpenBitSet)
-		  return contains((OpenBitSet)other);
+	  if(other instanceof BitDekkBitSet)
+		  return contains((BitDekkBitSet)other);
 	  else
 		  throw new RuntimeException("OpenBitSet cannot act on other bitset implementations");
   }
   //** see {@link intersect} */
-  public void and(OpenBitSet other) {
+  public void and(BitDekkBitSet other) {
     intersect(other);
   }
 
   //** see {@link union} */
-  public void or(OpenBitSet other) {
+  public void or(BitDekkBitSet other) {
     union(other);
   }
 
   //** see {@link andNot} */
-  public void andNot(OpenBitSet other) {
+  public void andNot(BitDekkBitSet other) {
     remove(other);
   }
 
   /** returns true if the sets have any elements in common */
-  public boolean intersects(OpenBitSet other) {
+  public boolean intersects(BitDekkBitSet other) {
     int pos = Math.min(this.wlen, other.wlen);
     long[] thisArr = this.bits;
     long[] otherArr = other.bits;
@@ -768,9 +769,9 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof OpenBitSet)) return false;
-    OpenBitSet a;
-    OpenBitSet b = (OpenBitSet)o;
+    if (!(o instanceof BitDekkBitSet)) return false;
+    BitDekkBitSet a;
+    BitDekkBitSet b = (BitDekkBitSet)o;
     // make a the larger set.
     if (b.wlen > this.wlen) {
       a = b; b=this;
@@ -809,22 +810,31 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 		else
 			return "";
 	}
-	public boolean contains(OpenBitSet other) {
-		if(other != null && other.wlen <= this.wlen) {
-			int pos = other.wlen;
-		    long[] thisArr = this.bits;
-		    long[] otherArr = other.bits;
-		    while (--pos>=0)
-			   if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
-				   return false;
-		    return true;
+	public boolean contains(BitDekkBitSet other) {
+		if(other != null) {
+		   long[] thisArr = this.bits;
+		   long[] otherArr = other.bits;
+		   int[] otherZeroes = other.zeroes;
+		   if(otherZeroes != null && otherArr.length < thisArr.length) {
+			    for(int j = 0, i = -1, max = otherZeroes.length; j < max; j++) {
+			    	i = i + otherZeroes[j] + 1;
+			    	if(otherArr[i] != (thisArr[i] & otherArr[i]))
+			    		return false;
+			    }
+		    } else {
+		    	int pos = other.wlen;
+			    while (--pos>=0)
+			      if (otherArr[pos] != (thisArr[pos] & otherArr[pos])) 
+			    	  return false;
+		    }
+			return true;
 		} else
 			return false;
 	}
 	@Override
 	public Iterator<Integer> iterator() {
 		return new Iterator<Integer>() {
-			private int position = OpenBitSet.this.nextSetBit(0);
+			private int position = BitDekkBitSet.this.nextSetBit(0);
 			@Override
 			public boolean hasNext() {
 				return position > -1;
@@ -833,7 +843,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 			@Override
 			public Integer next() {
 				int temp = position;
-				position = OpenBitSet.this.nextSetBit(++position);
+				position = BitDekkBitSet.this.nextSetBit(++position);
 				return temp;
 			}
 
@@ -843,33 +853,14 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 			}
 		};
 	}
+
 	@Override
 	public int compareTo(IBitSet o) {
-		if(o instanceof OpenBitSet) {
-			OpenBitSet other = (OpenBitSet)o;
-			int pos = Math.min(other.wlen, this.wlen);
-		    long[] thisArr = this.bits;
-		    long[] otherArr = other.bits;
-		    int posOriginal = pos;
-		    if(pos > 0) {
-			    while (--pos>=0) {
-			        if (otherArr[pos] > thisArr[pos])
-			    	    return -1;
-			        else if (otherArr[pos] < thisArr[pos])
-			    	    return 1;
-			    }
-		    }
-		    for(; posOriginal < this.bits.length; posOriginal++)
-		    	if(bits[posOriginal] > 0)
-		    		return 1;
-		    for(; posOriginal < other.bits.length; posOriginal++)
-		    	if(other.bits[posOriginal] > 0)
-		    		return -1;
-		    return 0;
-			/*int index = 0;
+		if(o instanceof BitDekkBitSet) {
+			int index = 0;
 			while(true) {
 				int thisNextSetBit = this.nextSetBit(index);
-				int otherNextSetBit = other.nextSetBit(index);
+				int otherNextSetBit = o.nextSetBit(index);
 				if(thisNextSetBit > otherNextSetBit)
 					return 1;
 				else if(thisNextSetBit < otherNextSetBit)
@@ -878,7 +869,7 @@ public class OpenBitSet implements Cloneable, Serializable, IBitSet {
 					index = thisNextSetBit + 1;
 				else
 					return 0;
-			}*/
+			}
 		} else
 			  throw new RuntimeException("OpenBitSet cannot act on other bitset implementations");
 	}
